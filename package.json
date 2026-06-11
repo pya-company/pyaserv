@@ -1,22 +1,16 @@
 {
-  "name": "@pyaserv/site",
+  "name": "pyaserv",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "PyaServ — services classifieds for Paraguay. Astro static, deployed to GitHub Pages, custom domain pyaserv.com.",
+  "description": "PyaServ — services classifieds for Paraguay. Two-sided marketplace built on pya-platform.",
   "packageManager": "bun@1.2.0",
+  "workspaces": ["apps/*"],
   "scripts": {
-    "dev": "astro dev --host 127.0.0.1",
-    "build": "astro build",
-    "preview": "astro preview",
-    "type-check": "astro check",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^5.0.0"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.4",
-    "typescript": "^5.7.2"
+    "dev:site": "bun --filter @pyaserv/site dev",
+    "dev:api": "bun --filter @pyaserv/api dev",
+    "build:site": "bun --filter @pyaserv/site build",
+    "build:api": "bun --filter @pyaserv/api build",
+    "type-check": "bun --filter '*' type-check"
   }
 }

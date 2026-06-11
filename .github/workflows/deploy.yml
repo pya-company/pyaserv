@@ -27,12 +27,12 @@ jobs:
       # https://undeadliner.github.io/pyaserv/ — Astro needs the base path
       # baked in at build time. Drop this `env:` block after enabling the
       # `pyaserv.com` custom domain in Settings → Pages.
-      - run: bun run build
+      - run: bun run build:site
         env:
           BASE_PATH: /pyaserv/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: apps/site/dist
   deploy:
     needs: build
     runs-on: ubuntu-latest

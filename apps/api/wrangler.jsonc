@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pyaserv-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "ENVIRONMENT": "development",
+    "SITE_ORIGIN": "http://127.0.0.1:4321",
+    "ADMIN_ORIGIN": "http://127.0.0.1:4322",
+    "API_ORIGIN": "http://127.0.0.1:8787",
+    "WEBAUTHN_RP_ID": "localhost"
+  },
+  "env": {
+    "production": {
+      "name": "pyaserv-api-prod",
+      "vars": {
+        "ENVIRONMENT": "production",
+        "SITE_ORIGIN": "https://pyaserv.com",
+        "ADMIN_ORIGIN": "https://admin.pyaserv.com",
+        "API_ORIGIN": "https://api.pyaserv.com",
+        "WEBAUTHN_RP_ID": "pyaserv.com",
+        "WEBAUTHN_ORIGINS": "https://pyaserv.com,https://admin.pyaserv.com",
+        "EMAIL_DOMAIN": "pyaserv.com"
+      }
+      // D1 + KV bindings land here once Phase 8 Terraform creates them.
+      // For now the Worker boots without bindings and returns 503 from any
+      // route that needs DB / sessions.
+    }
+  }
+}

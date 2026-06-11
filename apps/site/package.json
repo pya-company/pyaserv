@@ -1,0 +1,21 @@
+{
+  "name": "@pyaserv/site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PyaServ — services classifieds for Paraguay. Astro static, deployed to GitHub Pages, custom domain pyaserv.com.",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "astro build",
+    "preview": "astro preview",
+    "type-check": "astro check",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.7.2"
+  }
+}

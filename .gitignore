@@ -5,6 +5,10 @@ node_modules/
 .cache/
 .bun/
 
+# wrangler
+.wrangler/
+.dev.vars
+
 # env
 .env
 .env.*
