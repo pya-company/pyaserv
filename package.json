@@ -12,5 +12,10 @@
     "build:site": "bun --filter @pyaserv/site build",
     "build:api": "bun --filter @pyaserv/api build",
     "type-check": "bun --filter '*' type-check"
+  },
+  "//pya-platform-overrides": "@undeadliner/pya-* resolved from sibling pya-platform checkout. Same pattern as pyaeats-app.",
+  "overrides": {
+    "@undeadliner/pya-shared": "file:../pya-platform/packages/shared",
+    "@undeadliner/pya-auth": "file:../pya-platform/packages/auth"
   }
 }

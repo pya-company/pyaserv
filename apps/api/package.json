@@ -11,6 +11,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@undeadliner/pya-auth": "*",
+    "@undeadliner/pya-shared": "*",
     "hono": "^4.6.0",
     "valibot": "^1.0.0"
   },

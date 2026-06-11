@@ -1,40 +1,50 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { passwordlessRoutes, requireAuth, mapErrorToStatus, type DomainError } from '@undeadliner/pya-auth'
 
-// PyaServ API — placeholder Worker.
-//
-// Phase 6 (refactor pyaeats-app) verifies that `@pya/auth` works in production
-// against PyaEats first. Once that's green, this Worker mounts:
-//
-//   import { passwordlessRoutes, oauthRoutes, requireAuth } from '@pya/auth'
-//   app.route('/api/auth', passwordlessRoutes)
-//   app.route('/api/auth', oauthRoutes)
-//   app.use('/v1/*', requireAuth)
-//
-// Until then we serve only a health probe so the Worker can be deployed,
-// custom domain bound, and DNS verified independent of the engine cutover.
-
-interface Env {
-  readonly ENVIRONMENT: 'development' | 'preview' | 'staging' | 'production'
-  readonly SITE_ORIGIN: string
-  readonly API_ORIGIN: string
+interface AppEnv {
+  readonly Bindings: Env
 }
 
-const app = new Hono<{ Bindings: Env }>()
+const isDomainError = (e: unknown): e is DomainError =>
+  typeof e === 'object' && e !== null && '_tag' in e
 
-app.get('/health', (c) => c.json({
-  ok: true,
-  service: 'pyaserv-api',
-  env: c.env.ENVIRONMENT,
-  ts: Math.floor(Date.now() / 1000),
-}))
-
-app.get('/', (c) => c.text(
-  'PyaServ API — placeholder Worker.\n' +
-  'See https://github.com/undeadliner/pyaserv for the source and roadmap.\n',
-))
-
-app.all('*', (c) => c.json({
-  error: { code: 'NotFound', message: 'Endpoint not yet implemented.' },
-}, 404))
+const app = new Hono<AppEnv>()
+  .use('*', (c, next) =>
+    cors({
+      origin: c.env.SITE_ORIGIN,
+      credentials: true,
+      allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'X-CSRF-Token', 'Authorization'],
+    })(c, next)
+  )
+  .onError((err, c) => {
+    if (isDomainError(err)) {
+      const status = mapErrorToStatus(err)
+      return c.json(
+        {
+          error: {
+            code: err._tag,
+            message: 'message' in err && typeof err.message === 'string' ? err.message : err._tag,
+          },
+        },
+        status as 400 | 401 | 403 | 404 | 409 | 422 | 429,
+      )
+    }
+    console.error('Unhandled', err)
+    return c.json({ error: { code: 'Internal', message: 'Unexpected error' } }, 500)
+  })
+  .get('/health', (c) => c.json({
+    ok: true,
+    service: 'pyaserv-api',
+    env: c.env.ENVIRONMENT,
+    ts: Math.floor(Date.now() / 1000),
+  }))
+  .route('/api/auth', passwordlessRoutes)
+  .get('/v1/me', requireAuth, (c) => {
+    const session = c.var.session
+    return c.json({ data: { userId: session.userId, roles: session.roles } })
+  })
+  .all('*', (c) => c.json({ error: { code: 'NotFound', message: 'Endpoint not yet implemented.' } }, 404))
 
 export default app

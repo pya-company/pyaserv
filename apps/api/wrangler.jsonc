@@ -4,13 +4,21 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-01-01",
   "compatibility_flags": ["nodejs_compat"],
+  "migrations_dir": "migrations",
   "vars": {
     "ENVIRONMENT": "development",
     "SITE_ORIGIN": "http://127.0.0.1:4321",
     "ADMIN_ORIGIN": "http://127.0.0.1:4322",
-    "API_ORIGIN": "http://127.0.0.1:8787",
+    "API_ORIGIN": "http://127.0.0.1:8788",
     "WEBAUTHN_RP_ID": "localhost"
   },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "pyaserv", "database_id": "1d5cb188-fac0-4bec-8990-82ad6225ed94" }
+  ],
+  "kv_namespaces": [
+    { "binding": "SESSIONS", "id": "bdbd72f4629547a2b9950b2a06001759" },
+    { "binding": "OAUTH_STATE", "id": "7ac1d7087a9148c6b9bf9a7564e14d40" }
+  ],
   "env": {
     "production": {
       "name": "pyaserv-api-prod",
@@ -22,10 +30,14 @@
         "WEBAUTHN_RP_ID": "pyaserv.com",
         "WEBAUTHN_ORIGINS": "https://pyaserv.com,https://admin.pyaserv.com",
         "EMAIL_DOMAIN": "pyaserv.com"
-      }
-      // D1 + KV bindings land here once Phase 8 Terraform creates them.
-      // For now the Worker boots without bindings and returns 503 from any
-      // route that needs DB / sessions.
+      },
+      "d1_databases": [
+        { "binding": "DB", "database_name": "pyaserv", "database_id": "1d5cb188-fac0-4bec-8990-82ad6225ed94" }
+      ],
+      "kv_namespaces": [
+        { "binding": "SESSIONS", "id": "bdbd72f4629547a2b9950b2a06001759" },
+        { "binding": "OAUTH_STATE", "id": "7ac1d7087a9148c6b9bf9a7564e14d40" }
+      ]
     }
   }
 }
