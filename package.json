@@ -7,6 +7,7 @@
   "packageManager": "bun@1.2.0",
   "workspaces": ["apps/*"],
   "scripts": {
+    "preinstall": "bun scripts/ensure-gh-packages-auth.ts",
     "dev:site": "bun --filter @pyaserv/site dev",
     "dev:api": "bun --filter @pyaserv/api dev",
     "build:site": "bun --filter @pyaserv/site build",
