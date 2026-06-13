@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { passwordlessRoutes, requireAuth, mapErrorToStatus, type DomainError } from '@pya-platform/auth'
+import { passwordlessRoutes, requireAuth, mapErrorToStatus, type DomainError } from '@undeadliner/pya-auth'
 
 interface AppEnv {
   readonly Bindings: Env
