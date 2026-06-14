@@ -25,11 +25,8 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      # Custom-domain path: CNAME points pya-company.github.io/pyaserv at
-      # pyaserv.com. Once DNS lands, drop BASE_PATH below.
+      # pyaserv.com is the custom domain (see /CNAME), so site lives at root.
       - run: bun run build:site
-        env:
-          BASE_PATH: /pyaserv/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/site/dist

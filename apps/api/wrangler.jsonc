@@ -24,7 +24,7 @@
       "name": "pyaserv-api-prod",
       "vars": {
         "ENVIRONMENT": "production",
-        "SITE_ORIGIN": "https://pya-company.github.io",
+        "SITE_ORIGIN": "https://pyaserv.com",
         "ADMIN_ORIGIN": "https://admin.pyaserv.com",
         "API_ORIGIN": "https://api.pyaserv.com",
         "WEBAUTHN_RP_ID": "pyaserv.com",
