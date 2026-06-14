@@ -12,24 +12,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <a id="subject-link" class="ps-btn ps-btn--ghost ps-btn--sm" data-i18n="inquiry.view_subject">Ver publicación</a>
       </div>
 
-      <div id="status-bar" class="ps-banner" style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
-        <span id="status-label"></span>
+      <div id="status-bar" class="ps-banner ps-row" style="flex-wrap:wrap">
+        <span id="status-label" class="ps-status-chip" role="status" aria-live="polite"></span>
         <button id="btn-start" class="ps-btn ps-btn--sm ps-hidden" data-i18n="inquiry.btn_start">Comenzar trabajo</button>
         <button id="btn-done" class="ps-btn ps-btn--sm ps-hidden" data-i18n="inquiry.btn_done">Marcar terminado</button>
         <button id="btn-cancel" class="ps-btn ps-btn--ghost ps-btn--sm ps-hidden" data-i18n="inquiry.btn_cancel">Cancelar</button>
       </div>
 
-      <div id="messages" class="ps-chat" aria-busy="true" aria-live="polite"></div>
+      <div id="messages" class="ps-chat" aria-busy="true" aria-live="polite" aria-relevant="additions" aria-atomic="false"></div>
       <form id="composer-form" class="ps-composer">
         <textarea name="body" required minlength="1" maxlength="2000" data-i18n-placeholder="inquiry.compose_placeholder" placeholder="Escribí un mensaje…"></textarea>
         <button type="submit" class="ps-btn" data-i18n="common.send">Enviar</button>
       </form>
       <p id="msg" class="ps-msg" aria-live="polite"></p>
 
-      <div id="review-form" class="ps-banner ps-hidden">
-        <h2 style="margin:0 0 .5rem" data-i18n="inquiry.review_h">Calificar trabajo</h2>
+      <div id="review-form" class="ps-banner ps-hidden" role="region" aria-labelledby="review-form-h">
+        <h2 id="review-form-h" data-i18n="inquiry.review_h">Calificar trabajo</h2>
         <form id="review-form-el" class="ps-form">
-          <div id="stars-row" class="ps-row" style="font-size:1.6rem;gap:.25rem"></div>
+          <div id="stars-row" class="ps-stars-row" role="group" aria-label="Stars"></div>
           <label>
             <span data-i18n="inquiry.review_body_label">Comentario (opcional)</span>
             <textarea name="body" maxlength="1000" rows="3" data-i18n-placeholder="inquiry.review_body_placeholder" placeholder="Contale a otros cómo fue."></textarea>
@@ -73,9 +73,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       let cachedInquiry = null
       let lastCount = 0
       let cachedReviews = []
+      let subjectLinkResolved = false
 
       const renderStatusBar = (inquiry) => {
         statusLabel.textContent = labelByStatus[inquiry.workStatus] || inquiry.workStatus
+        statusLabel.dataset.status = inquiry.workStatus
         const isClient = inquiry.clientUserId === me.userId
         const isSpec = inquiry.specialistUserId === me.userId
         const btnStart = document.getElementById('btn-start')
@@ -120,21 +122,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           thread.classList.remove('ps-hidden')
           document.getElementById('title').textContent = data.inquiry.subjectType === 'listing' ? t('inquiry.subject_listing') : t('inquiry.subject_request')
 
-          // Subject link: for listings we route to /specialists/detail/?id=<specialist profile id> via lookup;
-          // for requests, route to /clients/detail/?id=<requestId>.
-          const link = document.getElementById('subject-link')
-          if (data.inquiry.subjectType === 'request') {
-            link.href = `${base}/clients/detail/?id=${data.inquiry.subjectId}`
-          } else {
-            // Lookup specialist profile id from the listing
-            try {
-              const listing = (await apiFetch(`/v1/listings`)).find((l) => l.id === data.inquiry.subjectId)
-              const profile = listing
-                ? (await apiFetch(`/v1/specialists`)).find((s) => s.userId === data.inquiry.specialistUserId)
-                : null
-              if (profile) link.href = `${base}/specialists/detail/?id=${profile.id}`
-              else link.classList.add('ps-hidden')
-            } catch { link.classList.add('ps-hidden') }
+          // Resolve subject link once per page load — listings need a lookup, requests are direct.
+          if (!subjectLinkResolved) {
+            const link = document.getElementById('subject-link')
+            if (data.inquiry.subjectType === 'request') {
+              link.href = `${base}/clients/detail/?id=${data.inquiry.subjectId}`
+              subjectLinkResolved = true
+            } else {
+              try {
+                const listing = (await apiFetch(`/v1/listings`)).find((l) => l.id === data.inquiry.subjectId)
+                const profile = listing
+                  ? (await apiFetch(`/v1/specialists`)).find((s) => s.userId === data.inquiry.specialistUserId)
+                  : null
+                if (profile) link.href = `${base}/specialists/detail/?id=${profile.id}`
+                else link.classList.add('ps-hidden')
+              } catch { link.classList.add('ps-hidden') }
+              subjectLinkResolved = true
+            }
           }
 
           renderStatusBar(data.inquiry)
@@ -171,7 +175,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const starsRow = document.getElementById('stars-row')
       let pickedStars = 5
       const drawStars = () => {
-        starsRow.innerHTML = [1,2,3,4,5].map((n) => `<button type="button" class="ps-star" data-n="${n}" aria-label="${n} ★" style="background:none;border:0;cursor:pointer;color:${n <= pickedStars ? '#f59e0b' : 'var(--ps-text-soft)'};font-size:inherit;line-height:1">★</button>`).join('')
+        starsRow.innerHTML = [1,2,3,4,5].map((n) => `<button type="button" class="ps-star${n <= pickedStars ? ' ps-star--on' : ''}" data-n="${n}" aria-label="${n} ★" aria-pressed="${n <= pickedStars ? 'true' : 'false'}">★</button>`).join('')
         for (const b of starsRow.querySelectorAll('button')) {
           b.addEventListener('click', () => { pickedStars = +b.dataset.n; drawStars() })
         }

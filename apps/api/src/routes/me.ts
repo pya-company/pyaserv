@@ -1,5 +1,8 @@
 import { requireAuth } from '@pya-company/auth'
+import { ValidationError } from '@pya-company/shared'
 import { Hono } from 'hono'
+import * as v from 'valibot'
+import { NotificationPrefsSchema } from '../schemas.ts'
 
 interface AppEnv {
   readonly Bindings: Env
@@ -47,4 +50,16 @@ export const meRoutes = new Hono<AppEnv>()
       .bind(c.var.session.userId)
       .first<{ email_notifications: number }>()
     return c.json({ data: { emailNotifications: row?.email_notifications === 1 } })
+  })
+  .patch('/notifications', requireAuth, async (c) => {
+    const body = await c.req.json().catch(() => ({}))
+    const parsed = v.safeParse(NotificationPrefsSchema, body)
+    if (!parsed.success)
+      throw new ValidationError({
+        issues: parsed.issues.map((i) => ({ path: i.path?.map((p) => p.key).join('.') ?? '', message: i.message })),
+      })
+    await c.env.DB.prepare('UPDATE users SET email_notifications = ? WHERE id = ?')
+      .bind(parsed.output.emailNotifications ? 1 : 0, c.var.session.userId)
+      .run()
+    return c.json({ data: { emailNotifications: parsed.output.emailNotifications } })
   })
