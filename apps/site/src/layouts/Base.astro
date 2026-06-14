@@ -14,18 +14,26 @@ const href = (path: string): string => `${base}${path}`
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title} · PyaServ</title>
     {description !== undefined && <meta name="description" content={description} />}
     <meta name="theme-color" content="#0e7490" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
   </head>
   <body>
-    <header class="ps-topbar">
+    <header class="ps-topbar" id="topbar">
       <a href={href('/')} class="ps-topbar__brand">
         <span class="ps-topbar__brand-em">Pya</span>Serv
       </a>
-      <nav class="ps-topbar__nav" aria-label="Principal">
+      <button class="ps-topbar__menu" type="button" id="menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="topnav">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+      <nav class="ps-topbar__nav" id="topnav" aria-label="Principal">
         <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}>Profesionales</a>
         <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}>Pedidos</a>
         <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me>Mi panel</a>
@@ -39,13 +47,33 @@ const href = (path: string): string => `${base}${path}`
       © PyaServ · <a href={href('/')}>hermano de PyaEats</a> · construido sobre pya-platform
     </footer>
     <script>
-      // Hide "Ingresar" if token is present; otherwise hide "Mi panel".
+      // @ts-nocheck
       ;(() => {
+        // Auth-gate the nav items
         const token = sessionStorage.getItem('pyaserv.token')
         const me = document.querySelector('[data-nav-me]')
         const login = document.querySelector('[data-nav-login]')
-        if (token) { login?.classList.add('ps-hidden') }
-        else { me?.classList.add('ps-hidden') }
+        if (token) login?.classList.add('ps-hidden')
+        else me?.classList.add('ps-hidden')
+
+        // Mobile menu toggle
+        const topbar = document.getElementById('topbar')
+        const btn = document.getElementById('menu-btn')
+        const setOpen = (open) => {
+          if (!topbar || !btn) return
+          topbar.dataset.open = open ? 'true' : 'false'
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+        }
+        btn?.addEventListener('click', () => setOpen(topbar?.dataset.open !== 'true'))
+        // Close when tapping outside the panel
+        document.addEventListener('click', (e) => {
+          if (!topbar || topbar.dataset.open !== 'true') return
+          const t = e.target
+          if (t instanceof Element && (topbar.contains(t))) return
+          setOpen(false)
+        })
+        // Close on Esc
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
       })()
     </script>
   </body>
