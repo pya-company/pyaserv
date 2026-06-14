@@ -29,7 +29,7 @@
         "API_ORIGIN": "https://api.pyaserv.com",
         "WEBAUTHN_RP_ID": "pyaserv.com",
         "WEBAUTHN_ORIGINS": "https://pyaserv.com,https://admin.pyaserv.com",
-        "EMAIL_DOMAIN": "pyaserv.com"
+        "EMAIL_DOMAIN": "pyaeats.com"
       },
       "d1_databases": [
         { "binding": "DB", "database_name": "pyaserv", "database_id": "1d5cb188-fac0-4bec-8990-82ad6225ed94" }
