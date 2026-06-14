@@ -1,5 +1,5 @@
 const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
-  'https://pyaserv-api-prod.igor-ganov.workers.dev'
+  'https://api.pyaserv.com'
 
 const TOKEN_KEY = 'pyaserv.token'
 
