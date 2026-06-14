@@ -9,6 +9,7 @@
     "apps/*"
   ],
   "scripts": {
+    "setup": "bun scripts/setup.ts",
     "dev:site": "bun --filter @pyaserv/site dev",
     "dev:api": "bun --filter @pyaserv/api dev",
     "build:site": "bun --filter @pyaserv/site build",
