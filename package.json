@@ -5,18 +5,19 @@
   "type": "module",
   "description": "PyaServ — services classifieds for Paraguay. Two-sided marketplace built on pya-platform.",
   "packageManager": "bun@1.2.0",
-  "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "setup": "bun scripts/setup.ts",
     "dev:site": "bun --filter @pyaserv/site dev",
     "dev:api": "bun --filter @pyaserv/api dev",
     "build:site": "bun --filter @pyaserv/site build",
     "build:api": "bun --filter @pyaserv/api build",
     "type-check": "bun --filter '*' type-check"
   },
-  "//pya-platform-overrides": "@undeadliner/pya-* resolved from sibling pya-platform checkout. Same pattern as pyaeats-app.",
+  "//pya-platform-overrides": "@pya-company/* resolved from sibling pya-platform checkout. Same pattern as pyaeats-app.",
   "overrides": {
-    "@undeadliner/pya-shared": "file:../pya-platform/packages/shared",
-    "@undeadliner/pya-auth": "file:../pya-platform/packages/auth"
+    "@pya-company/shared": "file:../pya-platform/packages/shared",
+    "@pya-company/auth": "file:../pya-platform/packages/auth"
   }
 }

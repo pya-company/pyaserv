@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "PyaServ API — Cloudflare Worker. Consumes @undeadliner/pya-auth for sessions/OAuth/passkeys and serves listings + inquiries.",
+  "description": "PyaServ API — Cloudflare Worker. Consumes @pya-company/auth for sessions/OAuth/passkeys and serves listings + inquiries.",
   "scripts": {
     "dev": "wrangler dev",
     "build": "wrangler deploy --dry-run --outdir dist",
@@ -11,8 +11,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@undeadliner/pya-auth": "*",
-    "@undeadliner/pya-shared": "*",
+    "@pya-company/auth": "*",
+    "@pya-company/shared": "*",
     "hono": "^4.6.0",
     "valibot": "^1.0.0"
   },
