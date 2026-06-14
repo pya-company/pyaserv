@@ -83,6 +83,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       status.classList.add('ps-hidden')
       profile.classList.remove('ps-hidden')
 
+      // Fire-and-forget profile_view event — backend dedupes self-views.
+      try { apiFetch('/v1/analytics', { method: 'POST', body: JSON.stringify({ event: 'profile_view', subjectId: id }) }) } catch {}
+
       document.getElementById('name').textContent = spec.displayName
       document.getElementById('meta').textContent = `${spec.headline} · 📍 ${spec.barrio}`
       document.getElementById('bio').textContent = spec.bio || spec.headline
@@ -125,10 +128,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         const phoneLink = document.getElementById('phone-link')
         phoneText.textContent = spec.phone
         phoneLink.href = `tel:${spec.phone.replace(/[^+0-9]/g, '')}`
+        phoneLink.addEventListener('click', () => {
+          try { apiFetch('/v1/analytics', { method: 'POST', body: JSON.stringify({ event: 'phone_click', subjectId: id }) }) } catch {}
+        })
         if (spec.whatsapp) {
           const wa = document.getElementById('whatsapp-link')
           wa.href = `https://wa.me/${spec.whatsapp.replace(/[^0-9]/g, '')}`
           wa.classList.remove('ps-hidden')
+          wa.addEventListener('click', () => {
+            try { apiFetch('/v1/analytics', { method: 'POST', body: JSON.stringify({ event: 'whatsapp_click', subjectId: id }) }) } catch {}
+          })
         }
         document.getElementById('contact-btn').classList.remove('ps-hidden')
       }

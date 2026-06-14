@@ -2,6 +2,7 @@ import { type DomainError, mapErrorToStatus, passwordlessRoutes, requireAuth } f
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { checkRateLimit } from './rate-limit.ts'
+import { analyticsRoutes } from './routes/analytics.ts'
 import { inquiriesRoutes } from './routes/inquiries.ts'
 import { listingsRoutes } from './routes/listings.ts'
 import { mediaRoutes } from './routes/media.ts'
@@ -79,6 +80,7 @@ const app = new Hono<AppEnv>()
   .route('/v1/me', meRoutes)
   .route('/v1', reviewsRoutes)
   .route('/v1/media', mediaRoutes)
+  .route('/v1/analytics', analyticsRoutes)
   .all('*', (c) => c.json({ error: { code: 'NotFound', message: 'Endpoint not yet implemented.' } }, 404))
 
 export default app

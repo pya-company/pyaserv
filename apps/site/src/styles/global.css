@@ -571,6 +571,47 @@ button { font: inherit; cursor: pointer; }
 .ps-theme-btn:hover { background: var(--ps-acc-soft); border-color: var(--ps-acc); }
 .ps-theme-btn:focus-visible { outline: 2px solid var(--ps-acc); outline-offset: 2px; }
 
+/* Stats grid (specialist dashboard) */
+.ps-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--ps-space-3);
+  margin: var(--ps-space-3) 0;
+}
+.ps-stat-card {
+  background: var(--ps-surface);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  padding: var(--ps-space-4);
+  text-align: center;
+}
+.ps-stat-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ps-acc);
+  line-height: 1.2;
+}
+.ps-stat-card__label {
+  margin-top: var(--ps-space-1);
+  color: var(--ps-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Profile completeness meter */
+.ps-completeness { margin: var(--ps-space-3) 0 var(--ps-space-4); }
+.ps-completeness__bar {
+  width: 100%;
+  height: 8px;
+  background: var(--ps-surface-2);
+  border-radius: var(--ps-radius-pill);
+  overflow: hidden;
+}
+.ps-completeness__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ps-acc), var(--ps-good));
+  transition: width 220ms ease-out;
+}
+
 /* Landing hero stats */
 .ps-home-stats {
   margin: var(--ps-space-4) 0 0;

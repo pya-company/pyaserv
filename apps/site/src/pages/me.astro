@@ -16,11 +16,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <button class="ps-tab" data-tab="listings" data-i18n="me.tabs.listings">🛠️ Mis servicios</button>
       <button class="ps-tab" data-tab="requests" data-i18n="me.tabs.requests">📢 Mis pedidos</button>
       <button class="ps-tab" data-tab="inquiries" data-i18n="me.tabs.inquiries">💬 Conversaciones</button>
+      <button class="ps-tab" data-tab="stats" data-i18n="me.tabs.stats">📊 Estadísticas</button>
     </nav>
 
     <div class="ps-tabpanel" id="panel-profile" hidden>
       <h2 data-i18n="me.profile.h">Perfil de profesional</h2>
       <p data-i18n="me.profile.intro">Si querés ofrecer servicios, completá tu perfil acá.</p>
+      <div id="completeness" class="ps-completeness" aria-live="polite" hidden>
+        <div class="ps-completeness__bar"><div class="ps-completeness__fill" id="completeness-fill"></div></div>
+        <p class="ps-card__sub"><span id="completeness-label"></span></p>
+      </div>
       <form id="profile-form" class="ps-form">
         <div class="ps-row ps-photo-widget">
           <div id="photo-preview" class="ps-detail__avatar ps-avatar--thumb">👤</div>
@@ -100,6 +105,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <h2 data-i18n="me.inquiries.h">Conversaciones</h2>
       <div id="my-inquiries" class="ps-cards" aria-busy="true"></div>
     </div>
+
+    <div class="ps-tabpanel" id="panel-stats" hidden>
+      <h2 data-i18n="me.stats.h">Estadísticas</h2>
+      <p id="stats-msg" class="ps-msg" data-i18n="me.stats.intro">Métricas de tu perfil — últimos 30 días.</p>
+      <div id="stats-grid" class="ps-stats-grid"></div>
+    </div>
   </section>
 
   <BarriosDatalist />
@@ -107,7 +118,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   <script>
     // @ts-nocheck
     import { apiFetch, getToken, clearToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime, uploadImage, mediaUrl } from '../lib/api.ts'
-    import { t } from '../lib/i18n.ts'
+    import { interp, t } from '../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -136,6 +147,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         listings: document.getElementById('panel-listings'),
         requests: document.getElementById('panel-requests'),
         inquiries: document.getElementById('panel-inquiries'),
+        stats: document.getElementById('panel-stats'),
       }
       const setTab = (name) => {
         for (const tab of tabs) tab.setAttribute('aria-selected', tab.dataset.tab === name ? 'true' : 'false')
@@ -239,6 +251,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           refreshListings()
         } catch (err) { pm.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>` }
       })
+
+      // ---- Profile completeness meter ----
+      const completenessEl = document.getElementById('completeness')
+      const completenessFill = document.getElementById('completeness-fill')
+      const completenessLabel = document.getElementById('completeness-label')
+      const computeCompleteness = () => {
+        const fields = ['displayName','headline','phone','barrio','bio']
+        const filled = fields.filter((k) => pf.elements[k] && String(pf.elements[k].value || '').trim().length > 0).length
+        const total = fields.length + 1
+        const score = filled + (photoKey.value ? 1 : 0)
+        const pct = Math.round((score / total) * 100)
+        completenessFill.style.width = pct + '%'
+        completenessLabel.textContent = interp(t('me.profile.completeness'), { pct })
+        completenessEl.hidden = false
+      }
+      pf.addEventListener('input', computeCompleteness)
+      photoInput.addEventListener('change', () => setTimeout(computeCompleteness, 50))
+      photoRemove.addEventListener('click', () => setTimeout(computeCompleteness, 50))
+      computeCompleteness()
 
       // ---- Notifications opt-out ----
       const notifEmail = document.getElementById('notif-email')
@@ -357,6 +388,26 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           }).join('')
         }
       } catch (err) { iEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
+
+      // ---- Stats ----
+      const statsGrid = document.getElementById('stats-grid')
+      const statsMsg = document.getElementById('stats-msg')
+      try {
+        const stats = await apiFetch('/v1/analytics/me')
+        if (!stats) {
+          statsMsg.textContent = t('me.stats.empty')
+          statsGrid.innerHTML = ''
+        } else {
+          const card = (label, value) => `<div class="ps-stat-card"><div class="ps-stat-card__value">${value}</div><div class="ps-stat-card__label">${label}</div></div>`
+          statsGrid.innerHTML = [
+            card(t('me.stats.profile_view'), stats.last30d.profileView),
+            card(t('me.stats.phone_click'), stats.last30d.phoneClick),
+            card(t('me.stats.whatsapp_click'), stats.last30d.whatsappClick),
+            card(t('me.stats.inquiries'), stats.funnel.inquiries),
+            card(t('me.stats.completed'), stats.funnel.completed),
+          ].join('')
+        }
+      } catch (err) { statsGrid.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
     })()
   </script>
 </Base>
