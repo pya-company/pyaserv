@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Clone the platform sibling so bun overrides (file:../pya-platform/...) resolve.
+      - run: git clone --depth 1 https://github.com/pya-company/pya-platform.git ../pya-platform
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
