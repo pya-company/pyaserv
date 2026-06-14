@@ -95,6 +95,7 @@ const ES: Dict = {
   'home.clients.desc': 'Mirá los pedidos abiertos en tu zona. Si encaja con lo tuyo, escribiles directo — sin filtros, sin pago para postularte.',
   'home.clients.cta': 'Ver pedidos →',
   'home.banner.html': '<strong>Estado:</strong> MVP en vivo. Crearás tu perfil de profesional o tu pedido en el panel <a data-banner-link>Mi panel</a>. Si todavía no tenés cuenta, te creamos una con tu email — sin contraseñas.',
+  'home.stats': '<strong>{specs}</strong> profesionales activos · <strong>{reqs}</strong> pedidos abiertos',
 
   // specialists list
   'specialists.title': 'Profesionales',
@@ -380,6 +381,7 @@ const EN: Dict = {
   'home.clients.desc': 'See open requests in your area. If it matches what you do, message them directly — no filters, no fee to apply.',
   'home.clients.cta': 'Browse requests →',
   'home.banner.html': '<strong>Status:</strong> MVP live. Create your specialist profile or your request from the <a data-banner-link>My dashboard</a> panel. If you do not have an account yet, we create one with your email — no passwords.',
+  'home.stats': '<strong>{specs}</strong> active specialists · <strong>{reqs}</strong> open requests',
 
   // specialists list
   'specialists.title': 'Specialists',

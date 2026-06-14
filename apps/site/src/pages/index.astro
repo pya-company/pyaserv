@@ -16,6 +16,7 @@ const href = (p: string): string => `${base}${p}`
       Si ofrecés un servicio o si buscás a alguien que resuelva algo concreto,
       PyaServ tiene un lado para vos. Nada de comisiones por presentar — el trato lo cierran ustedes.
     </p>
+    <p id="home-stats" class="ps-home-stats" aria-live="polite"></p>
   </section>
 
   <div class="ps-mode-grid">
@@ -49,5 +50,24 @@ const href = (p: string): string => `${base}${p}`
     // Wire up the data-banner-link href after i18n-html injected fresh markup.
     const link = document.querySelector('#home-banner [data-banner-link]')
     if (link) link.setAttribute('href', meHref)
+  </script>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch } from '../lib/api.ts'
+    import { interp, t } from '../lib/i18n.ts'
+    ;(async () => {
+      try {
+        const [specs, reqs] = await Promise.all([
+          apiFetch('/v1/specialists').catch(() => []),
+          apiFetch('/v1/requests').catch(() => []),
+        ])
+        const total = (specs?.length ?? 0) + (reqs?.length ?? 0)
+        if (total === 0) return
+        const el = document.getElementById('home-stats')
+        if (!el) return
+        el.innerHTML = interp(t('home.stats'), { specs: specs.length, reqs: reqs.length })
+      } catch {}
+    })()
   </script>
 </Base>

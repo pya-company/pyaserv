@@ -525,6 +525,15 @@ button { font: inherit; cursor: pointer; }
 /* Stack gap modifiers */
 .ps-stack--gap-4 { gap: var(--ps-space-4); }
 
+/* Landing hero stats */
+.ps-home-stats {
+  margin: var(--ps-space-4) 0 0;
+  font-size: 1rem;
+  color: var(--ps-text-muted);
+}
+.ps-home-stats strong { color: var(--ps-acc); font-weight: 700; }
+.ps-home-stats:empty { display: none; }
+
 /* ---------- cards ---------- */
 .ps-cards {
   display: grid;
