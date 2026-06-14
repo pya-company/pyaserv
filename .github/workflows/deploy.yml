@@ -21,12 +21,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.2.0
+          bun-version: latest
       - run: bun install --frozen-lockfile
-      # While the custom domain isn't wired yet, the site lives at
-      # https://undeadliner.github.io/pyaserv/ — Astro needs the base path
-      # baked in at build time. Drop this `env:` block after enabling the
-      # `pyaserv.com` custom domain in Settings → Pages.
+      # Custom-domain path: CNAME points pya-company.github.io/pyaserv at
+      # pyaserv.com. Once DNS lands, drop BASE_PATH below.
       - run: bun run build:site
         env:
           BASE_PATH: /pyaserv/
