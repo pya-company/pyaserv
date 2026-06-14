@@ -1,0 +1,65 @@
+---
+import Base from '../../../layouts/Base.astro'
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+---
+<Base title="Nuevo servicio" active="me">
+  <section class="ps-section" data-base={base}>
+    <p><a href={`${base}/me/?tab=listings`}>← Mis servicios</a></p>
+    <h1>Nuevo servicio</h1>
+    <p>Publicá un servicio concreto que ofrecés. Aparecerá en el catálogo público de profesionales filtrable por categoría.</p>
+    <form id="form" class="ps-form">
+      <label>Categoría
+        <select name="category" id="category" required></select>
+      </label>
+      <label>Título <input name="title" required maxlength="120" placeholder="Reparación de calefones" /></label>
+      <label>Descripción
+        <textarea name="description" rows="4" maxlength="2000" placeholder="Qué incluye el servicio, qué materiales, en qué zonas…"></textarea>
+      </label>
+      <div class="ps-grid-2col">
+        <label>Precio desde (Gs, opcional)
+          <input name="priceFromGs" type="number" min="0" />
+        </label>
+        <label>Por
+          <select name="priceUnit">
+            <option value="">—</option>
+            <option value="hour">Hora</option>
+            <option value="job">Trabajo</option>
+          </select>
+        </label>
+      </div>
+      <button type="submit" class="ps-btn">Publicar</button>
+      <p id="msg" class="ps-msg" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch, getToken, CATEGORIES } from '../../../lib/api.ts'
+
+    ;(async () => {
+      const base = document.querySelector('.ps-section').dataset.base ?? ''
+      if (!getToken()) { location.href = `${base}/login/?next=${encodeURIComponent(location.pathname)}`; return }
+      const cat = document.getElementById('category')
+      for (const c of CATEGORIES) {
+        const opt = document.createElement('option')
+        opt.value = c.value
+        opt.textContent = `${c.emoji} ${c.label}`
+        cat.append(opt)
+      }
+      const form = document.getElementById('form')
+      const msg = document.getElementById('msg')
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        msg.textContent = 'Publicando…'
+        const fd = Object.fromEntries(new FormData(form))
+        if (fd.priceFromGs) fd.priceFromGs = Number(fd.priceFromGs)
+        else delete fd.priceFromGs
+        if (!fd.priceUnit) delete fd.priceUnit
+        try {
+          await apiFetch('/v1/listings', { method: 'POST', body: JSON.stringify(fd) })
+          location.href = `${base}/me/?tab=listings`
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+      })
+    })()
+  </script>
+</Base>

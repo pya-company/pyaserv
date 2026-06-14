@@ -38,18 +38,42 @@ export const apiFetch = async <T = unknown>(
     : body) as T
 }
 
-export const CATEGORIES = [
-  { value: 'plumbing', label: 'Plomería' },
-  { value: 'electrical', label: 'Electricidad' },
-  { value: 'cleaning', label: 'Limpieza' },
-  { value: 'repair', label: 'Reparaciones' },
-  { value: 'beauty', label: 'Belleza' },
-  { value: 'teaching', label: 'Clases' },
-  { value: 'photography', label: 'Fotografía' },
-  { value: 'translation', label: 'Traducción' },
-  { value: 'events', label: 'Eventos' },
-  { value: 'other', label: 'Otro' },
-] as const
+export interface CategoryDef {
+  readonly value: string
+  readonly label: string
+  readonly emoji: string
+}
+
+export const CATEGORIES: ReadonlyArray<CategoryDef> = [
+  { value: 'plumbing', label: 'Plomería', emoji: '🔧' },
+  { value: 'electrical', label: 'Electricidad', emoji: '💡' },
+  { value: 'cleaning', label: 'Limpieza', emoji: '🧽' },
+  { value: 'repair', label: 'Reparaciones', emoji: '🛠️' },
+  { value: 'beauty', label: 'Belleza', emoji: '💇' },
+  { value: 'teaching', label: 'Clases', emoji: '📚' },
+  { value: 'photography', label: 'Fotografía', emoji: '📷' },
+  { value: 'translation', label: 'Traducción', emoji: '🌐' },
+  { value: 'events', label: 'Eventos', emoji: '🎉' },
+  { value: 'other', label: 'Otro', emoji: '✨' },
+]
 
 export const categoryLabel = (value: string): string =>
   CATEGORIES.find((c) => c.value === value)?.label ?? value
+
+export const categoryEmoji = (value: string): string =>
+  CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
+
+export const formatGs = (gs: number | null | undefined): string => {
+  if (gs === null || gs === undefined) return 'A coordinar'
+  return `${new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(gs)} Gs`
+}
+
+export const formatRelativeTime = (unixSeconds: number): string => {
+  const now = Math.floor(Date.now() / 1000)
+  const delta = now - unixSeconds
+  if (delta < 60) return 'ahora'
+  if (delta < 3600) return `hace ${Math.floor(delta / 60)} min`
+  if (delta < 86400) return `hace ${Math.floor(delta / 3600)} h`
+  if (delta < 604800) return `hace ${Math.floor(delta / 86400)} d`
+  return new Date(unixSeconds * 1000).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' })
+}

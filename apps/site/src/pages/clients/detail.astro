@@ -1,0 +1,96 @@
+---
+import Base from '../../layouts/Base.astro'
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+---
+<Base title="Pedido" active="clients">
+  <section class="ps-section" data-base={base}>
+    <p id="status" class="ps-msg" aria-live="polite">Cargando…</p>
+    <article id="detail" class="ps-hidden ps-stack">
+      <div class="ps-row">
+        <span id="chip" class="ps-chip">—</span>
+        <span id="status-badge" class="ps-badge">—</span>
+      </div>
+      <h1 id="title">—</h1>
+      <p class="ps-card__sub" id="meta">—</p>
+      <article class="ps-detail__bio" id="body">—</article>
+
+      <div class="ps-banner ps-banner--warn" id="locked-msg">
+        Para responder al pedido, <a id="login-link">iniciá sesión</a>.
+      </div>
+      <button id="reply-btn" class="ps-btn ps-hidden">Postularme</button>
+    </article>
+
+    <div id="composer" class="ps-banner ps-hidden">
+      <h2 style="margin:0 0 .5rem">Postularme</h2>
+      <form id="composer-form" class="ps-form">
+        <label>Mensaje al cliente
+          <textarea name="body" required minlength="1" maxlength="2000" placeholder="Hola, puedo encargarme…"></textarea>
+        </label>
+        <div class="ps-row">
+          <button type="submit" class="ps-btn">Enviar</button>
+          <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost">Cancelar</button>
+        </div>
+        <p id="composer-msg" class="ps-msg" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch, getToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime } from '../../lib/api.ts'
+
+    ;(async () => {
+      const base = document.querySelector('.ps-section').dataset.base ?? ''
+      const id = new URLSearchParams(location.search).get('id')
+      const status = document.getElementById('status')
+      const detail = document.getElementById('detail')
+
+      document.getElementById('login-link').href = `${base}/login/?next=${encodeURIComponent(location.pathname + location.search)}`
+
+      if (!id) { status.innerHTML = '<span class="ps-error">Falta el id</span>'; return }
+      const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
+
+      let req
+      try { req = await apiFetch(`/v1/requests/${id}`) }
+      catch (err) { status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`; return }
+
+      status.classList.add('ps-hidden')
+      detail.classList.remove('ps-hidden')
+
+      document.getElementById('chip').textContent = `${categoryEmoji(req.category)} ${categoryLabel(req.category)}`
+      const sb = document.getElementById('status-badge')
+      sb.textContent = req.status === 'open' ? 'Abierto' : 'Cerrado'
+      sb.className = req.status === 'open' ? 'ps-badge' : 'ps-badge ps-badge--neutral'
+      document.getElementById('title').textContent = req.title
+      document.getElementById('meta').textContent = `📍 ${req.barrio} · 💰 ${formatGs(req.budgetGs)} · ${formatRelativeTime(req.createdAt)}`
+      document.getElementById('body').textContent = req.description || '(sin descripción)'
+
+      const token = getToken()
+      const replyBtn = document.getElementById('reply-btn')
+      const locked = document.getElementById('locked-msg')
+      if (token && req.status === 'open') { locked.classList.add('ps-hidden'); replyBtn.classList.remove('ps-hidden') }
+      if (req.status === 'closed') { replyBtn.classList.add('ps-hidden'); locked.classList.add('ps-hidden') }
+
+      const composer = document.getElementById('composer')
+      replyBtn.addEventListener('click', () => { composer.classList.remove('ps-hidden'); composer.scrollIntoView({ behavior: 'smooth' }) })
+      document.getElementById('composer-cancel').addEventListener('click', () => composer.classList.add('ps-hidden'))
+
+      const cf = document.getElementById('composer-form')
+      const cm = document.getElementById('composer-msg')
+      cf.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        cm.textContent = 'Enviando…'
+        const body = new FormData(cf).get('body')
+        try {
+          const inq = await apiFetch('/v1/inquiries', {
+            method: 'POST',
+            body: JSON.stringify({ subjectType: 'request', subjectId: id, body }),
+          })
+          location.href = `${base}/me/inquiries/detail/?id=${inq.id}`
+        } catch (err) {
+          cm.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
+        }
+      })
+    })()
+  </script>
+</Base>

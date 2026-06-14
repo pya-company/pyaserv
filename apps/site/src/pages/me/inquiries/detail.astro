@@ -1,0 +1,81 @@
+---
+import Base from '../../../layouts/Base.astro'
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+---
+<Base title="Conversación" active="me">
+  <section class="ps-section" data-base={base}>
+    <p><a href={`${base}/me/?tab=inquiries`}>← Conversaciones</a></p>
+    <p id="status" class="ps-msg">Cargando…</p>
+    <div id="thread" class="ps-hidden">
+      <div class="ps-row" style="justify-content:space-between">
+        <h1 id="title">Conversación</h1>
+        <a id="subject-link" class="ps-btn ps-btn--ghost ps-btn--sm">Ver publicación</a>
+      </div>
+      <div id="messages" class="ps-chat" aria-busy="true"></div>
+      <form id="composer-form" class="ps-composer">
+        <textarea name="body" required minlength="1" maxlength="2000" placeholder="Escribí un mensaje…"></textarea>
+        <button type="submit" class="ps-btn">Enviar</button>
+      </form>
+      <p id="msg" class="ps-msg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch, getToken, formatRelativeTime } from '../../../lib/api.ts'
+
+    ;(async () => {
+      const base = document.querySelector('.ps-section').dataset.base ?? ''
+      if (!getToken()) { location.href = `${base}/login/?next=${encodeURIComponent(location.pathname+location.search)}`; return }
+      const id = new URLSearchParams(location.search).get('id')
+      const status = document.getElementById('status')
+      const thread = document.getElementById('thread')
+      const msgsEl = document.getElementById('messages')
+      const cf = document.getElementById('composer-form')
+      const msg = document.getElementById('msg')
+
+      const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
+
+      if (!id) { status.innerHTML = '<span class="ps-error">Falta el id</span>'; return }
+      const me = await apiFetch('/v1/me')
+
+      let lastCount = 0
+      const renderThread = async () => {
+        try {
+          const data = await apiFetch(`/v1/inquiries/${id}`)
+          if (data.messages.length === lastCount) return
+          lastCount = data.messages.length
+          msgsEl.removeAttribute('aria-busy')
+          status.classList.add('ps-hidden')
+          thread.classList.remove('ps-hidden')
+          const subjType = data.inquiry.subjectType
+          document.getElementById('title').textContent = subjType === 'listing' ? 'Sobre un servicio' : 'Sobre un pedido'
+          const link = document.getElementById('subject-link')
+          link.href = subjType === 'listing'
+            ? `${base}/specialists/detail/?id=${data.inquiry.specialistUserId}` // best-effort; ideally listing → specialistId
+            : `${base}/clients/detail/?id=${data.inquiry.subjectId}`
+          msgsEl.innerHTML = data.messages.map((m) => {
+            const mine = m.senderUserId === me.userId
+            return `<div class="ps-bubble ps-bubble--${mine ? 'mine' : 'them'}">${escape(m.body)}<span class="ps-bubble__time">${formatRelativeTime(m.createdAt)}</span></div>`
+          }).join('')
+          msgsEl.scrollTop = msgsEl.scrollHeight
+        } catch (err) { status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
+      }
+      await renderThread()
+      // poll for new messages every 5s
+      setInterval(renderThread, 5000)
+
+      cf.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        msg.textContent = ''
+        const body = new FormData(cf).get('body')
+        try {
+          await apiFetch(`/v1/inquiries/${id}/messages`, { method: 'POST', body: JSON.stringify({ body }) })
+          cf.reset()
+          lastCount = 0
+          renderThread()
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
+      })
+    })()
+  </script>
+</Base>

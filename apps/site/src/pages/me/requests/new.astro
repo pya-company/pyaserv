@@ -1,0 +1,58 @@
+---
+import Base from '../../../layouts/Base.astro'
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+---
+<Base title="Nuevo pedido" active="me">
+  <section class="ps-section" data-base={base}>
+    <p><a href={`${base}/me/?tab=requests`}>← Mis pedidos</a></p>
+    <h1>Nuevo pedido</h1>
+    <p>Describí el trabajo que necesitás. Los profesionales relevantes podrán postularse — el contacto ocurre por mensaje privado.</p>
+    <form id="form" class="ps-form">
+      <label>Categoría
+        <select name="category" id="category" required></select>
+      </label>
+      <label>Título <input name="title" required maxlength="120" placeholder="Necesito plomero urgente" /></label>
+      <label>Descripción
+        <textarea name="description" rows="5" maxlength="2000" placeholder="Qué hay que hacer, fecha aproximada, urgencia, particularidades…"></textarea>
+      </label>
+      <div class="ps-grid-2col">
+        <label>Barrio <input name="barrio" required placeholder="Villa Morra" /></label>
+        <label>Presupuesto (Gs, opcional)
+          <input name="budgetGs" type="number" min="0" />
+        </label>
+      </div>
+      <button type="submit" class="ps-btn">Publicar pedido</button>
+      <p id="msg" class="ps-msg" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch, getToken, CATEGORIES } from '../../../lib/api.ts'
+
+    ;(async () => {
+      const base = document.querySelector('.ps-section').dataset.base ?? ''
+      if (!getToken()) { location.href = `${base}/login/?next=${encodeURIComponent(location.pathname)}`; return }
+      const cat = document.getElementById('category')
+      for (const c of CATEGORIES) {
+        const opt = document.createElement('option')
+        opt.value = c.value
+        opt.textContent = `${c.emoji} ${c.label}`
+        cat.append(opt)
+      }
+      const form = document.getElementById('form')
+      const msg = document.getElementById('msg')
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        msg.textContent = 'Publicando…'
+        const fd = Object.fromEntries(new FormData(form))
+        if (fd.budgetGs) fd.budgetGs = Number(fd.budgetGs)
+        else delete fd.budgetGs
+        try {
+          await apiFetch('/v1/requests', { method: 'POST', body: JSON.stringify(fd) })
+          location.href = `${base}/me/?tab=requests`
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+      })
+    })()
+  </script>
+</Base>

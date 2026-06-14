@@ -1,0 +1,143 @@
+---
+import Base from '../../layouts/Base.astro'
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+---
+<Base title="Perfil" active="specialists">
+  <section class="ps-section" data-base={base}>
+    <p id="status" class="ps-msg" aria-live="polite">Cargando…</p>
+    <div id="profile" class="ps-detail ps-hidden">
+      <aside class="ps-detail__side">
+        <div class="ps-detail__avatar" id="avatar">🛠️</div>
+        <h1 class="ps-detail__name" id="name">—</h1>
+        <p class="ps-detail__meta" id="meta">—</p>
+        <div id="badge-row" class="ps-row" style="justify-content:center"></div>
+        <div id="contact" class="ps-detail__contact ps-stack ps-hidden">
+          <a id="phone-link" href="#">📞 <span id="phone-text">—</span></a>
+          <a id="whatsapp-link" href="#" target="_blank" rel="noopener" class="ps-hidden">💬 WhatsApp</a>
+        </div>
+        <p id="contact-locked" class="ps-banner ps-banner--warn">
+          Para ver el contacto, <a id="login-link">iniciá sesión</a>.
+        </p>
+        <button id="contact-btn" class="ps-btn ps-hidden">Enviar mensaje</button>
+      </aside>
+
+      <div class="ps-detail__body">
+        <article class="ps-detail__bio" id="bio">—</article>
+        <h2>Servicios que ofrece</h2>
+        <div id="listings" class="ps-cards"></div>
+      </div>
+    </div>
+
+    <div id="composer" class="ps-banner ps-hidden">
+      <h2 style="margin:0 0 .5rem">Escribirle</h2>
+      <form id="composer-form" class="ps-form">
+        <label>Mensaje
+          <textarea name="body" required minlength="1" maxlength="2000" placeholder="Hola, me interesa…"></textarea>
+        </label>
+        <div class="ps-row">
+          <button type="submit" class="ps-btn">Enviar</button>
+          <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost">Cancelar</button>
+        </div>
+        <p id="composer-msg" class="ps-msg" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch, getToken, categoryLabel, categoryEmoji, formatGs } from '../../lib/api.ts'
+
+    ;(async () => {
+      const base = document.querySelector('.ps-section').dataset.base ?? ''
+      const id = new URLSearchParams(location.search).get('id')
+      const status = document.getElementById('status')
+      const profile = document.getElementById('profile')
+
+      document.getElementById('login-link').href = `${base}/login/?next=${encodeURIComponent(location.pathname + location.search)}`
+
+      if (!id) { status.innerHTML = '<span class="ps-error">Falta el id</span>'; return }
+
+      const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
+
+      let spec, listings
+      try {
+        spec = await apiFetch(`/v1/specialists/${id}`)
+        listings = await apiFetch(`/v1/listings?specialist_id=${id}`)
+      } catch (err) {
+        status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
+        return
+      }
+
+      status.classList.add('ps-hidden')
+      profile.classList.remove('ps-hidden')
+
+      document.getElementById('name').textContent = spec.displayName
+      document.getElementById('meta').textContent = `${spec.headline} · 📍 ${spec.barrio}`
+      document.getElementById('bio').textContent = spec.bio || spec.headline
+
+      if (spec.verified) {
+        document.getElementById('badge-row').innerHTML = '<span class="ps-badge">✓ Verificado</span>'
+      }
+
+      const token = getToken()
+      if (token) {
+        document.getElementById('contact-locked').classList.add('ps-hidden')
+        const contact = document.getElementById('contact')
+        contact.classList.remove('ps-hidden')
+        const phoneText = document.getElementById('phone-text')
+        const phoneLink = document.getElementById('phone-link')
+        phoneText.textContent = spec.phone
+        phoneLink.href = `tel:${spec.phone.replace(/[^+0-9]/g, '')}`
+        if (spec.whatsapp) {
+          const wa = document.getElementById('whatsapp-link')
+          wa.href = `https://wa.me/${spec.whatsapp.replace(/[^0-9]/g, '')}`
+          wa.classList.remove('ps-hidden')
+        }
+        document.getElementById('contact-btn').classList.remove('ps-hidden')
+      }
+
+      const lEl = document.getElementById('listings')
+      lEl.innerHTML = listings.length === 0
+        ? '<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">Aún no publicó servicios</strong></p>'
+        : listings.map((l) => `
+          <article class="ps-card">
+            <div class="ps-row">
+              <span class="ps-chip">${categoryEmoji(l.category)} ${categoryLabel(l.category)}</span>
+            </div>
+            <h3>${escape(l.title)}</h3>
+            <p class="ps-card__body">${escape(l.description)}</p>
+            <p class="ps-card__sub">${l.priceFromGs ? `desde ${escape(formatGs(l.priceFromGs))}${l.priceUnit ? ` / ${l.priceUnit === 'hour' ? 'hora' : 'trabajo'}` : ''}` : 'Precio a coordinar'}</p>
+          </article>`).join('')
+
+      const composer = document.getElementById('composer')
+      const composerForm = document.getElementById('composer-form')
+      const composerMsg = document.getElementById('composer-msg')
+
+      document.getElementById('contact-btn').addEventListener('click', () => {
+        composer.classList.remove('ps-hidden')
+        composer.scrollIntoView({ behavior: 'smooth' })
+      })
+      document.getElementById('composer-cancel').addEventListener('click', () => composer.classList.add('ps-hidden'))
+
+      composerForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        composerMsg.textContent = 'Enviando…'
+        const body = new FormData(composerForm).get('body')
+        const subjectId = listings[0]?.id
+        if (!subjectId) {
+          composerMsg.innerHTML = '<span class="ps-error">Este profesional aún no publicó servicios; no se puede iniciar la conversación todavía.</span>'
+          return
+        }
+        try {
+          const inq = await apiFetch('/v1/inquiries', {
+            method: 'POST',
+            body: JSON.stringify({ subjectType: 'listing', subjectId, body }),
+          })
+          location.href = `${base}/me/inquiries/detail/?id=${inq.id}`
+        } catch (err) {
+          composerMsg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
+        }
+      })
+    })()
+  </script>
+</Base>

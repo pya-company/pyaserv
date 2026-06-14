@@ -1,0 +1,91 @@
+---
+import Base from '../../../layouts/Base.astro'
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+---
+<Base title="Editar servicio" active="me">
+  <section class="ps-section" data-base={base}>
+    <p><a href={`${base}/me/?tab=listings`}>← Mis servicios</a></p>
+    <h1>Editar servicio</h1>
+    <p id="status" class="ps-msg">Cargando…</p>
+    <form id="form" class="ps-form ps-hidden">
+      <label>Categoría
+        <select name="category" id="category" required></select>
+      </label>
+      <label>Título <input name="title" required maxlength="120" /></label>
+      <label>Descripción <textarea name="description" rows="4" maxlength="2000"></textarea></label>
+      <div class="ps-grid-2col">
+        <label>Precio desde (Gs)
+          <input name="priceFromGs" type="number" min="0" />
+        </label>
+        <label>Por
+          <select name="priceUnit">
+            <option value="">—</option>
+            <option value="hour">Hora</option>
+            <option value="job">Trabajo</option>
+          </select>
+        </label>
+      </div>
+      <div class="ps-row">
+        <button type="submit" class="ps-btn">Guardar</button>
+        <button type="button" id="del" class="ps-btn ps-btn--danger">Eliminar</button>
+      </div>
+      <p id="msg" class="ps-msg" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch, getToken, CATEGORIES } from '../../../lib/api.ts'
+
+    ;(async () => {
+      const base = document.querySelector('.ps-section').dataset.base ?? ''
+      if (!getToken()) { location.href = `${base}/login/?next=${encodeURIComponent(location.pathname+location.search)}`; return }
+      const id = new URLSearchParams(location.search).get('id')
+      const status = document.getElementById('status')
+      const form = document.getElementById('form')
+      const msg = document.getElementById('msg')
+
+      const cat = document.getElementById('category')
+      for (const c of CATEGORIES) {
+        const opt = document.createElement('option')
+        opt.value = c.value
+        opt.textContent = `${c.emoji} ${c.label}`
+        cat.append(opt)
+      }
+
+      if (!id) { status.innerHTML = '<span class="ps-error">Falta el id</span>'; return }
+      let item
+      try {
+        const list = await apiFetch(`/v1/listings`)
+        item = list.find((l) => l.id === id)
+        if (!item) throw new Error('Servicio no encontrado o no es tuyo')
+      } catch (err) { status.innerHTML = `<span class="ps-error">${err.message}</span>`; return }
+
+      status.classList.add('ps-hidden')
+      form.classList.remove('ps-hidden')
+      form.elements.category.value = item.category
+      form.elements.title.value = item.title
+      form.elements.description.value = item.description
+      if (item.priceFromGs != null) form.elements.priceFromGs.value = item.priceFromGs
+      if (item.priceUnit) form.elements.priceUnit.value = item.priceUnit
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        msg.textContent = 'Guardando…'
+        const fd = Object.fromEntries(new FormData(form))
+        fd.priceFromGs = fd.priceFromGs ? Number(fd.priceFromGs) : null
+        fd.priceUnit = fd.priceUnit || null
+        try {
+          await apiFetch(`/v1/listings/${id}`, { method: 'PATCH', body: JSON.stringify(fd) })
+          location.href = `${base}/me/?tab=listings`
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+      })
+
+      document.getElementById('del').addEventListener('click', async () => {
+        if (!confirm('¿Eliminar definitivamente?')) return
+        await apiFetch(`/v1/listings/${id}`, { method: 'DELETE' })
+        location.href = `${base}/me/?tab=listings`
+      })
+    })()
+  </script>
+</Base>

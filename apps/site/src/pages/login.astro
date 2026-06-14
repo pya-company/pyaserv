@@ -2,25 +2,28 @@
 import Base from '~/layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Iniciar sesión" active="home">
-  <section class="ps-section" style="max-width:30rem;margin:auto">
+<Base title="Iniciar sesión" active="login">
+  <section class="ps-section" data-base={base} style="max-width:28rem;margin:auto">
     <h1>Iniciar sesión</h1>
-    <p>Te enviamos un código por email — sin contraseñas, sin recordar nada.</p>
+    <p>Sin contraseñas — te mandamos un código de 6 dígitos por email.</p>
 
-    <form id="start-form" class="ps-form" data-base={base}>
+    <form id="start-form" class="ps-form">
       <label>
         Email
-        <input type="email" name="email" required autocomplete="email" />
+        <input type="email" name="email" required autocomplete="email" placeholder="tunombre@correo.com" />
       </label>
-      <button type="submit">Enviar código</button>
+      <button type="submit" class="ps-btn">Enviar código</button>
     </form>
 
     <form id="verify-form" class="ps-form" hidden>
       <label>
         Código (6 dígitos)
-        <input type="text" name="code" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" />
+        <input type="text" name="code" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" maxlength="6" />
       </label>
-      <button type="submit">Confirmar</button>
+      <div class="ps-row">
+        <button type="submit" class="ps-btn">Confirmar</button>
+        <button type="button" id="back" class="ps-btn ps-btn--ghost">Cambiar email</button>
+      </div>
     </form>
 
     <p id="msg" class="ps-msg" aria-live="polite"></p>
@@ -30,45 +33,43 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     // @ts-nocheck
     import { apiFetch, setToken } from '../lib/api.ts'
 
-    const startForm = document.getElementById('start-form')
-    const verifyForm = document.getElementById('verify-form')
-    const msg = document.getElementById('msg')
-    const base = startForm.dataset.base ?? ''
+    ;(async () => {
+      const base = document.querySelector('.ps-section').dataset.base ?? ''
+      const next = new URLSearchParams(location.search).get('next') || `${base}/me/`
+      const startForm = document.getElementById('start-form')
+      const verifyForm = document.getElementById('verify-form')
+      const msg = document.getElementById('msg')
+      let email = ''
 
-    let email = ''
+      startForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        msg.textContent = 'Enviando…'
+        email = new FormData(startForm).get('email')
+        try {
+          await apiFetch('/api/auth/start', { method: 'POST', body: JSON.stringify({ email, channel: 'otp' }) })
+          startForm.hidden = true
+          verifyForm.hidden = false
+          msg.innerHTML = '<span class="ps-msg--ok">Revisá tu email — buscá un código de 6 dígitos.</span>'
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+      })
 
-    startForm.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      msg.textContent = 'Enviando…'
-      email = new FormData(startForm).get('email')
-      try {
-        await apiFetch('/api/auth/start', {
-          method: 'POST',
-          body: JSON.stringify({ email, channel: 'otp' }),
-        })
-        startForm.hidden = true
-        verifyForm.hidden = false
-        msg.textContent = 'Revisá tu email.'
-      } catch (err) {
-        msg.textContent = err.message
-      }
-    })
+      document.getElementById('back').addEventListener('click', () => {
+        verifyForm.hidden = true
+        startForm.hidden = false
+        msg.textContent = ''
+      })
 
-    verifyForm.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      msg.textContent = 'Verificando…'
-      const code = new FormData(verifyForm).get('code')
-      try {
-        const data = await apiFetch('/api/auth/verify', {
-          method: 'POST',
-          body: JSON.stringify({ email, code }),
-        })
-        setToken(data.token)
-        msg.textContent = '¡Listo! Redirigiendo…'
-        location.href = `${base}/me/`
-      } catch (err) {
-        msg.textContent = err.message
-      }
-    })
+      verifyForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        msg.textContent = 'Verificando…'
+        const code = new FormData(verifyForm).get('code')
+        try {
+          const data = await apiFetch('/api/auth/verify', { method: 'POST', body: JSON.stringify({ email, code }) })
+          setToken(data.token)
+          msg.textContent = '✓ Listo, redirigiendo…'
+          location.href = next
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+      })
+    })()
   </script>
 </Base>

@@ -7,7 +7,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   description="Plomeros, electricistas, peluqueras, profes — encontralos en tu barrio en Asunción."
   active="specialists"
 >
-  <section class="ps-section">
+  <section class="ps-section" data-base={base}>
     <h1>Profesionales disponibles</h1>
     <p>Filtrá por categoría o barrio. El contacto se hace fuera de la plataforma; PyaServ solo presenta.</p>
 
@@ -24,56 +24,60 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       </label>
     </form>
 
-    <div id="results" class="ps-cards" aria-busy="true" data-base={base}>Cargando…</div>
+    <p id="status" class="ps-msg" aria-live="polite">Cargando…</p>
+    <div id="results" class="ps-cards" aria-busy="true"></div>
   </section>
 
   <script>
     // @ts-nocheck
     import { apiFetch, CATEGORIES } from '../lib/api.ts'
 
-    const cats = document.getElementById('f-category')
+    const sec = document.querySelector('.ps-section')
+    const base = sec.dataset.base ?? ''
+    const catSel = document.getElementById('f-category')
     for (const c of CATEGORIES) {
       const opt = document.createElement('option')
       opt.value = c.value
-      opt.textContent = c.label
-      cats.append(opt)
+      opt.textContent = `${c.emoji} ${c.label}`
+      catSel.append(opt)
     }
 
     const results = document.getElementById('results')
-    const base = results.dataset.base ?? ''
+    const status = document.getElementById('status')
     const form = document.getElementById('filters')
+
+    const escape = (s) => String(s).replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
 
     const render = (items) => {
       results.removeAttribute('aria-busy')
       if (items.length === 0) {
-        results.innerHTML = '<p class="ps-empty">No hay resultados con ese filtro.</p>'
+        results.innerHTML = ''
+        status.innerHTML = '<span class="ps-empty"><span class="ps-empty__icon">🔍</span><strong class="ps-empty__title">Nada por acá</strong>Probá quitar filtros o cambiar el barrio.</span>'
         return
       }
-      results.innerHTML = items
-        .map(
-          (s) => `
-          <article class="ps-card">
-            <header>
-              <h2>${s.displayName}${s.verified ? ' <span class="ps-badge">✓ verificado</span>' : ''}</h2>
-              <p class="ps-card__sub">${s.barrio}</p>
-            </header>
-            <p>${s.headline}</p>
-            <p class="ps-card__cta"><a href="tel:${s.phone}">Llamar</a> · ${s.whatsapp ? `<a href="https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}">WhatsApp</a>` : ''}</p>
-          </article>`,
-        )
-        .join('')
+      status.textContent = `${items.length} ${items.length === 1 ? 'profesional' : 'profesionales'}`
+      results.innerHTML = items.map((s) => `
+        <a class="ps-card" href="${base}/specialists/detail/?id=${escape(s.id)}">
+          <div class="ps-row">
+            <h2>${escape(s.displayName)}</h2>
+            ${s.verified ? '<span class="ps-badge">✓ verificado</span>' : ''}
+          </div>
+          <p class="ps-card__sub">📍 ${escape(s.barrio)}</p>
+          <p class="ps-card__body">${escape(s.headline)}</p>
+          <div class="ps-card__cta"><span>Ver perfil →</span></div>
+        </a>`).join('')
     }
 
     const load = async () => {
       const fd = new FormData(form)
       const params = new URLSearchParams()
       if (fd.get('barrio')) params.set('barrio', fd.get('barrio'))
+      status.textContent = 'Cargando…'
       results.setAttribute('aria-busy', 'true')
-      results.textContent = 'Cargando…'
+      results.innerHTML = ''
       try {
-        const data = await apiFetch(`/v1/specialists?${params.toString()}`)
+        let items = await apiFetch(`/v1/specialists?${params.toString()}`)
         const category = fd.get('category')
-        let items = data
         if (category) {
           const ls = await apiFetch(`/v1/listings?category=${encodeURIComponent(category)}`)
           const allowed = new Set(ls.map((l) => l.specialistId))
@@ -82,15 +86,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         render(items)
       } catch (err) {
         results.removeAttribute('aria-busy')
-        results.innerHTML = `<p class="ps-error">${err.message}</p>`
+        status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
       }
     }
 
     form.addEventListener('input', load)
-    form.addEventListener('submit', (e) => {
-      e.preventDefault()
-      load()
-    })
+    form.addEventListener('submit', (e) => { e.preventDefault(); load() })
     load()
   </script>
 </Base>

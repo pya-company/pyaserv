@@ -7,9 +7,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   description="Pedidos de clientes en Asunción. Si ofrecés el servicio que buscan, escribiles directo."
   active="clients"
 >
-  <section class="ps-section">
+  <section class="ps-section" data-base={base}>
     <h1>Pedidos abiertos</h1>
-    <p>Lista de clientes que están buscando un profesional. Para responder, iniciá sesión y abrí una conversación.</p>
+    <p>Clientes que están buscando un profesional ahora. Para responder, iniciá sesión y abrí una conversación.</p>
 
     <form id="filters" class="ps-filters" autocomplete="off">
       <label>
@@ -24,49 +24,49 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       </label>
     </form>
 
-    <div id="results" class="ps-cards" aria-busy="true" data-base={base}>Cargando…</div>
+    <p id="status" class="ps-msg" aria-live="polite">Cargando…</p>
+    <div id="results" class="ps-cards" aria-busy="true"></div>
   </section>
 
   <script>
     // @ts-nocheck
-    import { apiFetch, CATEGORIES, categoryLabel } from '../lib/api.ts'
+    import { apiFetch, CATEGORIES, categoryLabel, categoryEmoji, formatGs, formatRelativeTime } from '../lib/api.ts'
 
-    const cats = document.getElementById('f-category')
+    const sec = document.querySelector('.ps-section')
+    const base = sec.dataset.base ?? ''
+    const catSel = document.getElementById('f-category')
     for (const c of CATEGORIES) {
       const opt = document.createElement('option')
       opt.value = c.value
-      opt.textContent = c.label
-      cats.append(opt)
+      opt.textContent = `${c.emoji} ${c.label}`
+      catSel.append(opt)
     }
 
     const results = document.getElementById('results')
-    const base = results.dataset.base ?? ''
+    const status = document.getElementById('status')
     const form = document.getElementById('filters')
 
-    const formatBudget = (gs) => {
-      if (gs === null || gs === undefined) return 'A coordinar'
-      return new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(gs) + ' Gs'
-    }
+    const escape = (s) => String(s).replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
 
     const render = (items) => {
       results.removeAttribute('aria-busy')
       if (items.length === 0) {
-        results.innerHTML = '<p class="ps-empty">No hay pedidos abiertos con ese filtro.</p>'
+        results.innerHTML = ''
+        status.innerHTML = '<span class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">Sin pedidos por ahora</strong>Volvé más tarde o cambiá los filtros.</span>'
         return
       }
-      results.innerHTML = items
-        .map(
-          (r) => `
-          <article class="ps-card">
-            <header>
-              <h2>${r.title}</h2>
-              <p class="ps-card__sub">${categoryLabel(r.category)} · ${r.barrio} · ${formatBudget(r.budgetGs)}</p>
-            </header>
-            <p>${r.description.length > 240 ? r.description.slice(0, 240) + '…' : r.description}</p>
-            <p class="ps-card__cta"><a href="${base}/me/?reply=${r.id}&type=request">Responder →</a></p>
-          </article>`,
-        )
-        .join('')
+      status.textContent = `${items.length} ${items.length === 1 ? 'pedido abierto' : 'pedidos abiertos'}`
+      results.innerHTML = items.map((r) => `
+        <a class="ps-card ps-card--request" href="${base}/clients/detail/?id=${escape(r.id)}">
+          <div class="ps-row">
+            <span class="ps-chip">${categoryEmoji(r.category)} ${categoryLabel(r.category)}</span>
+            <span class="ps-card__sub">${formatRelativeTime(r.createdAt)}</span>
+          </div>
+          <h2>${escape(r.title)}</h2>
+          <p class="ps-card__sub">📍 ${escape(r.barrio)} · 💰 ${escape(formatGs(r.budgetGs))}</p>
+          <p class="ps-card__body">${escape(r.description.slice(0, 220))}${r.description.length > 220 ? '…' : ''}</p>
+          <div class="ps-card__cta"><span>Postularme →</span></div>
+        </a>`).join('')
     }
 
     const load = async () => {
@@ -74,22 +74,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const params = new URLSearchParams()
       if (fd.get('category')) params.set('category', fd.get('category'))
       if (fd.get('barrio')) params.set('barrio', fd.get('barrio'))
+      status.textContent = 'Cargando…'
       results.setAttribute('aria-busy', 'true')
-      results.textContent = 'Cargando…'
+      results.innerHTML = ''
       try {
         const data = await apiFetch(`/v1/requests?${params.toString()}`)
         render(data)
       } catch (err) {
         results.removeAttribute('aria-busy')
-        results.innerHTML = `<p class="ps-error">${err.message}</p>`
+        status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
       }
     }
 
     form.addEventListener('input', load)
-    form.addEventListener('submit', (e) => {
-      e.preventDefault()
-      load()
-    })
+    form.addEventListener('submit', (e) => { e.preventDefault(); load() })
     load()
   </script>
 </Base>

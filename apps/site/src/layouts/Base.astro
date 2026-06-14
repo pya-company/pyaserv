@@ -4,7 +4,7 @@ import '~/styles/global.css'
 interface Props {
   readonly title: string
   readonly description?: string
-  readonly active?: 'home' | 'specialists' | 'clients'
+  readonly active?: 'home' | 'specialists' | 'clients' | 'me' | 'login'
 }
 
 const { title, description, active = 'home' } = Astro.props
@@ -17,6 +17,7 @@ const href = (path: string): string => `${base}${path}`
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} · PyaServ</title>
     {description !== undefined && <meta name="description" content={description} />}
+    <meta name="theme-color" content="#0e7490" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
   </head>
   <body>
@@ -27,15 +28,25 @@ const href = (path: string): string => `${base}${path}`
       <nav class="ps-topbar__nav" aria-label="Principal">
         <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}>Profesionales</a>
         <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}>Pedidos</a>
-        <a href={href('/me/')}>Mi panel</a>
+        <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me>Mi panel</a>
+        <a href={href('/login/')} aria-current={active === 'login' ? 'page' : undefined} data-nav-login>Ingresar</a>
       </nav>
     </header>
     <main class="ps-shell">
       <slot />
     </main>
     <footer class="ps-foot">
-      © PyaServ · construido sobre <a href="https://github.com/undeadliner/pya-platform">pya-platform</a> ·
-      hermano de <a href="https://pyaeats.com">PyaEats</a>
+      © PyaServ · <a href={href('/')}>hermano de PyaEats</a> · construido sobre pya-platform
     </footer>
+    <script>
+      // Hide "Ingresar" if token is present; otherwise hide "Mi panel".
+      ;(() => {
+        const token = sessionStorage.getItem('pyaserv.token')
+        const me = document.querySelector('[data-nav-me]')
+        const login = document.querySelector('[data-nav-login]')
+        if (token) { login?.classList.add('ps-hidden') }
+        else { me?.classList.add('ps-hidden') }
+      })()
+    </script>
   </body>
 </html>
