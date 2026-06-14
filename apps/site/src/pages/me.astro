@@ -54,6 +54,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <span data-i18n="me.profile.barrio">Barrio</span>
           <input name="barrio" required list="ps-barrios" data-i18n-placeholder="me.profile.barrio.placeholder" placeholder="Villa Morra" />
         </label>
+
+        <div class="ps-row" style="align-items:center">
+          <button type="button" id="geoloc-btn" class="ps-btn ps-btn--ghost ps-btn--sm" data-i18n="me.profile.geoloc">Usar mi ubicación</button>
+          <span id="geoloc-status" class="ps-card__sub" aria-live="polite"></span>
+        </div>
+        <input type="hidden" name="lat" id="profile-lat" />
+        <input type="hidden" name="lng" id="profile-lng" />
+
         <label>
           <span data-i18n="me.profile.bio">Bio</span>
           <textarea name="bio" rows="4" maxlength="2000" data-i18n-placeholder="me.profile.bio.placeholder" placeholder="Contales tu experiencia, herramientas, zonas que cubrís…"></textarea>
@@ -171,7 +179,34 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           if (pf.elements[k] && myProfile[k] != null) pf.elements[k].value = myProfile[k]
         }
         if (myProfile.photo) { photoKey.value = myProfile.photo; showPhoto(myProfile.photo) }
+        if (myProfile.lat != null) pf.elements.lat.value = myProfile.lat
+        if (myProfile.lng != null) pf.elements.lng.value = myProfile.lng
       }
+
+      // Geolocation
+      const geoBtn = document.getElementById('geoloc-btn')
+      const geoStatus = document.getElementById('geoloc-status')
+      const profileLat = document.getElementById('profile-lat')
+      const profileLng = document.getElementById('profile-lng')
+      const updateGeoStatus = () => {
+        if (profileLat.value && profileLng.value) {
+          geoStatus.textContent = `📍 ${(+profileLat.value).toFixed(4)}, ${(+profileLng.value).toFixed(4)}`
+        }
+      }
+      updateGeoStatus()
+      geoBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) { geoStatus.textContent = t('me.profile.geoloc.unavailable'); return }
+        geoStatus.textContent = t('me.profile.geoloc.locating')
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            profileLat.value = String(pos.coords.latitude)
+            profileLng.value = String(pos.coords.longitude)
+            updateGeoStatus()
+          },
+          () => { geoStatus.textContent = t('me.profile.geoloc.denied') },
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 },
+        )
+      })
       photoInput.addEventListener('change', async () => {
         const f = photoInput.files?.[0]
         if (!f) return
@@ -192,6 +227,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         pm.textContent = t('common.saving')
         const fd = Object.fromEntries(new FormData(pf))
         if (!fd.photo) fd.photo = null
+        fd.lat = fd.lat ? Number(fd.lat) : null
+        fd.lng = fd.lng ? Number(fd.lng) : null
         try {
           if (myProfile) {
             await apiFetch(`/v1/specialists/${myProfile.id}`, { method: 'PATCH', body: JSON.stringify(fd) })

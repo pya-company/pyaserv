@@ -48,6 +48,7 @@ export const specialistsRoutes = new Hono<AppEnv>()
   .get('/', async (c) => {
     const url = new URL(c.req.url)
     const barrio = url.searchParams.get('barrio')
+    const near = url.searchParams.get('near')
     const where: string[] = ["status = 'active'"]
     const params: unknown[] = []
     if (barrio) {
@@ -56,7 +57,35 @@ export const specialistsRoutes = new Hono<AppEnv>()
     }
     const sql = `SELECT * FROM specialist_profiles WHERE ${where.join(' AND ')} ORDER BY verified DESC, updated_at DESC LIMIT 100`
     const result = await c.env.DB.prepare(sql).bind(...params).all<SpecialistRow>()
-    return c.json({ data: result.results.map(toDto) })
+    const rows = result.results
+    // Optional ?near=lat,lng — Haversine in JS keeps the SQL portable across
+    // workers + lets us return distance to the client. Profiles without
+    // lat/lng fall to the end.
+    if (near) {
+      const [latStr, lngStr] = near.split(',')
+      const lat = Number(latStr)
+      const lng = Number(lngStr)
+      if (Number.isFinite(lat) && Number.isFinite(lng)) {
+        const R = 6371
+        const toRad = (d: number) => (d * Math.PI) / 180
+        const distance = (r: SpecialistRow): number => {
+          if (r.lat === null || r.lng === null) return Number.POSITIVE_INFINITY
+          const dLat = toRad(r.lat - lat)
+          const dLng = toRad(r.lng - lng)
+          const a = Math.sin(dLat / 2) ** 2
+            + Math.cos(toRad(lat)) * Math.cos(toRad(r.lat)) * Math.sin(dLng / 2) ** 2
+          return 2 * R * Math.asin(Math.sqrt(a))
+        }
+        rows.sort((a, b) => distance(a) - distance(b))
+        return c.json({
+          data: rows.map((r) => {
+            const km = distance(r)
+            return { ...toDto(r), distanceKm: Number.isFinite(km) ? Math.round(km * 10) / 10 : null }
+          }),
+        })
+      }
+    }
+    return c.json({ data: rows.map(toDto) })
   })
   .get('/:id', async (c) => {
     const row = await c.env.DB.prepare('SELECT * FROM specialist_profiles WHERE id = ?')
