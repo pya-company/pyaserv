@@ -1,57 +1,71 @@
 ---
 import Base from '../../../layouts/Base.astro'
+import BarriosDatalist from '../../../components/BarriosDatalist.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Nuevo pedido" active="me">
+<Base title="Nuevo pedido" titleKey="request.new.title" active="me">
   <section class="ps-section" data-base={base}>
-    <p><a href={`${base}/me/?tab=requests`}>← Mis pedidos</a></p>
-    <h1>Nuevo pedido</h1>
-    <p>Describí el trabajo que necesitás. Los profesionales relevantes podrán postularse — el contacto ocurre por mensaje privado.</p>
+    <p><a href={`${base}/me/?tab=requests`} data-i18n="request.new.back">← Mis pedidos</a></p>
+    <h1 data-i18n="request.new.title">Nuevo pedido</h1>
+    <p data-i18n="request.new.intro">Describí el trabajo que necesitás. Los profesionales relevantes podrán postularse — el contacto ocurre por mensaje privado.</p>
     <form id="form" class="ps-form">
-      <label>Categoría
+      <label>
+        <span data-i18n="request.field.category">Categoría</span>
         <select name="category" id="category" required></select>
       </label>
-      <label>Título <input name="title" required maxlength="120" placeholder="Necesito plomero urgente" /></label>
-      <label>Descripción
-        <textarea name="description" rows="5" maxlength="2000" placeholder="Qué hay que hacer, fecha aproximada, urgencia, particularidades…"></textarea>
+      <label>
+        <span data-i18n="request.field.title">Título</span>
+        <input name="title" required maxlength="120" data-i18n-placeholder="request.field.title.placeholder" placeholder="Necesito plomero urgente" />
+      </label>
+      <label>
+        <span data-i18n="request.field.description">Descripción</span>
+        <textarea name="description" rows="5" maxlength="2000" data-i18n-placeholder="request.field.description.placeholder" placeholder="Qué hay que hacer, fecha aproximada, urgencia, particularidades…"></textarea>
       </label>
       <div class="ps-grid-2col">
-        <label>Barrio <input name="barrio" required placeholder="Villa Morra" /></label>
-        <label>Presupuesto (Gs, opcional)
+        <label>
+          <span data-i18n="request.field.barrio">Barrio</span>
+          <input name="barrio" required list="ps-barrios" data-i18n-placeholder="request.field.barrio.placeholder" placeholder="Villa Morra" />
+        </label>
+        <label>
+          <span data-i18n="request.field.budget">Presupuesto (Gs, opcional)</span>
           <input name="budgetGs" type="number" min="0" />
         </label>
       </div>
-      <button type="submit" class="ps-btn">Publicar pedido</button>
+      <button type="submit" class="ps-btn" data-i18n="request.new.submit">Publicar pedido</button>
       <p id="msg" class="ps-msg" aria-live="polite"></p>
     </form>
   </section>
 
+  <BarriosDatalist />
+
   <script>
     // @ts-nocheck
-    import { apiFetch, getToken, CATEGORIES } from '../../../lib/api.ts'
+    import { apiFetch, getToken, CATEGORIES, categoryLabel } from '../../../lib/api.ts'
+    import { t } from '../../../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
       if (!getToken()) { location.href = `${base}/login/?next=${encodeURIComponent(location.pathname)}`; return }
+      const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
       const cat = document.getElementById('category')
       for (const c of CATEGORIES) {
         const opt = document.createElement('option')
         opt.value = c.value
-        opt.textContent = `${c.emoji} ${c.label}`
+        opt.textContent = `${c.emoji} ${categoryLabel(c.value)}`
         cat.append(opt)
       }
       const form = document.getElementById('form')
       const msg = document.getElementById('msg')
       form.addEventListener('submit', async (e) => {
         e.preventDefault()
-        msg.textContent = 'Publicando…'
+        msg.textContent = t('common.publishing')
         const fd = Object.fromEntries(new FormData(form))
         if (fd.budgetGs) fd.budgetGs = Number(fd.budgetGs)
         else delete fd.budgetGs
         try {
           await apiFetch('/v1/requests', { method: 'POST', body: JSON.stringify(fd) })
           location.href = `${base}/me/?tab=requests`
-        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
       })
     })()
   </script>

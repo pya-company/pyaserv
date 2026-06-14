@@ -96,3 +96,49 @@ export const uploadImage = async (file: File): Promise<string> => {
 
 // Build a fully-qualified URL to a media object (R2/KV) served by the API.
 export const mediaUrl = (key: string): string => `${API}/v1/media/${key}`
+
+// Curated list of common Asunción + Gran Asunción barrios used in
+// autocomplete <datalist> on every barrio input. Order alphabetical to
+// match user expectations when scrolling the dropdown.
+export const BARRIOS: ReadonlyArray<string> = [
+  'Areguá',
+  'Asunción Centro',
+  'Barrio Obrero',
+  'Barrio San Pablo',
+  'Bañado Norte',
+  'Bañado Sur',
+  'Botánico',
+  'Capiatá',
+  'Carmelitas',
+  'Catedral',
+  'Encarnación',
+  'Fernando de la Mora',
+  'Hipódromo',
+  'Itá Enramada',
+  'Itauguá',
+  'Lambaré',
+  'Las Mercedes',
+  'Las Carmelitas',
+  'Loma Pytã',
+  'Luque',
+  'Mariscal Estigarribia',
+  'Mariscal López',
+  'Mburicaó',
+  'Mburucuyá',
+  'Mcal. López',
+  'Ñemby',
+  'Pinozá',
+  'Recoleta',
+  'Sajonia',
+  'San Antonio',
+  'San Lorenzo',
+  'San Pablo',
+  'San Roque',
+  'San Vicente',
+  'Tablada Nueva',
+  'Tembetary',
+  'Trinidad',
+  'Vista Alegre',
+  'Villa Aurelia',
+  'Villa Morra',
+]

@@ -1,5 +1,6 @@
 ---
 import Base from '~/layouts/Base.astro'
+import BarriosDatalist from '~/components/BarriosDatalist.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base title="Mi panel" titleKey="me.title" active="me">
@@ -51,7 +52,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         </label>
         <label>
           <span data-i18n="me.profile.barrio">Barrio</span>
-          <input name="barrio" required data-i18n-placeholder="me.profile.barrio.placeholder" placeholder="Villa Morra" />
+          <input name="barrio" required list="ps-barrios" data-i18n-placeholder="me.profile.barrio.placeholder" placeholder="Villa Morra" />
         </label>
         <label>
           <span data-i18n="me.profile.bio">Bio</span>
@@ -92,6 +93,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <div id="my-inquiries" class="ps-cards" aria-busy="true"></div>
     </div>
   </section>
+
+  <BarriosDatalist />
 
   <script>
     // @ts-nocheck
