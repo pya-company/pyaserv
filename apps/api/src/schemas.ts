@@ -72,3 +72,19 @@ export const MessageCreateSchema = v.object({
   body: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(2000)),
 })
 export type MessageCreate = v.InferOutput<typeof MessageCreateSchema>
+
+export const WorkStatusActionSchema = v.object({
+  action: v.picklist(['start', 'confirm_done', 'cancel']),
+})
+export type WorkStatusAction = v.InferOutput<typeof WorkStatusActionSchema>
+
+export const ReviewCreateSchema = v.object({
+  stars: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(5)),
+  body: v.optional(v.pipe(v.string(), v.maxLength(1000)), ''),
+})
+export type ReviewCreate = v.InferOutput<typeof ReviewCreateSchema>
+
+export const NotificationPrefsSchema = v.object({
+  emailNotifications: v.boolean(),
+})
+export type NotificationPrefs = v.InferOutput<typeof NotificationPrefsSchema>

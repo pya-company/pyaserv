@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@pya-company/auth": "*",
+    "@pya-company/email": "*",
     "@pya-company/shared": "*",
     "hono": "^4.6.0",
     "valibot": "^1.0.0"

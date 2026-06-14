@@ -19,6 +19,7 @@
   "//pya-platform-overrides": "@pya-company/* resolved from sibling pya-platform checkout. Same pattern as pyaeats-app.",
   "overrides": {
     "@pya-company/shared": "file:../pya-platform/packages/shared",
-    "@pya-company/auth": "file:../pya-platform/packages/auth"
+    "@pya-company/auth": "file:../pya-platform/packages/auth",
+    "@pya-company/email": "file:../pya-platform/packages/email"
   }
 }

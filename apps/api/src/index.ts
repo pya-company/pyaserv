@@ -3,7 +3,10 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { inquiriesRoutes } from './routes/inquiries.ts'
 import { listingsRoutes } from './routes/listings.ts'
+import { mediaRoutes } from './routes/media.ts'
+import { meRoutes } from './routes/me.ts'
 import { requestsRoutes } from './routes/requests.ts'
+import { reviewsRoutes } from './routes/reviews.ts'
 import { specialistsRoutes } from './routes/specialists.ts'
 
 interface AppEnv {
@@ -55,6 +58,9 @@ const app = new Hono<AppEnv>()
   .route('/v1/listings', listingsRoutes)
   .route('/v1/requests', requestsRoutes)
   .route('/v1/inquiries', inquiriesRoutes)
+  .route('/v1/me', meRoutes)
+  .route('/v1', reviewsRoutes)
+  .route('/v1/media', mediaRoutes)
   .all('*', (c) => c.json({ error: { code: 'NotFound', message: 'Endpoint not yet implemented.' } }, 404))
 
 export default app

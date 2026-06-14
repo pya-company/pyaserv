@@ -21,6 +21,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <h2 data-i18n="me.profile.h">Perfil de profesional</h2>
       <p data-i18n="me.profile.intro">Si querés ofrecer servicios, completá tu perfil acá.</p>
       <form id="profile-form" class="ps-form">
+        <div class="ps-row" style="align-items:center;gap:.75rem">
+          <div id="photo-preview" class="ps-detail__avatar" style="width:72px;height:72px;font-size:2rem">👤</div>
+          <div class="ps-stack" style="gap:.25rem">
+            <label class="ps-btn ps-btn--ghost ps-btn--sm" for="photo-input" style="margin:0">
+              <span id="photo-btn-label" data-i18n="media.upload">Subir foto</span>
+            </label>
+            <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+            <button type="button" id="photo-remove" class="ps-btn ps-btn--ghost ps-btn--sm ps-hidden" data-i18n="media.remove">Quitar</button>
+            <p id="photo-msg" class="ps-msg" aria-live="polite"></p>
+          </div>
+        </div>
+        <input type="hidden" name="photo" id="photo-key" />
         <label>
           <span data-i18n="me.profile.display_name">Nombre que mostramos</span>
           <input name="displayName" required maxlength="80" />
@@ -48,6 +60,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <button type="submit" class="ps-btn" data-i18n="common.save">Guardar</button>
         <p id="profile-msg" class="ps-msg" aria-live="polite"></p>
       </form>
+
+      <fieldset class="ps-banner ps-stack" style="margin-top:1rem;gap:.5rem">
+        <legend style="padding:0 .25rem"><strong data-i18n="me.notifs.h">Notificaciones</strong></legend>
+        <label class="ps-row" style="gap:.5rem;align-items:center">
+          <input type="checkbox" id="notif-email" />
+          <span data-i18n="me.notifs.email">Recibir avisos por email</span>
+        </label>
+        <p id="notif-msg" class="ps-msg" aria-live="polite"></p>
+      </fieldset>
     </div>
 
     <div class="ps-tabpanel" id="panel-listings" hidden>
@@ -74,7 +95,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
   <script>
     // @ts-nocheck
-    import { apiFetch, getToken, clearToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime } from '../lib/api.ts'
+    import { apiFetch, getToken, clearToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime, uploadImage, mediaUrl } from '../lib/api.ts'
     import { t } from '../lib/i18n.ts'
 
     ;(async () => {
@@ -123,16 +144,51 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         myProfile = list.find((s) => s.userId === me.userId) ?? null
       } catch {}
       const pf = document.getElementById('profile-form')
+      const photoPreview = document.getElementById('photo-preview')
+      const photoInput = document.getElementById('photo-input')
+      const photoKey = document.getElementById('photo-key')
+      const photoMsg = document.getElementById('photo-msg')
+      const photoBtnLabel = document.getElementById('photo-btn-label')
+      const photoRemove = document.getElementById('photo-remove')
+      const showPhoto = (key) => {
+        if (key) {
+          photoPreview.innerHTML = `<img src="${mediaUrl(key)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"/>`
+          photoPreview.style.padding = '0'
+          photoPreview.style.overflow = 'hidden'
+          photoBtnLabel.textContent = t('media.replace')
+          photoRemove.classList.remove('ps-hidden')
+        } else {
+          photoPreview.textContent = '👤'
+          photoBtnLabel.textContent = t('media.upload')
+          photoRemove.classList.add('ps-hidden')
+        }
+      }
       if (myProfile) {
         for (const k of ['displayName','headline','phone','whatsapp','barrio','bio']) {
           if (pf.elements[k] && myProfile[k] != null) pf.elements[k].value = myProfile[k]
         }
+        if (myProfile.photo) { photoKey.value = myProfile.photo; showPhoto(myProfile.photo) }
       }
+      photoInput.addEventListener('change', async () => {
+        const f = photoInput.files?.[0]
+        if (!f) return
+        photoMsg.textContent = t('media.uploading')
+        try {
+          const key = await uploadImage(f)
+          photoKey.value = key
+          showPhoto(key)
+          photoMsg.textContent = ''
+        } catch (err) { photoMsg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
+        finally { photoInput.value = '' }
+      })
+      photoRemove.addEventListener('click', () => { photoKey.value = ''; showPhoto('') })
+
       const pm = document.getElementById('profile-msg')
       pf.addEventListener('submit', async (e) => {
         e.preventDefault()
         pm.textContent = t('common.saving')
         const fd = Object.fromEntries(new FormData(pf))
+        if (!fd.photo) fd.photo = null
         try {
           if (myProfile) {
             await apiFetch(`/v1/specialists/${myProfile.id}`, { method: 'PATCH', body: JSON.stringify(fd) })
@@ -142,6 +198,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           pm.innerHTML = `<span class="ps-msg--ok">${t('me.profile.saved')}</span>`
           refreshListings()
         } catch (err) { pm.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>` }
+      })
+
+      // ---- Notifications opt-out ----
+      const notifEmail = document.getElementById('notif-email')
+      const notifMsg = document.getElementById('notif-msg')
+      try {
+        const n = await apiFetch('/v1/me/notifications')
+        notifEmail.checked = n.emailNotifications !== false
+      } catch { notifEmail.checked = true }
+      notifEmail.addEventListener('change', async () => {
+        notifMsg.textContent = t('common.saving')
+        try {
+          await apiFetch('/v1/me/notifications', { method: 'PATCH', body: JSON.stringify({ emailNotifications: notifEmail.checked }) })
+          notifMsg.innerHTML = `<span class="ps-msg--ok">${t('me.notifs.saved')}</span>`
+        } catch (err) { notifMsg.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>` }
       })
 
       // ---- My listings ----
@@ -193,9 +264,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const refreshRequests = async () => {
         rEl.setAttribute('aria-busy', 'true')
         try {
-          // server endpoint lists "open" by default; fetch open and filter for mine
-          const open = await apiFetch('/v1/requests')
-          const mine = open.filter((r) => r.clientId === me.userId)
+          // Dedicated endpoint returns ALL my requests (open + closed)
+          const mine = await apiFetch('/v1/me/requests')
           rEl.removeAttribute('aria-busy')
           if (mine.length === 0) {
             rEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">${t('me.requests.empty.title')}</strong>${t('me.requests.empty.hint')}</p>`

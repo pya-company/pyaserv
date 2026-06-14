@@ -261,6 +261,43 @@ const ES: Dict = {
   'inquiry.detail.placeholder': 'Escribí un mensaje…',
   'inquiry.detail.about_listing': 'Sobre un servicio',
   'inquiry.detail.about_request': 'Sobre un pedido',
+  'inquiry.back': '← Conversaciones',
+  'inquiry.view_subject': 'Ver publicación',
+  'inquiry.compose_placeholder': 'Escribí un mensaje…',
+  'inquiry.subject_listing': 'Sobre un servicio',
+  'inquiry.subject_request': 'Sobre un pedido',
+  'inquiry.status_negotiating': 'Negociando',
+  'inquiry.status_in_progress': 'En curso',
+  'inquiry.status_done': 'Terminado',
+  'inquiry.status_cancelled': 'Cancelado',
+  'inquiry.btn_start': 'Comenzar trabajo',
+  'inquiry.btn_done': 'Marcar terminado',
+  'inquiry.btn_cancel': 'Cancelar',
+  'inquiry.cancel_confirm': '¿Cancelar trabajo?',
+  'inquiry.review_h': 'Calificar trabajo',
+  'inquiry.review_body_label': 'Comentario (opcional)',
+  'inquiry.review_body_placeholder': 'Contale a otros cómo fue.',
+  'inquiry.review_submit': 'Enviar reseña',
+  'inquiry.review_thanks': '¡Gracias por tu reseña!',
+
+  // reviews on specialist detail
+  'reviews.h': 'Reseñas',
+  'reviews.empty': 'Sin reseñas todavía.',
+  'reviews.avg_one': 'reseña',
+  'reviews.avg_many': 'reseñas',
+
+  // photo upload
+  'media.upload': 'Subir foto',
+  'media.uploading': 'Subiendo…',
+  'media.replace': 'Cambiar foto',
+  'media.remove': 'Quitar',
+  'media.too_big': 'La imagen debe pesar menos de 5 MB.',
+  'media.bad_type': 'Solo JPG, PNG o WebP.',
+
+  // notifications
+  'me.notifs.h': 'Notificaciones',
+  'me.notifs.email': 'Recibir avisos por email',
+  'me.notifs.saved': '✓ Preferencia guardada',
 
   // categories
   'category.plumbing': 'Plomería',
@@ -502,6 +539,43 @@ const EN: Dict = {
   'inquiry.detail.placeholder': 'Write a message…',
   'inquiry.detail.about_listing': 'About a service',
   'inquiry.detail.about_request': 'About a request',
+  'inquiry.back': '← Conversations',
+  'inquiry.view_subject': 'View post',
+  'inquiry.compose_placeholder': 'Write a message…',
+  'inquiry.subject_listing': 'About a service',
+  'inquiry.subject_request': 'About a request',
+  'inquiry.status_negotiating': 'Negotiating',
+  'inquiry.status_in_progress': 'In progress',
+  'inquiry.status_done': 'Done',
+  'inquiry.status_cancelled': 'Cancelled',
+  'inquiry.btn_start': 'Start work',
+  'inquiry.btn_done': 'Mark done',
+  'inquiry.btn_cancel': 'Cancel',
+  'inquiry.cancel_confirm': 'Cancel this work?',
+  'inquiry.review_h': 'Rate the work',
+  'inquiry.review_body_label': 'Comment (optional)',
+  'inquiry.review_body_placeholder': 'Tell others how it went.',
+  'inquiry.review_submit': 'Submit review',
+  'inquiry.review_thanks': 'Thanks for your review!',
+
+  // reviews on specialist detail
+  'reviews.h': 'Reviews',
+  'reviews.empty': 'No reviews yet.',
+  'reviews.avg_one': 'review',
+  'reviews.avg_many': 'reviews',
+
+  // photo upload
+  'media.upload': 'Upload photo',
+  'media.uploading': 'Uploading…',
+  'media.replace': 'Replace photo',
+  'media.remove': 'Remove',
+  'media.too_big': 'Image must be under 5 MB.',
+  'media.bad_type': 'Only JPG, PNG or WebP.',
+
+  // notifications
+  'me.notifs.h': 'Notifications',
+  'me.notifs.email': 'Receive email notifications',
+  'me.notifs.saved': '✓ Preference saved',
 
   // categories
   'category.plumbing': 'Plumbing',

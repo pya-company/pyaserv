@@ -72,3 +72,27 @@ export const categoryEmoji = (value: string): string =>
 
 // Re-export i18n-aware formatters for backwards compatibility with the script blocks.
 export { formatGs, formatRelativeTime } from './i18n'
+
+const ALLOWED_IMG_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+const MAX_IMG_BYTES = 5 * 1024 * 1024
+
+// Upload a single image file to /v1/media and return its storage key.
+// Throws Error(<i18n message>) for invalid type / oversize. Reuses the same auth token via fetch headers.
+export const uploadImage = async (file: File): Promise<string> => {
+  if (!ALLOWED_IMG_TYPES.has(file.type)) throw new Error(t('media.bad_type'))
+  if (file.size > MAX_IMG_BYTES) throw new Error(t('media.too_big'))
+  const token = getToken()
+  const headers = new Headers()
+  headers.set('Content-Type', file.type)
+  if (token) headers.set('Authorization', `Bearer ${token}`)
+  const res = await fetch(`${API}/v1/media`, { method: 'POST', headers, body: file })
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => null) as { error?: { message?: string } } | null
+    throw new Error(errBody?.error?.message ?? `HTTP ${res.status}`)
+  }
+  const body = await res.json() as { data: { key: string } }
+  return body.data.key
+}
+
+// Build a fully-qualified URL to a media object (R2/KV) served by the API.
+export const mediaUrl = (key: string): string => `${API}/v1/media/${key}`

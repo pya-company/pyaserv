@@ -2,32 +2,53 @@
 import Base from '../../../layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Editar servicio" active="me">
+<Base title="Editar servicio" titleKey="listing.edit.title" active="me">
   <section class="ps-section" data-base={base}>
-    <p><a href={`${base}/me/?tab=listings`}>← Mis servicios</a></p>
-    <h1>Editar servicio</h1>
-    <p id="status" class="ps-msg">Cargando…</p>
+    <p><a href={`${base}/me/?tab=listings`} data-i18n="listing.new.back">← Mis servicios</a></p>
+    <h1 data-i18n="listing.edit.title">Editar servicio</h1>
+    <p id="status" class="ps-msg" data-i18n="common.loading">Cargando…</p>
     <form id="form" class="ps-form ps-hidden">
-      <label>Categoría
+      <label>
+        <span data-i18n="listing.field.category">Categoría</span>
         <select name="category" id="category" required></select>
       </label>
-      <label>Título <input name="title" required maxlength="120" /></label>
-      <label>Descripción <textarea name="description" rows="4" maxlength="2000"></textarea></label>
+      <label>
+        <span data-i18n="listing.field.title">Título</span>
+        <input name="title" required maxlength="120" />
+      </label>
+      <label>
+        <span data-i18n="listing.field.description">Descripción</span>
+        <textarea name="description" rows="4" maxlength="2000"></textarea>
+      </label>
       <div class="ps-grid-2col">
-        <label>Precio desde (Gs)
+        <label>
+          <span data-i18n="listing.field.price_from.short">Precio desde (Gs)</span>
           <input name="priceFromGs" type="number" min="0" />
         </label>
-        <label>Por
+        <label>
+          <span data-i18n="listing.field.unit">Por</span>
           <select name="priceUnit">
-            <option value="">—</option>
-            <option value="hour">Hora</option>
-            <option value="job">Trabajo</option>
+            <option value="" data-i18n="listing.field.unit.none">—</option>
+            <option value="hour" data-i18n="listing.field.unit.hour">Hora</option>
+            <option value="job" data-i18n="listing.field.unit.job">Trabajo</option>
           </select>
         </label>
       </div>
+      <div class="ps-row" style="align-items:center;gap:.75rem">
+        <div id="photo-preview" class="ps-detail__avatar" style="width:72px;height:72px;font-size:2rem">📷</div>
+        <div class="ps-stack" style="gap:.25rem">
+          <label class="ps-btn ps-btn--ghost ps-btn--sm" for="photo-input" style="margin:0">
+            <span id="photo-btn-label" data-i18n="media.upload">Subir foto</span>
+          </label>
+          <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+          <button type="button" id="photo-remove" class="ps-btn ps-btn--ghost ps-btn--sm ps-hidden" data-i18n="media.remove">Quitar</button>
+          <p id="photo-msg" class="ps-msg" aria-live="polite"></p>
+        </div>
+      </div>
+      <input type="hidden" name="photo" id="photo-key" />
       <div class="ps-row">
-        <button type="submit" class="ps-btn">Guardar</button>
-        <button type="button" id="del" class="ps-btn ps-btn--danger">Eliminar</button>
+        <button type="submit" class="ps-btn" data-i18n="common.save">Guardar</button>
+        <button type="button" id="del" class="ps-btn ps-btn--danger" data-i18n="common.delete">Eliminar</button>
       </div>
       <p id="msg" class="ps-msg" aria-live="polite"></p>
     </form>
@@ -35,7 +56,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
   <script>
     // @ts-nocheck
-    import { apiFetch, getToken, CATEGORIES } from '../../../lib/api.ts'
+    import { apiFetch, getToken, CATEGORIES, categoryLabel, uploadImage, mediaUrl } from '../../../lib/api.ts'
+    import { t } from '../../../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -44,22 +66,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const status = document.getElementById('status')
       const form = document.getElementById('form')
       const msg = document.getElementById('msg')
+      const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
 
       const cat = document.getElementById('category')
       for (const c of CATEGORIES) {
         const opt = document.createElement('option')
         opt.value = c.value
-        opt.textContent = `${c.emoji} ${c.label}`
+        opt.textContent = `${c.emoji} ${categoryLabel(c.value)}`
         cat.append(opt)
       }
 
-      if (!id) { status.innerHTML = '<span class="ps-error">Falta el id</span>'; return }
+      if (!id) { status.innerHTML = `<span class="ps-error">${t('common.missing_id')}</span>`; return }
       let item
       try {
         const list = await apiFetch(`/v1/listings`)
         item = list.find((l) => l.id === id)
-        if (!item) throw new Error('Servicio no encontrado o no es tuyo')
-      } catch (err) { status.innerHTML = `<span class="ps-error">${err.message}</span>`; return }
+        if (!item) throw new Error(t('listing.edit.not_found'))
+      } catch (err) { status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`; return }
 
       status.classList.add('ps-hidden')
       form.classList.remove('ps-hidden')
@@ -69,20 +92,55 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       if (item.priceFromGs != null) form.elements.priceFromGs.value = item.priceFromGs
       if (item.priceUnit) form.elements.priceUnit.value = item.priceUnit
 
+      const photoPreview = document.getElementById('photo-preview')
+      const photoInput = document.getElementById('photo-input')
+      const photoKey = document.getElementById('photo-key')
+      const photoMsg = document.getElementById('photo-msg')
+      const photoBtnLabel = document.getElementById('photo-btn-label')
+      const photoRemove = document.getElementById('photo-remove')
+      const showPhoto = (key) => {
+        if (key) {
+          photoPreview.innerHTML = `<img src="${mediaUrl(key)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"/>`
+          photoPreview.style.padding = '0'
+          photoPreview.style.overflow = 'hidden'
+          photoBtnLabel.textContent = t('media.replace')
+          photoRemove.classList.remove('ps-hidden')
+        } else {
+          photoPreview.textContent = '📷'
+          photoBtnLabel.textContent = t('media.upload')
+          photoRemove.classList.add('ps-hidden')
+        }
+      }
+      if (item.photo) { photoKey.value = item.photo; showPhoto(item.photo) }
+      photoInput.addEventListener('change', async () => {
+        const f = photoInput.files?.[0]
+        if (!f) return
+        photoMsg.textContent = t('media.uploading')
+        try {
+          const key = await uploadImage(f)
+          photoKey.value = key
+          showPhoto(key)
+          photoMsg.textContent = ''
+        } catch (err) { photoMsg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
+        finally { photoInput.value = '' }
+      })
+      photoRemove.addEventListener('click', () => { photoKey.value = ''; showPhoto('') })
+
       form.addEventListener('submit', async (e) => {
         e.preventDefault()
-        msg.textContent = 'Guardando…'
+        msg.textContent = t('common.saving')
         const fd = Object.fromEntries(new FormData(form))
         fd.priceFromGs = fd.priceFromGs ? Number(fd.priceFromGs) : null
         fd.priceUnit = fd.priceUnit || null
+        fd.photo = fd.photo || null
         try {
           await apiFetch(`/v1/listings/${id}`, { method: 'PATCH', body: JSON.stringify(fd) })
           location.href = `${base}/me/?tab=listings`
-        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
       })
 
       document.getElementById('del').addEventListener('click', async () => {
-        if (!confirm('¿Eliminar definitivamente?')) return
+        if (!confirm(t('listing.edit.confirm_delete'))) return
         await apiFetch(`/v1/listings/${id}`, { method: 'DELETE' })
         location.href = `${base}/me/?tab=listings`
       })

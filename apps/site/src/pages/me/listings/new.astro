@@ -34,6 +34,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           </select>
         </label>
       </div>
+      <div class="ps-row" style="align-items:center;gap:.75rem">
+        <div id="photo-preview" class="ps-detail__avatar" style="width:72px;height:72px;font-size:2rem">📷</div>
+        <div class="ps-stack" style="gap:.25rem">
+          <label class="ps-btn ps-btn--ghost ps-btn--sm" for="photo-input" style="margin:0">
+            <span id="photo-btn-label" data-i18n="media.upload">Subir foto</span>
+          </label>
+          <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+          <button type="button" id="photo-remove" class="ps-btn ps-btn--ghost ps-btn--sm ps-hidden" data-i18n="media.remove">Quitar</button>
+          <p id="photo-msg" class="ps-msg" aria-live="polite"></p>
+        </div>
+      </div>
+      <input type="hidden" name="photo" id="photo-key" />
       <button type="submit" class="ps-btn" data-i18n="listing.new.submit">Publicar</button>
       <p id="msg" class="ps-msg" aria-live="polite"></p>
     </form>
@@ -41,7 +53,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
   <script>
     // @ts-nocheck
-    import { apiFetch, getToken, CATEGORIES, categoryLabel } from '../../../lib/api.ts'
+    import { apiFetch, getToken, CATEGORIES, categoryLabel, uploadImage, mediaUrl } from '../../../lib/api.ts'
     import { t } from '../../../lib/i18n.ts'
 
     ;(async () => {
@@ -54,6 +66,40 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         opt.textContent = `${c.emoji} ${categoryLabel(c.value)}`
         cat.append(opt)
       }
+      const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
+      const photoPreview = document.getElementById('photo-preview')
+      const photoInput = document.getElementById('photo-input')
+      const photoKey = document.getElementById('photo-key')
+      const photoMsg = document.getElementById('photo-msg')
+      const photoBtnLabel = document.getElementById('photo-btn-label')
+      const photoRemove = document.getElementById('photo-remove')
+      const showPhoto = (key) => {
+        if (key) {
+          photoPreview.innerHTML = `<img src="${mediaUrl(key)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"/>`
+          photoPreview.style.padding = '0'
+          photoPreview.style.overflow = 'hidden'
+          photoBtnLabel.textContent = t('media.replace')
+          photoRemove.classList.remove('ps-hidden')
+        } else {
+          photoPreview.textContent = '📷'
+          photoBtnLabel.textContent = t('media.upload')
+          photoRemove.classList.add('ps-hidden')
+        }
+      }
+      photoInput.addEventListener('change', async () => {
+        const f = photoInput.files?.[0]
+        if (!f) return
+        photoMsg.textContent = t('media.uploading')
+        try {
+          const key = await uploadImage(f)
+          photoKey.value = key
+          showPhoto(key)
+          photoMsg.textContent = ''
+        } catch (err) { photoMsg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
+        finally { photoInput.value = '' }
+      })
+      photoRemove.addEventListener('click', () => { photoKey.value = ''; showPhoto('') })
+
       const form = document.getElementById('form')
       const msg = document.getElementById('msg')
       form.addEventListener('submit', async (e) => {
@@ -63,6 +109,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         if (fd.priceFromGs) fd.priceFromGs = Number(fd.priceFromGs)
         else delete fd.priceFromGs
         if (!fd.priceUnit) delete fd.priceUnit
+        if (!fd.photo) delete fd.photo
         try {
           await apiFetch('/v1/listings', { method: 'POST', body: JSON.stringify(fd) })
           location.href = `${base}/me/?tab=listings`
