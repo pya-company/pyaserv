@@ -3,6 +3,7 @@ import { requireAuth } from '@pya-company/auth'
 import { ForbiddenError, NotFoundError, ValidationError, uuidV7 } from '@pya-company/shared'
 import { Hono } from 'hono'
 import * as v from 'valibot'
+import { checkRateLimit } from '../rate-limit.ts'
 import {
   InquiryCreateSchema,
   MessageCreateSchema,
@@ -223,6 +224,17 @@ export const inquiriesRoutes = new Hono<AppEnv>()
     )
       .bind(parsed.output.subjectType, parsed.output.subjectId, clientUserId, specialistUserId)
       .first<InquiryRow>()
+
+    // Anti-spam: 10 *new* inquiries / day / user. Replies on existing threads
+    // don't count toward this — they're rate-limited only by the message limit.
+    if (!existing) {
+      await checkRateLimit(c.env.SESSIONS, {
+        bucket: 'inquiry-new',
+        id: me,
+        limit: 10,
+        windowSec: 24 * 60 * 60,
+      })
+    }
 
     const inquiryId = existing ? existing.id : uuidV7()
     if (!existing) {

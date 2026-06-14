@@ -1,6 +1,7 @@
 import { type DomainError, mapErrorToStatus, passwordlessRoutes, requireAuth } from '@pya-company/auth'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { checkRateLimit } from './rate-limit.ts'
 import { inquiriesRoutes } from './routes/inquiries.ts'
 import { listingsRoutes } from './routes/listings.ts'
 import { mediaRoutes } from './routes/media.ts'
@@ -49,6 +50,23 @@ const app = new Hono<AppEnv>()
       ts: Math.floor(Date.now() / 1000),
     }),
   )
+  // Anti-spam: cap /api/auth/start at 5/hour/email. We sniff the email out of
+  // the JSON body before passing to passwordlessRoutes (which re-reads via
+  // c.req.json — Hono caches it, so no double-consume).
+  .use('/api/auth/start', async (c, next) => {
+    if (c.req.method !== 'POST') return next()
+    const body = await c.req.json().catch(() => ({})) as { email?: unknown }
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
+    if (email) {
+      await checkRateLimit(c.env.SESSIONS, {
+        bucket: 'auth-start',
+        id: email,
+        limit: 5,
+        windowSec: 60 * 60,
+      })
+    }
+    await next()
+  })
   .route('/api/auth', passwordlessRoutes)
   .get('/v1/me', requireAuth, (c) => {
     const session = c.var.session
