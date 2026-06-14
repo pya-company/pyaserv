@@ -2,9 +2,9 @@
 import Base from '../../layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Perfil" active="specialists">
+<Base title="Perfil" titleKey="specialist.detail.title" active="specialists">
   <section class="ps-section" data-base={base}>
-    <p id="status" class="ps-msg" aria-live="polite">Cargando…</p>
+    <p id="status" class="ps-msg" aria-live="polite" data-i18n="common.loading">Cargando…</p>
     <div id="profile" class="ps-detail ps-hidden">
       <aside class="ps-detail__side">
         <div class="ps-detail__avatar" id="avatar">🛠️</div>
@@ -16,27 +16,29 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <a id="whatsapp-link" href="#" target="_blank" rel="noopener" class="ps-hidden">💬 WhatsApp</a>
         </div>
         <p id="contact-locked" class="ps-banner ps-banner--warn">
-          Para ver el contacto, <a id="login-link">iniciá sesión</a>.
+          <span data-i18n="specialist.detail.locked">Para ver el contacto,</span>
+          <a id="login-link" data-i18n="specialist.detail.locked.cta">iniciá sesión</a>.
         </p>
-        <button id="contact-btn" class="ps-btn ps-hidden">Enviar mensaje</button>
+        <button id="contact-btn" class="ps-btn ps-hidden" data-i18n="specialist.detail.contact_btn">Enviar mensaje</button>
       </aside>
 
       <div class="ps-detail__body">
         <article class="ps-detail__bio" id="bio">—</article>
-        <h2>Servicios que ofrece</h2>
+        <h2 data-i18n="specialist.detail.services_h">Servicios que ofrece</h2>
         <div id="listings" class="ps-cards"></div>
       </div>
     </div>
 
     <div id="composer" class="ps-banner ps-hidden">
-      <h2 style="margin:0 0 .5rem">Escribirle</h2>
+      <h2 style="margin:0 0 .5rem" data-i18n="specialist.detail.compose_h">Escribirle</h2>
       <form id="composer-form" class="ps-form">
-        <label>Mensaje
-          <textarea name="body" required minlength="1" maxlength="2000" placeholder="Hola, me interesa…"></textarea>
+        <label>
+          <span data-i18n="specialist.detail.compose.label">Mensaje</span>
+          <textarea name="body" required minlength="1" maxlength="2000" data-i18n-placeholder="specialist.detail.compose.placeholder" placeholder="Hola, me interesa…"></textarea>
         </label>
         <div class="ps-row">
-          <button type="submit" class="ps-btn">Enviar</button>
-          <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost">Cancelar</button>
+          <button type="submit" class="ps-btn" data-i18n="common.send">Enviar</button>
+          <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost" data-i18n="common.cancel">Cancelar</button>
         </div>
         <p id="composer-msg" class="ps-msg" aria-live="polite"></p>
       </form>
@@ -46,6 +48,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   <script>
     // @ts-nocheck
     import { apiFetch, getToken, categoryLabel, categoryEmoji, formatGs } from '../../lib/api.ts'
+    import { t } from '../../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -55,7 +58,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
       document.getElementById('login-link').href = `${base}/login/?next=${encodeURIComponent(location.pathname + location.search)}`
 
-      if (!id) { status.innerHTML = '<span class="ps-error">Falta el id</span>'; return }
+      if (!id) { status.innerHTML = `<span class="ps-error">${t('common.missing_id')}</span>`; return }
 
       const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
 
@@ -64,7 +67,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         spec = await apiFetch(`/v1/specialists/${id}`)
         listings = await apiFetch(`/v1/listings?specialist_id=${id}`)
       } catch (err) {
-        status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
+        status.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>`
         return
       }
 
@@ -76,7 +79,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       document.getElementById('bio').textContent = spec.bio || spec.headline
 
       if (spec.verified) {
-        document.getElementById('badge-row').innerHTML = '<span class="ps-badge">✓ Verificado</span>'
+        document.getElementById('badge-row').innerHTML = `<span class="ps-badge">${t('specialist.detail.verified')}</span>`
       }
 
       const token = getToken()
@@ -97,8 +100,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       }
 
       const lEl = document.getElementById('listings')
+      const noServicesTitle = t('specialist.detail.no_services.title')
+      const priceFrom = t('specialist.detail.price_from')
+      const perHour = t('specialist.detail.per_hour')
+      const perJob = t('specialist.detail.per_job')
+      const priceTbd = t('specialist.detail.price_tbd')
       lEl.innerHTML = listings.length === 0
-        ? '<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">Aún no publicó servicios</strong></p>'
+        ? `<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">${noServicesTitle}</strong></p>`
         : listings.map((l) => `
           <article class="ps-card">
             <div class="ps-row">
@@ -106,7 +114,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
             </div>
             <h3>${escape(l.title)}</h3>
             <p class="ps-card__body">${escape(l.description)}</p>
-            <p class="ps-card__sub">${l.priceFromGs ? `desde ${escape(formatGs(l.priceFromGs))}${l.priceUnit ? ` / ${l.priceUnit === 'hour' ? 'hora' : 'trabajo'}` : ''}` : 'Precio a coordinar'}</p>
+            <p class="ps-card__sub">${l.priceFromGs ? `${priceFrom} ${escape(formatGs(l.priceFromGs))}${l.priceUnit ? ` / ${l.priceUnit === 'hour' ? perHour : perJob}` : ''}` : priceTbd}</p>
           </article>`).join('')
 
       const composer = document.getElementById('composer')
@@ -121,11 +129,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
       composerForm.addEventListener('submit', async (e) => {
         e.preventDefault()
-        composerMsg.textContent = 'Enviando…'
+        composerMsg.textContent = t('common.sending')
         const body = new FormData(composerForm).get('body')
         const subjectId = listings[0]?.id
         if (!subjectId) {
-          composerMsg.innerHTML = '<span class="ps-error">Este profesional aún no publicó servicios; no se puede iniciar la conversación todavía.</span>'
+          composerMsg.innerHTML = `<span class="ps-error">${t('specialist.detail.no_listings_err')}</span>`
           return
         }
         try {
@@ -135,7 +143,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           })
           location.href = `${base}/me/inquiries/detail/?id=${inq.id}`
         } catch (err) {
-          composerMsg.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
+          composerMsg.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>`
         }
       })
     })()

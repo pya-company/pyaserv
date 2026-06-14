@@ -202,6 +202,41 @@ button { font: inherit; cursor: pointer; }
   background: var(--ps-acc-soft);
 }
 
+/* ---------- language switcher ---------- */
+.ps-lang-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--ps-surface-2);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-pill);
+  align-self: center;
+}
+@media (max-width: 719.98px) {
+  .ps-lang-switch { align-self: stretch; justify-content: center; margin-top: var(--ps-space-2); }
+}
+.ps-lang-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ps-text-muted);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  padding: 4px 10px;
+  min-height: 32px;
+  min-width: 36px;
+  border-radius: var(--ps-radius-pill);
+  letter-spacing: 0.04em;
+  transition: color 120ms, background 120ms;
+}
+.ps-lang-btn:hover,
+.ps-lang-btn:focus-visible { color: var(--ps-text); outline: none; }
+.ps-lang-btn[aria-pressed="true"] {
+  background: var(--ps-surface);
+  color: var(--ps-acc);
+  box-shadow: var(--ps-shadow-sm);
+}
+
 /* ---------- hero + mode grid ---------- */
 .ps-hero {
   padding: var(--ps-space-5) 0 var(--ps-space-4);

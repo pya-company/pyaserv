@@ -5,34 +5,37 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 <Base
   title="Pedidos"
   description="Pedidos de clientes en Asunción. Si ofrecés el servicio que buscan, escribiles directo."
+  titleKey="clients.title"
+  descriptionKey="clients.description"
   active="clients"
 >
   <section class="ps-section" data-base={base}>
     <div class="ps-page-head">
-      <h1>Pedidos abiertos</h1>
-      <p>Clientes que están buscando un profesional ahora. Para responder, iniciá sesión y abrí una conversación.</p>
+      <h1 data-i18n="clients.heading">Pedidos abiertos</h1>
+      <p data-i18n="clients.intro">Clientes que están buscando un profesional ahora. Para responder, iniciá sesión y abrí una conversación.</p>
     </div>
 
     <form id="filters" class="ps-filters" autocomplete="off">
       <label>
-        Categoría
+        <span data-i18n="specialists.filter.category">Categoría</span>
         <select name="category" id="f-category">
-          <option value="">Todas</option>
+          <option value="" data-i18n="specialists.filter.category.all">Todas</option>
         </select>
       </label>
       <label>
-        Barrio
-        <input type="text" name="barrio" id="f-barrio" placeholder="Villa Morra, Carmelitas…" />
+        <span data-i18n="specialists.filter.barrio">Barrio</span>
+        <input type="text" name="barrio" id="f-barrio" data-i18n-placeholder="specialists.filter.barrio.placeholder" placeholder="Villa Morra, Carmelitas…" />
       </label>
     </form>
 
-    <p id="status" class="ps-msg" aria-live="polite">Cargando…</p>
+    <p id="status" class="ps-msg" aria-live="polite" data-i18n="common.loading">Cargando…</p>
     <div id="results" class="ps-cards" aria-busy="true"></div>
   </section>
 
   <script>
     // @ts-nocheck
     import { apiFetch, CATEGORIES, categoryLabel, categoryEmoji, formatGs, formatRelativeTime } from '../lib/api.ts'
+    import { t } from '../lib/i18n.ts'
 
     const sec = document.querySelector('.ps-section')
     const base = sec.dataset.base ?? ''
@@ -40,7 +43,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     for (const c of CATEGORIES) {
       const opt = document.createElement('option')
       opt.value = c.value
-      opt.textContent = `${c.emoji} ${c.label}`
+      opt.textContent = `${c.emoji} ${categoryLabel(c.value)}`
       catSel.append(opt)
     }
 
@@ -54,10 +57,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       results.removeAttribute('aria-busy')
       if (items.length === 0) {
         results.innerHTML = ''
-        status.innerHTML = '<span class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">Sin pedidos por ahora</strong>Volvé más tarde o cambiá los filtros.</span>'
+        status.innerHTML = `<span class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">${t('clients.empty.title')}</strong>${t('clients.empty.hint')}</span>`
         return
       }
-      status.textContent = `${items.length} ${items.length === 1 ? 'pedido abierto' : 'pedidos abiertos'}`
+      status.textContent = `${items.length} ${items.length === 1 ? t('clients.count.one') : t('clients.count.many')}`
+      const cta = t('clients.card.cta')
       results.innerHTML = items.map((r) => `
         <a class="ps-card ps-card--request" href="${base}/clients/detail/?id=${escape(r.id)}">
           <div class="ps-row">
@@ -67,7 +71,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <h2>${escape(r.title)}</h2>
           <p class="ps-card__sub">📍 ${escape(r.barrio)} · 💰 ${escape(formatGs(r.budgetGs))}</p>
           <p class="ps-card__body">${escape(r.description.slice(0, 220))}${r.description.length > 220 ? '…' : ''}</p>
-          <div class="ps-card__cta"><span>Postularme →</span></div>
+          <div class="ps-card__cta"><span>${cta}</span></div>
         </a>`).join('')
     }
 
@@ -76,7 +80,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const params = new URLSearchParams()
       if (fd.get('category')) params.set('category', fd.get('category'))
       if (fd.get('barrio')) params.set('barrio', fd.get('barrio'))
-      status.textContent = 'Cargando…'
+      status.textContent = t('common.loading')
       results.setAttribute('aria-busy', 'true')
       results.innerHTML = ''
       try {
@@ -84,7 +88,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         render(data)
       } catch (err) {
         results.removeAttribute('aria-busy')
-        status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
+        status.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>`
       }
     }
 

@@ -2,39 +2,47 @@
 import Base from '../../../layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Nuevo servicio" active="me">
+<Base title="Nuevo servicio" titleKey="listing.new.title" active="me">
   <section class="ps-section" data-base={base}>
-    <p><a href={`${base}/me/?tab=listings`}>← Mis servicios</a></p>
-    <h1>Nuevo servicio</h1>
-    <p>Publicá un servicio concreto que ofrecés. Aparecerá en el catálogo público de profesionales filtrable por categoría.</p>
+    <p><a href={`${base}/me/?tab=listings`} data-i18n="listing.new.back">← Mis servicios</a></p>
+    <h1 data-i18n="listing.new.title">Nuevo servicio</h1>
+    <p data-i18n="listing.new.intro">Publicá un servicio concreto que ofrecés. Aparecerá en el catálogo público de profesionales filtrable por categoría.</p>
     <form id="form" class="ps-form">
-      <label>Categoría
+      <label>
+        <span data-i18n="listing.field.category">Categoría</span>
         <select name="category" id="category" required></select>
       </label>
-      <label>Título <input name="title" required maxlength="120" placeholder="Reparación de calefones" /></label>
-      <label>Descripción
-        <textarea name="description" rows="4" maxlength="2000" placeholder="Qué incluye el servicio, qué materiales, en qué zonas…"></textarea>
+      <label>
+        <span data-i18n="listing.field.title">Título</span>
+        <input name="title" required maxlength="120" data-i18n-placeholder="listing.field.title.placeholder" placeholder="Reparación de calefones" />
+      </label>
+      <label>
+        <span data-i18n="listing.field.description">Descripción</span>
+        <textarea name="description" rows="4" maxlength="2000" data-i18n-placeholder="listing.field.description.placeholder" placeholder="Qué incluye el servicio, qué materiales, en qué zonas…"></textarea>
       </label>
       <div class="ps-grid-2col">
-        <label>Precio desde (Gs, opcional)
+        <label>
+          <span data-i18n="listing.field.price_from">Precio desde (Gs, opcional)</span>
           <input name="priceFromGs" type="number" min="0" />
         </label>
-        <label>Por
+        <label>
+          <span data-i18n="listing.field.unit">Por</span>
           <select name="priceUnit">
-            <option value="">—</option>
-            <option value="hour">Hora</option>
-            <option value="job">Trabajo</option>
+            <option value="" data-i18n="listing.field.unit.none">—</option>
+            <option value="hour" data-i18n="listing.field.unit.hour">Hora</option>
+            <option value="job" data-i18n="listing.field.unit.job">Trabajo</option>
           </select>
         </label>
       </div>
-      <button type="submit" class="ps-btn">Publicar</button>
+      <button type="submit" class="ps-btn" data-i18n="listing.new.submit">Publicar</button>
       <p id="msg" class="ps-msg" aria-live="polite"></p>
     </form>
   </section>
 
   <script>
     // @ts-nocheck
-    import { apiFetch, getToken, CATEGORIES } from '../../../lib/api.ts'
+    import { apiFetch, getToken, CATEGORIES, categoryLabel } from '../../../lib/api.ts'
+    import { t } from '../../../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -43,14 +51,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       for (const c of CATEGORIES) {
         const opt = document.createElement('option')
         opt.value = c.value
-        opt.textContent = `${c.emoji} ${c.label}`
+        opt.textContent = `${c.emoji} ${categoryLabel(c.value)}`
         cat.append(opt)
       }
       const form = document.getElementById('form')
       const msg = document.getElementById('msg')
       form.addEventListener('submit', async (e) => {
         e.preventDefault()
-        msg.textContent = 'Publicando…'
+        msg.textContent = t('common.publishing')
         const fd = Object.fromEntries(new FormData(form))
         if (fd.priceFromGs) fd.priceFromGs = Number(fd.priceFromGs)
         else delete fd.priceFromGs
@@ -58,7 +66,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         try {
           await apiFetch('/v1/listings', { method: 'POST', body: JSON.stringify(fd) })
           location.href = `${base}/me/?tab=listings`
-        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message || t('error.network')}</span>` }
       })
     })()
   </script>

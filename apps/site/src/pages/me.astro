@@ -2,66 +2,72 @@
 import Base from '~/layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Mi panel" active="me">
+<Base title="Mi panel" titleKey="me.title" active="me">
   <section class="ps-section" data-base={base}>
     <div class="ps-row" style="justify-content:space-between">
-      <h1>Mi panel</h1>
-      <button id="logout" class="ps-btn ps-btn--ghost ps-btn--sm">Cerrar sesión</button>
+      <h1 data-i18n="me.heading">Mi panel</h1>
+      <button id="logout" class="ps-btn ps-btn--ghost ps-btn--sm" data-i18n="me.logout">Cerrar sesión</button>
     </div>
     <p id="me-info" class="ps-card__sub"></p>
 
-    <nav class="ps-tabs" role="tablist" aria-label="Secciones">
-      <button class="ps-tab" data-tab="profile">👤 Mi perfil</button>
-      <button class="ps-tab" data-tab="listings">🛠️ Mis servicios</button>
-      <button class="ps-tab" data-tab="requests">📢 Mis pedidos</button>
-      <button class="ps-tab" data-tab="inquiries">💬 Conversaciones</button>
+    <nav class="ps-tabs" role="tablist" data-i18n-aria="me.tabs.aria" aria-label="Secciones">
+      <button class="ps-tab" data-tab="profile" data-i18n="me.tabs.profile">👤 Mi perfil</button>
+      <button class="ps-tab" data-tab="listings" data-i18n="me.tabs.listings">🛠️ Mis servicios</button>
+      <button class="ps-tab" data-tab="requests" data-i18n="me.tabs.requests">📢 Mis pedidos</button>
+      <button class="ps-tab" data-tab="inquiries" data-i18n="me.tabs.inquiries">💬 Conversaciones</button>
     </nav>
 
     <div class="ps-tabpanel" id="panel-profile" hidden>
-      <h2>Perfil de profesional</h2>
-      <p>Si querés ofrecer servicios, completá tu perfil acá.</p>
+      <h2 data-i18n="me.profile.h">Perfil de profesional</h2>
+      <p data-i18n="me.profile.intro">Si querés ofrecer servicios, completá tu perfil acá.</p>
       <form id="profile-form" class="ps-form">
-        <label>Nombre que mostramos
+        <label>
+          <span data-i18n="me.profile.display_name">Nombre que mostramos</span>
           <input name="displayName" required maxlength="80" />
         </label>
-        <label>Frase corta (headline)
-          <input name="headline" required maxlength="120" placeholder="Plomero 24h en Asunción" />
+        <label>
+          <span data-i18n="me.profile.headline">Frase corta (headline)</span>
+          <input name="headline" required maxlength="120" data-i18n-placeholder="me.profile.headline.placeholder" placeholder="Plomero 24h en Asunción" />
         </label>
-        <label>Teléfono
-          <input name="phone" required placeholder="+595 981 234567" />
+        <label>
+          <span data-i18n="me.profile.phone">Teléfono</span>
+          <input name="phone" required data-i18n-placeholder="me.profile.phone.placeholder" placeholder="+595 981 234567" />
         </label>
-        <label>WhatsApp (opcional)
-          <input name="whatsapp" placeholder="+595 981 234567" />
+        <label>
+          <span data-i18n="me.profile.whatsapp">WhatsApp (opcional)</span>
+          <input name="whatsapp" data-i18n-placeholder="me.profile.whatsapp.placeholder" placeholder="+595 981 234567" />
         </label>
-        <label>Barrio
-          <input name="barrio" required placeholder="Villa Morra" />
+        <label>
+          <span data-i18n="me.profile.barrio">Barrio</span>
+          <input name="barrio" required data-i18n-placeholder="me.profile.barrio.placeholder" placeholder="Villa Morra" />
         </label>
-        <label>Bio
-          <textarea name="bio" rows="4" maxlength="2000" placeholder="Contales tu experiencia, herramientas, zonas que cubrís…"></textarea>
+        <label>
+          <span data-i18n="me.profile.bio">Bio</span>
+          <textarea name="bio" rows="4" maxlength="2000" data-i18n-placeholder="me.profile.bio.placeholder" placeholder="Contales tu experiencia, herramientas, zonas que cubrís…"></textarea>
         </label>
-        <button type="submit" class="ps-btn">Guardar</button>
+        <button type="submit" class="ps-btn" data-i18n="common.save">Guardar</button>
         <p id="profile-msg" class="ps-msg" aria-live="polite"></p>
       </form>
     </div>
 
     <div class="ps-tabpanel" id="panel-listings" hidden>
       <div class="ps-row" style="justify-content:space-between">
-        <h2>Mis servicios publicados</h2>
-        <a id="new-listing" class="ps-btn ps-btn--sm">+ Nuevo</a>
+        <h2 data-i18n="me.listings.h">Mis servicios publicados</h2>
+        <a id="new-listing" class="ps-btn ps-btn--sm" data-i18n="me.listings.new">+ Nuevo</a>
       </div>
       <div id="my-listings" class="ps-cards" aria-busy="true"></div>
     </div>
 
     <div class="ps-tabpanel" id="panel-requests" hidden>
       <div class="ps-row" style="justify-content:space-between">
-        <h2>Mis pedidos como cliente</h2>
-        <a id="new-request" class="ps-btn ps-btn--sm">+ Nuevo</a>
+        <h2 data-i18n="me.requests.h">Mis pedidos como cliente</h2>
+        <a id="new-request" class="ps-btn ps-btn--sm" data-i18n="me.requests.new">+ Nuevo</a>
       </div>
       <div id="my-requests" class="ps-cards" aria-busy="true"></div>
     </div>
 
     <div class="ps-tabpanel" id="panel-inquiries" hidden>
-      <h2>Conversaciones</h2>
+      <h2 data-i18n="me.inquiries.h">Conversaciones</h2>
       <div id="my-inquiries" class="ps-cards" aria-busy="true"></div>
     </div>
   </section>
@@ -69,6 +75,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   <script>
     // @ts-nocheck
     import { apiFetch, getToken, clearToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime } from '../lib/api.ts'
+    import { t } from '../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -88,7 +95,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       let me
       try { me = await apiFetch('/v1/me') }
       catch { clearToken(); location.href = `${base}/login/`; return }
-      document.getElementById('me-info').textContent = `Sesión iniciada · userId ${me.userId.slice(0,8)}…`
+      document.getElementById('me-info').textContent = `${t('me.session_prefix')} ${me.userId.slice(0,8)}…`
 
       // Tab routing
       const tabs = document.querySelectorAll('.ps-tab')
@@ -99,13 +106,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         inquiries: document.getElementById('panel-inquiries'),
       }
       const setTab = (name) => {
-        for (const t of tabs) t.setAttribute('aria-selected', t.dataset.tab === name ? 'true' : 'false')
+        for (const tab of tabs) tab.setAttribute('aria-selected', tab.dataset.tab === name ? 'true' : 'false')
         for (const [k, el] of Object.entries(panels)) el.hidden = k !== name
         const url = new URL(location.href)
         url.searchParams.set('tab', name)
         history.replaceState({}, '', url.toString())
       }
-      for (const t of tabs) t.addEventListener('click', () => setTab(t.dataset.tab))
+      for (const tab of tabs) tab.addEventListener('click', () => setTab(tab.dataset.tab))
       const initial = new URLSearchParams(location.search).get('tab') || 'profile'
       setTab(initial)
 
@@ -124,7 +131,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const pm = document.getElementById('profile-msg')
       pf.addEventListener('submit', async (e) => {
         e.preventDefault()
-        pm.textContent = 'Guardando…'
+        pm.textContent = t('common.saving')
         const fd = Object.fromEntries(new FormData(pf))
         try {
           if (myProfile) {
@@ -132,9 +139,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           } else {
             myProfile = await apiFetch('/v1/specialists', { method: 'POST', body: JSON.stringify(fd) })
           }
-          pm.innerHTML = '<span class="ps-msg--ok">✓ Perfil guardado</span>'
+          pm.innerHTML = `<span class="ps-msg--ok">${t('me.profile.saved')}</span>`
           refreshListings()
-        } catch (err) { pm.innerHTML = `<span class="ps-error">${escape(err.message)}</span>` }
+        } catch (err) { pm.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>` }
       })
 
       // ---- My listings ----
@@ -142,7 +149,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const refreshListings = async () => {
         if (!myProfile) {
           lEl.removeAttribute('aria-busy')
-          lEl.innerHTML = '<p class="ps-empty"><span class="ps-empty__icon">👤</span><strong class="ps-empty__title">Primero creá tu perfil</strong>Completá la pestaña «Mi perfil» antes de publicar.</p>'
+          lEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">👤</span><strong class="ps-empty__title">${t('me.listings.empty_profile.title')}</strong>${t('me.listings.empty_profile.hint')}</p>`
           return
         }
         lEl.setAttribute('aria-busy', 'true')
@@ -150,30 +157,34 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           const items = await apiFetch(`/v1/listings?specialist_id=${myProfile.id}`)
           lEl.removeAttribute('aria-busy')
           if (items.length === 0) {
-            lEl.innerHTML = '<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">No publicaste servicios todavía</strong>Tocá «+ Nuevo» arriba para empezar.</p>'
+            lEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">${t('me.listings.empty.title')}</strong>${t('me.listings.empty.hint')}</p>`
             return
           }
+          const priceFrom = t('me.listings.price_from')
+          const priceTbd = t('common.price_tbd')
+          const editLabel = t('common.edit')
+          const deleteLabel = t('common.delete')
           lEl.innerHTML = items.map((l) => `
             <article class="ps-card">
               <div class="ps-row">
                 <span class="ps-chip">${categoryEmoji(l.category)} ${categoryLabel(l.category)}</span>
               </div>
               <h3>${escape(l.title)}</h3>
-              <p class="ps-card__sub">${l.priceFromGs ? `desde ${escape(formatGs(l.priceFromGs))}` : 'A coordinar'}</p>
+              <p class="ps-card__sub">${l.priceFromGs ? `${priceFrom} ${escape(formatGs(l.priceFromGs))}` : priceTbd}</p>
               <p class="ps-card__body">${escape(l.description.slice(0,160))}${l.description.length>160?'…':''}</p>
               <div class="ps-card__cta">
-                <a href="${base}/me/listings/edit/?id=${l.id}">Editar</a>
-                <button data-id="${l.id}" class="ps-btn ps-btn--ghost ps-btn--sm js-del">Eliminar</button>
+                <a href="${base}/me/listings/edit/?id=${l.id}">${editLabel}</a>
+                <button data-id="${l.id}" class="ps-btn ps-btn--ghost ps-btn--sm js-del">${deleteLabel}</button>
               </div>
             </article>`).join('')
           for (const btn of lEl.querySelectorAll('.js-del')) {
             btn.addEventListener('click', async () => {
-              if (!confirm('¿Eliminar este servicio?')) return
+              if (!confirm(t('me.listings.confirm_delete'))) return
               await apiFetch(`/v1/listings/${btn.dataset.id}`, { method: 'DELETE' })
               refreshListings()
             })
           }
-        } catch (err) { lEl.innerHTML = `<p class="ps-error">${escape(err.message)}</p>` }
+        } catch (err) { lEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
       }
       refreshListings()
 
@@ -182,28 +193,32 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const refreshRequests = async () => {
         rEl.setAttribute('aria-busy', 'true')
         try {
-          // server endpoint lists "open" by default; we need ALL mine — fetch open + closed separately
+          // server endpoint lists "open" by default; fetch open and filter for mine
           const open = await apiFetch('/v1/requests')
           const mine = open.filter((r) => r.clientId === me.userId)
           rEl.removeAttribute('aria-busy')
           if (mine.length === 0) {
-            rEl.innerHTML = '<p class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">No publicaste pedidos abiertos</strong>Si necesitás algo concreto, tocá «+ Nuevo».</p>'
+            rEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">${t('me.requests.empty.title')}</strong>${t('me.requests.empty.hint')}</p>`
             return
           }
+          const statusOpen = t('me.requests.status.open')
+          const statusClosed = t('me.requests.status.closed')
+          const editLabel = t('common.edit')
+          const publicView = t('me.requests.public_view')
           rEl.innerHTML = mine.map((r) => `
             <article class="ps-card ps-card--request">
               <div class="ps-row">
                 <span class="ps-chip">${categoryEmoji(r.category)} ${categoryLabel(r.category)}</span>
-                <span class="ps-badge">${r.status === 'open' ? 'Abierto' : 'Cerrado'}</span>
+                <span class="ps-badge">${r.status === 'open' ? statusOpen : statusClosed}</span>
               </div>
               <h3>${escape(r.title)}</h3>
               <p class="ps-card__sub">📍 ${escape(r.barrio)} · 💰 ${escape(formatGs(r.budgetGs))}</p>
               <div class="ps-card__cta">
-                <a href="${base}/me/requests/edit/?id=${r.id}">Editar</a>
-                <a href="${base}/clients/detail/?id=${r.id}">Vista pública →</a>
+                <a href="${base}/me/requests/edit/?id=${r.id}">${editLabel}</a>
+                <a href="${base}/clients/detail/?id=${r.id}">${publicView}</a>
               </div>
             </article>`).join('')
-        } catch (err) { rEl.innerHTML = `<p class="ps-error">${escape(err.message)}</p>` }
+        } catch (err) { rEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
       }
       refreshRequests()
 
@@ -213,21 +228,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         const items = await apiFetch('/v1/inquiries')
         iEl.removeAttribute('aria-busy')
         if (items.length === 0) {
-          iEl.innerHTML = '<p class="ps-empty"><span class="ps-empty__icon">💬</span><strong class="ps-empty__title">Sin conversaciones todavía</strong>Cuando contactes a alguien o te contacten, aparecerán acá.</p>'
+          iEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">💬</span><strong class="ps-empty__title">${t('me.inquiries.empty.title')}</strong>${t('me.inquiries.empty.hint')}</p>`
         } else {
+          const asClient = t('me.inquiries.as_client')
+          const asSpec = t('me.inquiries.as_specialist')
+          const aboutListing = t('me.inquiries.about_listing')
+          const aboutRequest = t('me.inquiries.about_request')
           iEl.innerHTML = items.map((i) => {
-            const role = i.clientUserId === me.userId ? 'Como cliente' : 'Como profesional'
+            const role = i.clientUserId === me.userId ? asClient : asSpec
             return `
               <a class="ps-card ps-card--mini" href="${base}/me/inquiries/detail/?id=${i.id}">
                 <div class="ps-row">
                   <span class="ps-badge ps-badge--neutral">${role}</span>
                   <span class="ps-card__sub">${formatRelativeTime(i.lastMessageAt)}</span>
                 </div>
-                <p>Sobre ${i.subjectType === 'listing' ? 'un servicio' : 'un pedido'}</p>
+                <p>${i.subjectType === 'listing' ? aboutListing : aboutRequest}</p>
               </a>`
           }).join('')
         }
-      } catch (err) { iEl.innerHTML = `<p class="ps-error">${escape(err.message)}</p>` }
+      } catch (err) { iEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
     })()
   </script>
 </Base>

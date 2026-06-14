@@ -5,13 +5,17 @@ interface Props {
   readonly title: string
   readonly description?: string
   readonly active?: 'home' | 'specialists' | 'clients' | 'me' | 'login'
+  // Title in Spanish (default UI language used by static frontmatter rendering).
+  // For locale-aware <title>, supply a translation key via `titleKey`.
+  readonly titleKey?: string
+  readonly descriptionKey?: string
 }
 
-const { title, description, active = 'home' } = Astro.props
+const { title, description, active = 'home', titleKey, descriptionKey } = Astro.props
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const href = (path: string): string => `${base}${path}`
 ---
-<html lang="es">
+<html lang="es" data-title-key={titleKey} data-desc-key={descriptionKey}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -20,61 +24,102 @@ const href = (path: string): string => `${base}${path}`
     <meta name="theme-color" content="#4f46e5" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
+    <script>
+      // Apply locale to <html lang> before paint to avoid FOUC of wrong language.
+      // @ts-nocheck
+      ;(() => {
+        const isLoc = (v) => v === 'es' || v === 'en'
+        let loc = null
+        try {
+          const s = localStorage.getItem('pyaserv.locale')
+          if (isLoc(s)) loc = s
+        } catch {}
+        if (!loc) {
+          const qp = new URLSearchParams(location.search).get('lang')
+          if (isLoc(qp)) loc = qp
+        }
+        if (!loc) loc = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'es'
+        document.documentElement.lang = loc
+      })()
+    </script>
   </head>
   <body>
     <header class="ps-topbar" id="topbar">
       <a href={href('/')} class="ps-topbar__brand">
         <span class="ps-topbar__brand-em">Pya</span>Serv
       </a>
-      <button class="ps-topbar__menu" type="button" id="menu-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="topnav">
+      <button class="ps-topbar__menu" type="button" id="menu-btn" data-i18n-aria="nav.menu_open" aria-label="Abrir menú" aria-expanded="false" aria-controls="topnav">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
           <line x1="4" y1="7" x2="20" y2="7"/>
           <line x1="4" y1="12" x2="20" y2="12"/>
           <line x1="4" y1="17" x2="20" y2="17"/>
         </svg>
       </button>
-      <nav class="ps-topbar__nav" id="topnav" aria-label="Principal">
-        <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}>Profesionales</a>
-        <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}>Pedidos</a>
-        <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me>Mi panel</a>
-        <a href={href('/login/')} aria-current={active === 'login' ? 'page' : undefined} data-nav-login>Ingresar</a>
+      <nav class="ps-topbar__nav" id="topnav" data-i18n-aria="nav.primary_aria" aria-label="Principal">
+        <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined} data-i18n="nav.specialists">Profesionales</a>
+        <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined} data-i18n="nav.clients">Pedidos</a>
+        <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me data-i18n="nav.me">Mi panel</a>
+        <a href={href('/login/')} aria-current={active === 'login' ? 'page' : undefined} data-nav-login data-i18n="nav.login">Ingresar</a>
+        <div class="ps-lang-switch" role="group" data-i18n-aria="nav.lang_label" aria-label="Idioma">
+          <button type="button" class="ps-lang-btn" data-lang="es" data-i18n="nav.lang_es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
+          <button type="button" class="ps-lang-btn" data-lang="en" data-i18n="nav.lang_en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
+        </div>
       </nav>
     </header>
     <main class="ps-shell">
       <slot />
     </main>
     <footer class="ps-foot">
-      © PyaServ · <a href={href('/')}>hermano de PyaEats</a> · construido sobre pya-platform
+      © PyaServ · <a href={href('/')} data-i18n="foot.brother">hermano de PyaEats</a> · <span data-i18n="foot.built_on">construido sobre pya-platform</span>
     </footer>
     <script>
       // @ts-nocheck
-      ;(() => {
-        // Auth-gate the nav items
-        const token = sessionStorage.getItem('pyaserv.token')
-        const me = document.querySelector('[data-nav-me]')
-        const login = document.querySelector('[data-nav-login]')
-        if (token) login?.classList.add('ps-hidden')
-        else me?.classList.add('ps-hidden')
+      import { applyI18n, getLocale, setLocale, t } from '../lib/i18n.ts'
 
-        // Mobile menu toggle
-        const topbar = document.getElementById('topbar')
-        const btn = document.getElementById('menu-btn')
-        const setOpen = (open) => {
-          if (!topbar || !btn) return
-          topbar.dataset.open = open ? 'true' : 'false'
-          btn.setAttribute('aria-expanded', open ? 'true' : 'false')
-        }
-        btn?.addEventListener('click', () => setOpen(topbar?.dataset.open !== 'true'))
-        // Close when tapping outside the panel
-        document.addEventListener('click', (e) => {
-          if (!topbar || topbar.dataset.open !== 'true') return
-          const t = e.target
-          if (t instanceof Element && (topbar.contains(t))) return
-          setOpen(false)
+      // 1. Walk DOM and translate everything tagged with data-i18n*
+      applyI18n(document)
+
+      // 2. Localized <title> (use titleKey if provided)
+      const titleKey = document.documentElement.dataset.titleKey
+      const descKey = document.documentElement.dataset.descKey
+      if (titleKey) document.title = `${t(titleKey)} · PyaServ`
+      if (descKey) {
+        const meta = document.querySelector('meta[name="description"]')
+        if (meta) meta.setAttribute('content', t(descKey))
+      }
+
+      // 3. Mark active language button
+      const loc = getLocale()
+      for (const b of document.querySelectorAll('.ps-lang-btn')) {
+        b.setAttribute('aria-pressed', b.dataset.lang === loc ? 'true' : 'false')
+        b.addEventListener('click', () => {
+          if (b.dataset.lang && b.dataset.lang !== loc) setLocale(b.dataset.lang)
         })
-        // Close on Esc
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
-      })()
+      }
+
+      // 4. Auth-gate the nav items
+      const token = sessionStorage.getItem('pyaserv.token')
+      const me = document.querySelector('[data-nav-me]')
+      const login = document.querySelector('[data-nav-login]')
+      if (token) login?.classList.add('ps-hidden')
+      else me?.classList.add('ps-hidden')
+
+      // 5. Mobile menu toggle
+      const topbar = document.getElementById('topbar')
+      const btn = document.getElementById('menu-btn')
+      const setOpen = (open) => {
+        if (!topbar || !btn) return
+        topbar.dataset.open = open ? 'true' : 'false'
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+      }
+      btn?.addEventListener('click', () => setOpen(topbar?.dataset.open !== 'true'))
+      document.addEventListener('click', (e) => {
+        if (!topbar || topbar.dataset.open !== 'true') return
+        const tEl = e.target
+        if (tEl instanceof Element && topbar.contains(tEl)) return
+        setOpen(false)
+      })
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
     </script>
   </body>
 </html>

@@ -2,9 +2,9 @@
 import Base from '../../layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Pedido" active="clients">
+<Base title="Pedido" titleKey="request.detail.title" active="clients">
   <section class="ps-section" data-base={base}>
-    <p id="status" class="ps-msg" aria-live="polite">Cargando…</p>
+    <p id="status" class="ps-msg" aria-live="polite" data-i18n="common.loading">Cargando…</p>
     <article id="detail" class="ps-hidden ps-stack">
       <div class="ps-row">
         <span id="chip" class="ps-chip">—</span>
@@ -15,20 +15,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <article class="ps-detail__bio" id="body">—</article>
 
       <div class="ps-banner ps-banner--warn" id="locked-msg">
-        Para responder al pedido, <a id="login-link">iniciá sesión</a>.
+        <span data-i18n="request.detail.locked">Para responder al pedido,</span>
+        <a id="login-link" data-i18n="request.detail.locked.cta">iniciá sesión</a>.
       </div>
-      <button id="reply-btn" class="ps-btn ps-hidden">Postularme</button>
+      <button id="reply-btn" class="ps-btn ps-hidden" data-i18n="request.detail.reply_btn">Postularme</button>
     </article>
 
     <div id="composer" class="ps-banner ps-hidden">
-      <h2 style="margin:0 0 .5rem">Postularme</h2>
+      <h2 style="margin:0 0 .5rem" data-i18n="request.detail.compose_h">Postularme</h2>
       <form id="composer-form" class="ps-form">
-        <label>Mensaje al cliente
-          <textarea name="body" required minlength="1" maxlength="2000" placeholder="Hola, puedo encargarme…"></textarea>
+        <label>
+          <span data-i18n="request.detail.compose.label">Mensaje al cliente</span>
+          <textarea name="body" required minlength="1" maxlength="2000" data-i18n-placeholder="request.detail.compose.placeholder" placeholder="Hola, puedo encargarme…"></textarea>
         </label>
         <div class="ps-row">
-          <button type="submit" class="ps-btn">Enviar</button>
-          <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost">Cancelar</button>
+          <button type="submit" class="ps-btn" data-i18n="common.send">Enviar</button>
+          <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost" data-i18n="common.cancel">Cancelar</button>
         </div>
         <p id="composer-msg" class="ps-msg" aria-live="polite"></p>
       </form>
@@ -38,6 +40,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   <script>
     // @ts-nocheck
     import { apiFetch, getToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime } from '../../lib/api.ts'
+    import { t } from '../../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -47,23 +50,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
       document.getElementById('login-link').href = `${base}/login/?next=${encodeURIComponent(location.pathname + location.search)}`
 
-      if (!id) { status.innerHTML = '<span class="ps-error">Falta el id</span>'; return }
+      if (!id) { status.innerHTML = `<span class="ps-error">${t('common.missing_id')}</span>`; return }
       const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
 
       let req
       try { req = await apiFetch(`/v1/requests/${id}`) }
-      catch (err) { status.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`; return }
+      catch (err) { status.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>`; return }
 
       status.classList.add('ps-hidden')
       detail.classList.remove('ps-hidden')
 
       document.getElementById('chip').textContent = `${categoryEmoji(req.category)} ${categoryLabel(req.category)}`
       const sb = document.getElementById('status-badge')
-      sb.textContent = req.status === 'open' ? 'Abierto' : 'Cerrado'
+      sb.textContent = req.status === 'open' ? t('request.detail.status.open') : t('request.detail.status.closed')
       sb.className = req.status === 'open' ? 'ps-badge' : 'ps-badge ps-badge--neutral'
       document.getElementById('title').textContent = req.title
       document.getElementById('meta').textContent = `📍 ${req.barrio} · 💰 ${formatGs(req.budgetGs)} · ${formatRelativeTime(req.createdAt)}`
-      document.getElementById('body').textContent = req.description || '(sin descripción)'
+      document.getElementById('body').textContent = req.description || t('common.no_description')
 
       const token = getToken()
       const replyBtn = document.getElementById('reply-btn')
@@ -79,7 +82,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const cm = document.getElementById('composer-msg')
       cf.addEventListener('submit', async (e) => {
         e.preventDefault()
-        cm.textContent = 'Enviando…'
+        cm.textContent = t('common.sending')
         const body = new FormData(cf).get('body')
         try {
           const inq = await apiFetch('/v1/inquiries', {
@@ -88,7 +91,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           })
           location.href = `${base}/me/inquiries/detail/?id=${inq.id}`
         } catch (err) {
-          cm.innerHTML = `<span class="ps-error">${escape(err.message)}</span>`
+          cm.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>`
         }
       })
     })()

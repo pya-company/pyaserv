@@ -2,28 +2,28 @@
 import Base from '~/layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Iniciar sesión" active="login">
+<Base title="Iniciar sesión" titleKey="login.title" active="login">
   <section class="ps-section" data-base={base} style="max-width:28rem;margin:auto">
-    <h1>Iniciar sesión</h1>
-    <p>Sin contraseñas — te mandamos un código de 6 dígitos por email.</p>
+    <h1 data-i18n="login.title">Iniciar sesión</h1>
+    <p data-i18n="login.intro">Sin contraseñas — te mandamos un código de 6 dígitos por email.</p>
 
     <div class="ps-login-card">
     <form id="start-form" class="ps-form">
       <label>
-        Email
-        <input type="email" name="email" required autocomplete="email" placeholder="tunombre@correo.com" />
+        <span data-i18n="login.email">Email</span>
+        <input type="email" name="email" required autocomplete="email" data-i18n-placeholder="login.email.placeholder" placeholder="tunombre@correo.com" />
       </label>
-      <button type="submit" class="ps-btn">Enviar código</button>
+      <button type="submit" class="ps-btn" data-i18n="login.send_code">Enviar código</button>
     </form>
 
     <form id="verify-form" class="ps-form" hidden>
       <label>
-        Código (6 dígitos)
+        <span data-i18n="login.code">Código (6 dígitos)</span>
         <input type="text" name="code" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" maxlength="6" />
       </label>
       <div class="ps-row">
-        <button type="submit" class="ps-btn">Confirmar</button>
-        <button type="button" id="back" class="ps-btn ps-btn--ghost">Cambiar email</button>
+        <button type="submit" class="ps-btn" data-i18n="login.confirm">Confirmar</button>
+        <button type="button" id="back" class="ps-btn ps-btn--ghost" data-i18n="login.change_email">Cambiar email</button>
       </div>
     </form>
 
@@ -34,6 +34,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   <script>
     // @ts-nocheck
     import { apiFetch, setToken } from '../lib/api.ts'
+    import { t } from '../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -45,14 +46,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
       startForm.addEventListener('submit', async (e) => {
         e.preventDefault()
-        msg.textContent = 'Enviando…'
+        msg.textContent = t('common.sending')
         email = new FormData(startForm).get('email')
         try {
           await apiFetch('/api/auth/start', { method: 'POST', body: JSON.stringify({ email, channel: 'otp' }) })
           startForm.hidden = true
           verifyForm.hidden = false
-          msg.innerHTML = '<span class="ps-msg--ok">Revisá tu email — buscá un código de 6 dígitos.</span>'
-        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+          msg.innerHTML = `<span class="ps-msg--ok">${t('login.sent_ok')}</span>`
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message || t('error.network')}</span>` }
       })
 
       document.getElementById('back').addEventListener('click', () => {
@@ -63,14 +64,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
       verifyForm.addEventListener('submit', async (e) => {
         e.preventDefault()
-        msg.textContent = 'Verificando…'
+        msg.textContent = t('common.verifying')
         const code = new FormData(verifyForm).get('code')
         try {
           const data = await apiFetch('/api/auth/verify', { method: 'POST', body: JSON.stringify({ email, code }) })
           setToken(data.token)
-          msg.textContent = '✓ Listo, redirigiendo…'
+          msg.textContent = t('login.success')
           location.href = next
-        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message}</span>` }
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message || t('error.network')}</span>` }
       })
     })()
   </script>

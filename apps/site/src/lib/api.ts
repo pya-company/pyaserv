@@ -1,3 +1,5 @@
+import { t } from './i18n'
+
 const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
   'https://api.pyaserv.com'
 
@@ -23,7 +25,12 @@ export const apiFetch = async <T = unknown>(
   if (token) headers.set('Authorization', `Bearer ${token}`)
   if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json')
 
-  const res = await fetch(`${API}${path}`, { ...init, headers })
+  let res: Response
+  try {
+    res = await fetch(`${API}${path}`, { ...init, headers })
+  } catch {
+    throw new Error(t('error.network'))
+  }
   const ctype = res.headers.get('content-type') ?? ''
   const body = ctype.includes('json') ? await res.json() : await res.text()
   if (!res.ok) {
@@ -38,42 +45,30 @@ export const apiFetch = async <T = unknown>(
     : body) as T
 }
 
+// API contract — `value` is the canonical English enum sent to/received from the server.
+// User-facing label/emoji come from i18n at render time.
 export interface CategoryDef {
   readonly value: string
-  readonly label: string
   readonly emoji: string
 }
 
 export const CATEGORIES: ReadonlyArray<CategoryDef> = [
-  { value: 'plumbing', label: 'Plomería', emoji: '🔧' },
-  { value: 'electrical', label: 'Electricidad', emoji: '💡' },
-  { value: 'cleaning', label: 'Limpieza', emoji: '🧽' },
-  { value: 'repair', label: 'Reparaciones', emoji: '🛠️' },
-  { value: 'beauty', label: 'Belleza', emoji: '💇' },
-  { value: 'teaching', label: 'Clases', emoji: '📚' },
-  { value: 'photography', label: 'Fotografía', emoji: '📷' },
-  { value: 'translation', label: 'Traducción', emoji: '🌐' },
-  { value: 'events', label: 'Eventos', emoji: '🎉' },
-  { value: 'other', label: 'Otro', emoji: '✨' },
+  { value: 'plumbing', emoji: '🔧' },
+  { value: 'electrical', emoji: '💡' },
+  { value: 'cleaning', emoji: '🧽' },
+  { value: 'repair', emoji: '🛠️' },
+  { value: 'beauty', emoji: '💇' },
+  { value: 'teaching', emoji: '📚' },
+  { value: 'photography', emoji: '📷' },
+  { value: 'translation', emoji: '🌐' },
+  { value: 'events', emoji: '🎉' },
+  { value: 'other', emoji: '✨' },
 ]
 
-export const categoryLabel = (value: string): string =>
-  CATEGORIES.find((c) => c.value === value)?.label ?? value
+export const categoryLabel = (value: string): string => t(`category.${value}`)
 
 export const categoryEmoji = (value: string): string =>
   CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
 
-export const formatGs = (gs: number | null | undefined): string => {
-  if (gs === null || gs === undefined) return 'A coordinar'
-  return `${new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(gs)} Gs`
-}
-
-export const formatRelativeTime = (unixSeconds: number): string => {
-  const now = Math.floor(Date.now() / 1000)
-  const delta = now - unixSeconds
-  if (delta < 60) return 'ahora'
-  if (delta < 3600) return `hace ${Math.floor(delta / 60)} min`
-  if (delta < 86400) return `hace ${Math.floor(delta / 3600)} h`
-  if (delta < 604800) return `hace ${Math.floor(delta / 86400)} d`
-  return new Date(unixSeconds * 1000).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' })
-}
+// Re-export i18n-aware formatters for backwards compatibility with the script blocks.
+export { formatGs, formatRelativeTime } from './i18n'

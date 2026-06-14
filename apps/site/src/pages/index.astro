@@ -6,11 +6,13 @@ const href = (p: string): string => `${base}${p}`
 <Base
   title="Servicios en Paraguay sin comisiones"
   description="PyaServ conecta profesionales con clientes en Paraguay. Sin comisiones por contacto, sin pagos en plataforma."
+  titleKey="home.title"
+  descriptionKey="home.description"
   active="home"
 >
   <section class="ps-hero">
-    <h1>Servicios en Paraguay, sin intermediarios.</h1>
-    <p>
+    <h1 data-i18n="home.hero.title">Servicios en Paraguay, sin intermediarios.</h1>
+    <p data-i18n="home.hero.body">
       Si ofrecés un servicio o si buscás a alguien que resuelva algo concreto,
       PyaServ tiene un lado para vos. Nada de comisiones por presentar — el trato lo cierran ustedes.
     </p>
@@ -19,27 +21,33 @@ const href = (p: string): string => `${base}${p}`
   <div class="ps-mode-grid">
     <a href={href('/specialists/')} class="ps-mode-card ps-mode-card--specialist">
       <span class="ps-mode-card__icon" aria-hidden="true">🛠️</span>
-      <h2 class="ps-mode-card__title">Necesito a un profesional</h2>
-      <p class="ps-mode-card__desc">
+      <h2 class="ps-mode-card__title" data-i18n="home.specialists.title">Necesito a un profesional</h2>
+      <p class="ps-mode-card__desc" data-i18n="home.specialists.desc">
         Plomeros, electricistas, profes, peluqueras — buscá por barrio y categoría.
         Contactá directo cuando te decidas.
       </p>
-      <span class="ps-mode-card__cta">Ver profesionales →</span>
+      <span class="ps-mode-card__cta" data-i18n="home.specialists.cta">Ver profesionales →</span>
     </a>
 
     <a href={href('/clients/')} class="ps-mode-card ps-mode-card--client">
       <span class="ps-mode-card__icon" aria-hidden="true">📢</span>
-      <h2 class="ps-mode-card__title">Ofrezco un servicio</h2>
-      <p class="ps-mode-card__desc">
+      <h2 class="ps-mode-card__title" data-i18n="home.clients.title">Ofrezco un servicio</h2>
+      <p class="ps-mode-card__desc" data-i18n="home.clients.desc">
         Mirá los pedidos abiertos en tu zona. Si encaja con lo tuyo, escribiles directo —
         sin filtros, sin pago para postularte.
       </p>
-      <span class="ps-mode-card__cta">Ver pedidos →</span>
+      <span class="ps-mode-card__cta" data-i18n="home.clients.cta">Ver pedidos →</span>
     </a>
   </div>
 
-  <p class="ps-banner">
+  <p class="ps-banner" id="home-banner" data-i18n-html="home.banner.html">
     <strong>Estado:</strong> MVP en vivo. Crearás tu perfil de profesional o tu pedido en el panel
     <a href={href('/me/')}>Mi panel</a>. Si todavía no tenés cuenta, te creamos una con tu email — sin contraseñas.
   </p>
+
+  <script define:vars={{ meHref: href('/me/') }}>
+    // Wire up the data-banner-link href after i18n-html injected fresh markup.
+    const link = document.querySelector('#home-banner [data-banner-link]')
+    if (link) link.setAttribute('href', meHref)
+  </script>
 </Base>
