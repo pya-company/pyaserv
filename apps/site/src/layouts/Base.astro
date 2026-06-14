@@ -25,21 +25,27 @@ const href = (path: string): string => `${base}${path}`
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
     <script>
-      // Apply locale to <html lang> before paint to avoid FOUC of wrong language.
+      // Apply locale + theme to the root element before paint to avoid FOUC.
       // @ts-nocheck
       ;(() => {
         const isLoc = (v) => v === 'es' || v === 'en'
+        const isTheme = (v) => v === 'light' || v === 'dark' || v === 'auto'
         let loc = null
+        let theme = null
         try {
           const s = localStorage.getItem('pyaserv.locale')
           if (isLoc(s)) loc = s
+          const t = localStorage.getItem('pyaserv.theme')
+          if (isTheme(t)) theme = t
         } catch {}
         if (!loc) {
           const qp = new URLSearchParams(location.search).get('lang')
           if (isLoc(qp)) loc = qp
         }
         if (!loc) loc = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'es'
+        if (!theme) theme = 'auto'
         document.documentElement.lang = loc
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
       })()
     </script>
   </head>
@@ -64,6 +70,9 @@ const href = (path: string): string => `${base}${path}`
           <button type="button" class="ps-lang-btn" data-lang="es" data-i18n="nav.lang_es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
           <button type="button" class="ps-lang-btn" data-lang="en" data-i18n="nav.lang_en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
         </div>
+        <button type="button" class="ps-theme-btn" id="theme-btn" data-i18n-aria="nav.theme_label" aria-label="Cambiar tema">
+          <span id="theme-icon" aria-hidden="true">🌓</span>
+        </button>
       </nav>
     </header>
     <main class="ps-shell">
@@ -104,7 +113,29 @@ const href = (path: string): string => `${base}${path}`
       if (token) login?.classList.add('ps-hidden')
       else me?.classList.add('ps-hidden')
 
-      // 5. Mobile menu toggle
+      // 5. Theme cycle button — light → dark → auto
+      const themeBtn = document.getElementById('theme-btn')
+      const themeIcon = document.getElementById('theme-icon')
+      const isTheme = (v) => v === 'light' || v === 'dark' || v === 'auto'
+      const readTheme = () => {
+        try {
+          const v = localStorage.getItem('pyaserv.theme')
+          return isTheme(v) ? v : 'auto'
+        } catch { return 'auto' }
+      }
+      const writeTheme = (v) => {
+        try { localStorage.setItem('pyaserv.theme', v) } catch {}
+        if (v === 'auto') delete document.documentElement.dataset.theme
+        else document.documentElement.dataset.theme = v
+        themeIcon.textContent = v === 'light' ? '☀️' : v === 'dark' ? '🌙' : '🌓'
+      }
+      writeTheme(readTheme())
+      themeBtn?.addEventListener('click', () => {
+        const cur = readTheme()
+        writeTheme(cur === 'light' ? 'dark' : cur === 'dark' ? 'auto' : 'light')
+      })
+
+      // 6. Mobile menu toggle
       const topbar = document.getElementById('topbar')
       const btn = document.getElementById('menu-btn')
       const setOpen = (open) => {

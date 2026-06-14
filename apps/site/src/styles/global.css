@@ -44,14 +44,20 @@
   color-scheme: light dark;
 }
 
+/* Dark theme is applied either by an explicit data-theme on <html> or by the
+   OS preference when data-theme="auto" (or absent). */
+:root[data-theme="dark"],
+:where(:root:not([data-theme="light"]):not([data-theme="dark"])) {
+  /* fallback no-op for the :where path — overridden by @media below */
+}
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --ps-bg: #111827;
     --ps-surface: #1f2937;
     --ps-surface-2: #111827;
     --ps-text: #f9fafb;
-    --ps-text-muted: #9ca3af;
-    --ps-text-soft: #6b7280;
+    --ps-text-muted: #d1d5db;
+    --ps-text-soft: #9ca3af;
     --ps-border: #374151;
     --ps-border-strong: #4b5563;
     --ps-acc: #818cf8;
@@ -68,6 +74,29 @@
     --ps-shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
     --ps-shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
   }
+}
+:root[data-theme="dark"] {
+  --ps-bg: #111827;
+  --ps-surface: #1f2937;
+  --ps-surface-2: #111827;
+  --ps-text: #f9fafb;
+  --ps-text-muted: #d1d5db;
+  --ps-text-soft: #9ca3af;
+  --ps-border: #374151;
+  --ps-border-strong: #4b5563;
+  --ps-acc: #818cf8;
+  --ps-acc-hover: #6366f1;
+  --ps-acc-soft: #1e1b4b;
+  --ps-warn: #fbbf24;
+  --ps-warn-soft: #1c1203;
+  --ps-good: #34d399;
+  --ps-good-soft: #022c22;
+  --ps-bad: #f87171;
+  --ps-bad-soft: #1f0202;
+  --ps-star: #fbbf24;
+  --ps-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --ps-shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
+  --ps-shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
 }
 
 /* ---------- page head ---------- */
@@ -524,6 +553,23 @@ button { font: inherit; cursor: pointer; }
 
 /* Stack gap modifiers */
 .ps-stack--gap-4 { gap: var(--ps-space-4); }
+
+/* Theme button */
+.ps-theme-btn {
+  appearance: none;
+  background: transparent;
+  border: 1.5px solid var(--ps-border-strong);
+  border-radius: var(--ps-radius-md);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 1.125rem;
+  color: var(--ps-text);
+  -webkit-tap-highlight-color: transparent;
+}
+.ps-theme-btn:hover { background: var(--ps-acc-soft); border-color: var(--ps-acc); }
+.ps-theme-btn:focus-visible { outline: 2px solid var(--ps-acc); outline-offset: 2px; }
 
 /* Landing hero stats */
 .ps-home-stats {

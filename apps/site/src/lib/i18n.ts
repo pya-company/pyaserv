@@ -82,6 +82,7 @@ const ES: Dict = {
   'nav.lang_en': 'EN',
   'nav.lang_es_aria': 'Cambiar a español',
   'nav.lang_en_aria': 'Cambiar a inglés',
+  'nav.theme_label': 'Cambiar tema (claro/oscuro/auto)',
 
   // home
   'home.title': 'Servicios en Paraguay sin comisiones',
@@ -132,6 +133,7 @@ const ES: Dict = {
   'specialist.detail.per_hour': 'hora',
   'specialist.detail.per_job': 'trabajo',
   'specialist.detail.price_tbd': 'Precio a coordinar',
+  'specialist.detail.ask_about': 'Consultar sobre este servicio',
 
   // clients list
   'clients.title': 'Pedidos',
@@ -368,6 +370,7 @@ const EN: Dict = {
   'nav.lang_en': 'EN',
   'nav.lang_es_aria': 'Switch to Spanish',
   'nav.lang_en_aria': 'Switch to English',
+  'nav.theme_label': 'Toggle theme (light/dark/auto)',
 
   // home
   'home.title': 'Services in Paraguay without fees',
@@ -418,6 +421,7 @@ const EN: Dict = {
   'specialist.detail.per_hour': 'hour',
   'specialist.detail.per_job': 'job',
   'specialist.detail.price_tbd': 'Price to be agreed',
+  'specialist.detail.ask_about': 'Ask about this service',
 
   // clients list
   'clients.title': 'Requests',

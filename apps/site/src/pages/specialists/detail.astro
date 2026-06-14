@@ -142,14 +142,26 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       lEl.innerHTML = listings.length === 0
         ? `<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">${noServicesTitle}</strong></p>`
         : listings.map((l) => `
-          <article class="ps-card">
+          <article class="ps-card" data-listing-id="${escape(l.id)}">
             <div class="ps-row">
               <span class="ps-chip">${categoryEmoji(l.category)} ${categoryLabel(l.category)}</span>
             </div>
             <h3>${escape(l.title)}</h3>
             <p class="ps-card__body">${escape(l.description)}</p>
             <p class="ps-card__sub">${l.priceFromGs ? `${priceFrom} ${escape(formatGs(l.priceFromGs))}${l.priceUnit ? ` / ${l.priceUnit === 'hour' ? perHour : perJob}` : ''}` : priceTbd}</p>
+            ${token ? `<div class="ps-card__cta"><button type="button" class="ps-btn ps-btn--sm js-pick-listing" data-id="${escape(l.id)}" data-i18n="specialist.detail.ask_about">Consultar sobre este servicio</button></div>` : ''}
           </article>`).join('')
+
+      // Remember which listing the user clicked so the composer creates the inquiry
+      // against THAT listing, not always listings[0].
+      let pickedListingId = listings[0]?.id ?? null
+      for (const btn of lEl.querySelectorAll('.js-pick-listing')) {
+        btn.addEventListener('click', () => {
+          pickedListingId = btn.dataset.id
+          composer.classList.remove('ps-hidden')
+          composer.scrollIntoView({ behavior: 'smooth' })
+        })
+      }
 
       const composer = document.getElementById('composer')
       const composerForm = document.getElementById('composer-form')
@@ -165,7 +177,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         e.preventDefault()
         composerMsg.textContent = t('common.sending')
         const body = new FormData(composerForm).get('body')
-        const subjectId = listings[0]?.id
+        const subjectId = pickedListingId ?? listings[0]?.id
         if (!subjectId) {
           composerMsg.innerHTML = `<span class="ps-error">${t('specialist.detail.no_listings_err')}</span>`
           return
