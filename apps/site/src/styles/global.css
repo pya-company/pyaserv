@@ -1,23 +1,23 @@
-/* PyaServ design system — teal primary + amber accent.
- * Contrasts with PyaEats's warm-orange palette: cool, professional, trustworthy. */
+/* PyaServ design system — indigo primary, light-first.
+ * Contrasts with PyaEats's warm-orange palette: calm, professional, trustworthy. */
 :root {
-  --ps-bg: #f8fafc;
+  --ps-bg: #f7f8fa;
   --ps-surface: #ffffff;
-  --ps-surface-2: #f1f5f9;
-  --ps-text: #0f172a;
-  --ps-text-muted: #64748b;
-  --ps-text-soft: #94a3b8;
-  --ps-border: #e2e8f0;
-  --ps-border-strong: #cbd5e1;
-  --ps-acc: #0e7490;
-  --ps-acc-hover: #155e75;
-  --ps-acc-soft: #cffafe;
+  --ps-surface-2: #f0f2f5;
+  --ps-text: #111827;
+  --ps-text-muted: #6b7280;
+  --ps-text-soft: #9ca3af;
+  --ps-border: #e5e7eb;
+  --ps-border-strong: #d1d5db;
+  --ps-acc: #4f46e5;
+  --ps-acc-hover: #4338ca;
+  --ps-acc-soft: #eef2ff;
   --ps-warn: #d97706;
-  --ps-warn-soft: #fef3c7;
-  --ps-good: #047857;
-  --ps-good-soft: #d1fae5;
-  --ps-bad: #b91c1c;
-  --ps-bad-soft: #fee2e2;
+  --ps-warn-soft: #fffbeb;
+  --ps-good: #059669;
+  --ps-good-soft: #ecfdf5;
+  --ps-bad: #dc2626;
+  --ps-bad-soft: #fef2f2;
 
   --ps-radius-sm: 6px;
   --ps-radius-md: 12px;
@@ -33,9 +33,9 @@
   --ps-space-7: 3rem;
   --ps-space-8: 4rem;
 
-  --ps-shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
-  --ps-shadow-md: 0 4px 12px rgb(15 23 42 / 0.08);
-  --ps-shadow-lg: 0 12px 32px rgb(15 23 42 / 0.12);
+  --ps-shadow-sm: 0 1px 2px rgb(17 24 39 / 0.06);
+  --ps-shadow-md: 0 4px 12px rgb(17 24 39 / 0.10);
+  --ps-shadow-lg: 0 12px 32px rgb(17 24 39 / 0.14);
 
   --ps-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -45,27 +45,47 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --ps-bg: #0f172a;
-    --ps-surface: #1e293b;
-    --ps-surface-2: #0f1e30;
-    --ps-text: #f1f5f9;
-    --ps-text-muted: #94a3b8;
-    --ps-text-soft: #64748b;
-    --ps-border: #334155;
-    --ps-border-strong: #475569;
-    --ps-acc: #22d3ee;
-    --ps-acc-hover: #06b6d4;
-    --ps-acc-soft: #164e63;
-    --ps-warn: #f59e0b;
-    --ps-warn-soft: #422006;
+    --ps-bg: #111827;
+    --ps-surface: #1f2937;
+    --ps-surface-2: #111827;
+    --ps-text: #f9fafb;
+    --ps-text-muted: #9ca3af;
+    --ps-text-soft: #6b7280;
+    --ps-border: #374151;
+    --ps-border-strong: #4b5563;
+    --ps-acc: #818cf8;
+    --ps-acc-hover: #6366f1;
+    --ps-acc-soft: #1e1b4b;
+    --ps-warn: #fbbf24;
+    --ps-warn-soft: #1c1203;
     --ps-good: #34d399;
-    --ps-good-soft: #064e3b;
+    --ps-good-soft: #022c22;
     --ps-bad: #f87171;
-    --ps-bad-soft: #450a0a;
+    --ps-bad-soft: #1f0202;
     --ps-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --ps-shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
     --ps-shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
   }
+}
+
+/* ---------- page head ---------- */
+.ps-page-head {
+  border-bottom: 1px solid var(--ps-border);
+  padding-bottom: var(--ps-space-4);
+  margin-bottom: var(--ps-space-4);
+}
+
+/* ---------- login card ---------- */
+.ps-login-card {
+  background: var(--ps-surface);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-lg);
+  padding: var(--ps-space-5);
+  box-shadow: var(--ps-shadow-md);
+  margin-top: var(--ps-space-5);
+}
+@media (min-width: 560px) {
+  .ps-login-card { padding: var(--ps-space-6); }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -231,6 +251,17 @@ button { font: inherit; cursor: pointer; }
 @media (min-width: 720px) {
   .ps-mode-card { padding: var(--ps-space-6); gap: var(--ps-space-3); }
 }
+.ps-mode-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--ps-acc);
+  border-radius: var(--ps-radius-lg) var(--ps-radius-lg) 0 0;
+}
+.ps-mode-card--client::before { background: var(--ps-warn); }
 .ps-mode-card::after {
   content: "";
   position: absolute;
