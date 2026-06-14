@@ -334,3 +334,69 @@ button {
   color: var(--ps-acc);
   border: 1.5px solid var(--ps-acc);
 }
+
+/* ---------- MVP feature styles ---------- */
+.ps-section { padding: var(--ps-space-6) 0; }
+.ps-section h1 { margin: 0 0 var(--ps-space-2); font-size: clamp(1.5rem, 3vw, 2rem); }
+.ps-section h2 { margin: var(--ps-space-6) 0 var(--ps-space-3); font-size: 1.25rem; }
+.ps-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--ps-space-3);
+  margin: var(--ps-space-4) 0;
+}
+.ps-filters label { display: flex; flex-direction: column; font-size: 0.85rem; color: var(--ps-text-muted); gap: var(--ps-space-1); }
+.ps-filters input,
+.ps-filters select,
+.ps-form input,
+.ps-form select,
+.ps-form textarea {
+  padding: var(--ps-space-2) var(--ps-space-3);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-sm);
+  background: var(--ps-surface);
+  color: var(--ps-text);
+  font: inherit;
+}
+.ps-form { display: grid; gap: var(--ps-space-3); margin: var(--ps-space-4) 0; }
+.ps-form label { display: flex; flex-direction: column; gap: var(--ps-space-1); font-size: 0.9rem; }
+.ps-form button {
+  padding: var(--ps-space-3) var(--ps-space-5);
+  background: var(--ps-acc);
+  color: #fff;
+  border: 0;
+  border-radius: var(--ps-radius-sm);
+  font: inherit;
+  cursor: pointer;
+}
+.ps-form button:hover { filter: brightness(1.08); }
+.ps-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: var(--ps-space-4);
+  margin: var(--ps-space-4) 0;
+}
+.ps-card {
+  padding: var(--ps-space-4);
+  background: var(--ps-surface);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-2);
+}
+.ps-card h2 { margin: 0; font-size: 1.05rem; }
+.ps-card h3 { margin: 0; font-size: 1rem; }
+.ps-card__sub { margin: 0; color: var(--ps-text-muted); font-size: 0.85rem; }
+.ps-card__cta { margin-top: auto; }
+.ps-card--mini { padding: var(--ps-space-3); }
+.ps-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--ps-acc-2);
+  color: #fff;
+}
+.ps-empty, .ps-error, .ps-msg { color: var(--ps-text-muted); font-size: 0.95rem; padding: var(--ps-space-3) 0; }
+.ps-error { color: #b91c1c; }

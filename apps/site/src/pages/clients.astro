@@ -1,133 +1,95 @@
 ---
 import Base from '~/layouts/Base.astro'
-
-interface JobRequest {
-  readonly poster: string
-  readonly title: string
-  readonly description: string
-  readonly initial: string
-  readonly barrio: string
-  readonly budgetGs: number
-  readonly tags: ReadonlyArray<string>
-  readonly posted: string
-}
-
-const samples: ReadonlyArray<JobRequest> = [
-  {
-    poster: 'Ana V.',
-    title: 'Necesito reparar una llave térmica que salta',
-    description: 'Salta cada vez que enchufo la heladera nueva. Casa de una planta en Villa Morra. Esta semana si se puede.',
-    initial: 'A',
-    barrio: 'Villa Morra',
-    budgetGs: 200000,
-    tags: ['Electricidad', 'Urgencia'],
-    posted: 'hace 2 h',
-  },
-  {
-    poster: 'Pedro G.',
-    title: 'Traducción de título universitario al inglés con apostille',
-    description: 'Para una maestría en España. Necesito el original traducido y certificado en menos de 10 días.',
-    initial: 'P',
-    barrio: 'Recoleta',
-    budgetGs: 350000,
-    tags: ['Idiomas', 'Documentos'],
-    posted: 'hace 5 h',
-  },
-  {
-    poster: 'Camila R.',
-    title: 'Logo + carta para mi nueva cafetería',
-    description: 'Abro en septiembre, necesito identidad simple, cálida, papelería de menú y redes para el lanzamiento.',
-    initial: 'C',
-    barrio: 'Carmelitas',
-    budgetGs: 1500000,
-    tags: ['Diseño', 'Marketing'],
-    posted: 'ayer',
-  },
-  {
-    poster: 'Roberto T.',
-    title: 'Profe de matemática para mi hija — bachillerato',
-    description: 'Le cuesta funciones y trigonometría. Una clase por semana, presencial o online. Empezamos cuando puedas.',
-    initial: 'R',
-    barrio: 'Las Mercedes',
-    budgetGs: 80000,
-    tags: ['Educación'],
-    posted: 'ayer',
-  },
-  {
-    poster: 'Marta E.',
-    title: 'Pelo y maquillaje para una boda — 5 personas',
-    description: 'Sábado 12. Necesito a alguien que venga al hotel temprano. Novia + 4 madrinas.',
-    initial: 'M',
-    barrio: 'Manorá',
-    budgetGs: 1200000,
-    tags: ['Peluquería', 'Evento'],
-    posted: 'hace 2 días',
-  },
-  {
-    poster: 'Sergio D.',
-    title: 'Fuga de gas en el calefón',
-    description: 'Olor fuerte en la cocina, ya cerré la llave. Necesito a alguien hoy o mañana temprano.',
-    initial: 'S',
-    barrio: 'Asunción centro',
-    budgetGs: 300000,
-    tags: ['Plomería', 'Gas', 'Urgencia'],
-    posted: 'hace 30 min',
-  },
-]
-
-const fmtGs = (n: number): string => `${n.toLocaleString('es-PY')} Gs`
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base
-  title="Pedidos de trabajo en Paraguay"
-  description="Clientes en Paraguay que buscan a un profesional. Si ofrecés ese servicio, contactá directo."
+  title="Pedidos"
+  description="Pedidos de clientes en Asunción. Si ofrecés el servicio que buscan, escribiles directo."
   active="clients"
 >
-  <section class="ps-hero">
-    <h1>Pedidos de trabajo</h1>
-    <p>Lo que la gente está buscando ahora. Si podés resolverlo, escribí directo al cliente.</p>
+  <section class="ps-section">
+    <h1>Pedidos abiertos</h1>
+    <p>Lista de clientes que están buscando un profesional. Para responder, iniciá sesión y abrí una conversación.</p>
+
+    <form id="filters" class="ps-filters" autocomplete="off">
+      <label>
+        Categoría
+        <select name="category" id="f-category">
+          <option value="">Todas</option>
+        </select>
+      </label>
+      <label>
+        Barrio
+        <input type="text" name="barrio" id="f-barrio" placeholder="Villa Morra, Carmelitas…" />
+      </label>
+    </form>
+
+    <div id="results" class="ps-cards" aria-busy="true" data-base={base}>Cargando…</div>
   </section>
 
-  <form class="ps-filter-bar" role="search" aria-label="Filtrar pedidos">
-    <input type="search" name="q" placeholder="Buscar por palabra clave…" autocomplete="off" />
-    <select name="category" aria-label="Categoría">
-      <option value="">Todas las categorías</option>
-      <option>Electricidad</option>
-      <option>Plomería</option>
-      <option>Idiomas</option>
-      <option>Diseño</option>
-      <option>Educación</option>
-      <option>Peluquería</option>
-      <option>Marketing</option>
-    </select>
-    <select name="urgency" aria-label="Urgencia">
-      <option value="">Todas las urgencias</option>
-      <option value="urgent">Urgente (hoy / mañana)</option>
-      <option value="week">Esta semana</option>
-      <option value="flex">Flexible</option>
-    </select>
-  </form>
+  <script>
+    // @ts-nocheck
+    import { apiFetch, CATEGORIES, categoryLabel } from '../lib/api.ts'
 
-  <section class="ps-list" aria-label="Pedidos de trabajo">
-    {samples.map((r) => (
-      <article class="ps-listing ps-listing--request">
-        <header class="ps-listing__head">
-          <span class="ps-listing__avatar" aria-hidden="true">{r.initial}</span>
-          <div>
-            <div class="ps-listing__name">{r.poster}</div>
-            <div class="ps-listing__meta">{r.barrio} · Presupuesto {fmtGs(r.budgetGs)} · {r.posted}</div>
-          </div>
-        </header>
-        <h2 class="ps-listing__title">{r.title}</h2>
-        <p class="ps-listing__body">{r.description}</p>
-        <div class="ps-listing__tags">
-          {r.tags.map((t) => <span class="ps-tag">{t}</span>)}
-        </div>
-      </article>
-    ))}
-  </section>
+    const cats = document.getElementById('f-category')
+    for (const c of CATEGORIES) {
+      const opt = document.createElement('option')
+      opt.value = c.value
+      opt.textContent = c.label
+      cats.append(opt)
+    }
 
-  <p class="ps-banner">
-    ¿Necesitás algo? Cuando habiliten las cuentas vas a poder publicar tu pedido en menos de un minuto y
-    recibir respuestas directo en el chat. Por ahora, comentá en el GitHub del proyecto si te interesa.
-  </p>
+    const results = document.getElementById('results')
+    const base = results.dataset.base ?? ''
+    const form = document.getElementById('filters')
+
+    const formatBudget = (gs) => {
+      if (gs === null || gs === undefined) return 'A coordinar'
+      return new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(gs) + ' Gs'
+    }
+
+    const render = (items) => {
+      results.removeAttribute('aria-busy')
+      if (items.length === 0) {
+        results.innerHTML = '<p class="ps-empty">No hay pedidos abiertos con ese filtro.</p>'
+        return
+      }
+      results.innerHTML = items
+        .map(
+          (r) => `
+          <article class="ps-card">
+            <header>
+              <h2>${r.title}</h2>
+              <p class="ps-card__sub">${categoryLabel(r.category)} · ${r.barrio} · ${formatBudget(r.budgetGs)}</p>
+            </header>
+            <p>${r.description.length > 240 ? r.description.slice(0, 240) + '…' : r.description}</p>
+            <p class="ps-card__cta"><a href="${base}/me/?reply=${r.id}&type=request">Responder →</a></p>
+          </article>`,
+        )
+        .join('')
+    }
+
+    const load = async () => {
+      const fd = new FormData(form)
+      const params = new URLSearchParams()
+      if (fd.get('category')) params.set('category', fd.get('category'))
+      if (fd.get('barrio')) params.set('barrio', fd.get('barrio'))
+      results.setAttribute('aria-busy', 'true')
+      results.textContent = 'Cargando…'
+      try {
+        const data = await apiFetch(`/v1/requests?${params.toString()}`)
+        render(data)
+      } catch (err) {
+        results.removeAttribute('aria-busy')
+        results.innerHTML = `<p class="ps-error">${err.message}</p>`
+      }
+    }
+
+    form.addEventListener('input', load)
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      load()
+    })
+    load()
+  </script>
 </Base>

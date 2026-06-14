@@ -1,0 +1,140 @@
+import { requireAuth } from '@pya-company/auth'
+import { ForbiddenError, NotFoundError, ValidationError, uuidV7 } from '@pya-company/shared'
+import { Hono } from 'hono'
+import * as v from 'valibot'
+import { SpecialistCreateSchema, SpecialistUpdateSchema } from '../schemas.ts'
+
+interface AppEnv {
+  readonly Bindings: Env
+}
+
+interface SpecialistRow {
+  readonly id: string
+  readonly user_id: string
+  readonly display_name: string
+  readonly headline: string
+  readonly bio: string
+  readonly phone: string
+  readonly whatsapp: string | null
+  readonly barrio: string
+  readonly lat: number | null
+  readonly lng: number | null
+  readonly photo: string | null
+  readonly verified: number
+  readonly status: string
+  readonly created_at: number
+  readonly updated_at: number
+}
+
+const toDto = (r: SpecialistRow) => ({
+  id: r.id,
+  userId: r.user_id,
+  displayName: r.display_name,
+  headline: r.headline,
+  bio: r.bio,
+  phone: r.phone,
+  whatsapp: r.whatsapp,
+  barrio: r.barrio,
+  lat: r.lat,
+  lng: r.lng,
+  photo: r.photo,
+  verified: r.verified === 1,
+  status: r.status,
+  createdAt: r.created_at,
+  updatedAt: r.updated_at,
+})
+
+export const specialistsRoutes = new Hono<AppEnv>()
+  .get('/', async (c) => {
+    const url = new URL(c.req.url)
+    const barrio = url.searchParams.get('barrio')
+    const where: string[] = ["status = 'active'"]
+    const params: unknown[] = []
+    if (barrio) {
+      where.push('barrio = ?')
+      params.push(barrio)
+    }
+    const sql = `SELECT * FROM specialist_profiles WHERE ${where.join(' AND ')} ORDER BY verified DESC, updated_at DESC LIMIT 100`
+    const result = await c.env.DB.prepare(sql).bind(...params).all<SpecialistRow>()
+    return c.json({ data: result.results.map(toDto) })
+  })
+  .get('/:id', async (c) => {
+    const row = await c.env.DB.prepare('SELECT * FROM specialist_profiles WHERE id = ?')
+      .bind(c.req.param('id'))
+      .first<SpecialistRow>()
+    if (!row) throw new NotFoundError({ resource: 'specialist' })
+    return c.json({ data: toDto(row) })
+  })
+  .post('/', requireAuth, async (c) => {
+    const body = await c.req.json().catch(() => ({}))
+    const parsed = v.safeParse(SpecialistCreateSchema, body)
+    if (!parsed.success) throw new ValidationError({ issues: parsed.issues.map((i) => ({ path: i.path?.map((p) => p.key).join(".") ?? "", message: i.message })) })
+    const userId = c.var.session.userId
+    const now = Math.floor(Date.now() / 1000)
+    const id = uuidV7()
+    await c.env.DB.prepare(
+      `INSERT INTO specialist_profiles
+       (id, user_id, display_name, headline, bio, phone, whatsapp, barrio, lat, lng, photo, verified, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?)`,
+    )
+      .bind(
+        id,
+        userId,
+        parsed.output.displayName,
+        parsed.output.headline,
+        parsed.output.bio ?? '',
+        parsed.output.phone,
+        parsed.output.whatsapp ?? null,
+        parsed.output.barrio,
+        parsed.output.lat ?? null,
+        parsed.output.lng ?? null,
+        parsed.output.photo ?? null,
+        now,
+        now,
+      )
+      .run()
+    const row = await c.env.DB.prepare('SELECT * FROM specialist_profiles WHERE id = ?')
+      .bind(id)
+      .first<SpecialistRow>()
+    return c.json({ data: toDto(row as SpecialistRow) }, 201)
+  })
+  .patch('/:id', requireAuth, async (c) => {
+    const id = c.req.param('id')
+    const existing = await c.env.DB.prepare('SELECT * FROM specialist_profiles WHERE id = ?')
+      .bind(id)
+      .first<SpecialistRow>()
+    if (!existing) throw new NotFoundError({ resource: 'specialist' })
+    if (existing.user_id !== c.var.session.userId) throw new ForbiddenError({ required: "not owner" })
+
+    const body = await c.req.json().catch(() => ({}))
+    const parsed = v.safeParse(SpecialistUpdateSchema, body)
+    if (!parsed.success) throw new ValidationError({ issues: parsed.issues.map((i) => ({ path: i.path?.map((p) => p.key).join(".") ?? "", message: i.message })) })
+    const o = parsed.output
+
+    const sets: string[] = []
+    const params: unknown[] = []
+    const set = (col: string, val: unknown) => {
+      sets.push(`${col} = ?`)
+      params.push(val)
+    }
+    if (o.displayName !== undefined) set('display_name', o.displayName)
+    if (o.headline !== undefined) set('headline', o.headline)
+    if (o.bio !== undefined) set('bio', o.bio)
+    if (o.phone !== undefined) set('phone', o.phone)
+    if (o.whatsapp !== undefined) set('whatsapp', o.whatsapp)
+    if (o.barrio !== undefined) set('barrio', o.barrio)
+    if (o.lat !== undefined) set('lat', o.lat)
+    if (o.lng !== undefined) set('lng', o.lng)
+    if (o.photo !== undefined) set('photo', o.photo)
+    if (sets.length === 0) return c.json({ data: toDto(existing) })
+    sets.push('updated_at = ?')
+    params.push(Math.floor(Date.now() / 1000))
+    params.push(id)
+    await c.env.DB.prepare(`UPDATE specialist_profiles SET ${sets.join(', ')} WHERE id = ?`)
+      .bind(...params)
+      .run()
+    const fresh = await c.env.DB.prepare('SELECT * FROM specialist_profiles WHERE id = ?')
+      .bind(id)
+      .first<SpecialistRow>()
+    return c.json({ data: toDto(fresh as SpecialistRow) })
+  })

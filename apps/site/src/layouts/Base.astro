@@ -27,6 +27,7 @@ const href = (path: string): string => `${base}${path}`
       <nav class="ps-topbar__nav" aria-label="Principal">
         <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}>Profesionales</a>
         <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}>Pedidos</a>
+        <a href={href('/me/')}>Mi panel</a>
       </nav>
     </header>
     <main class="ps-shell">

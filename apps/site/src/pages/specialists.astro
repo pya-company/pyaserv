@@ -1,129 +1,96 @@
 ---
 import Base from '~/layouts/Base.astro'
-
-interface Specialist {
-  readonly name: string
-  readonly title: string
-  readonly description: string
-  readonly initial: string
-  readonly barrio: string
-  readonly priceFromGs: number
-  readonly tags: ReadonlyArray<string>
-}
-
-const samples: ReadonlyArray<Specialist> = [
-  {
-    name: 'Carlos R.',
-    title: 'Electricista matriculado · 18 años',
-    description: 'Reparaciones, instalaciones nuevas, llaves térmicas. Garantía escrita. Asunción y alrededores.',
-    initial: 'C',
-    barrio: 'Villa Morra',
-    priceFromGs: 150000,
-    tags: ['Electricidad', 'Domicilio', '24 h'],
-  },
-  {
-    name: 'Mónica L.',
-    title: 'Traductora ES ⇄ EN ⇄ PT',
-    description: 'Documentos legales, certificados académicos, sitios web. Apostille en 48 h.',
-    initial: 'M',
-    barrio: 'Recoleta',
-    priceFromGs: 80000,
-    tags: ['Idiomas', 'Documentos', 'Remoto'],
-  },
-  {
-    name: 'Diego A.',
-    title: 'Diseñador gráfico + redes',
-    description: 'Identidad visual, contenido para Instagram, edición de video corto. Reuniones por Meet.',
-    initial: 'D',
-    barrio: 'Carmelitas',
-    priceFromGs: 250000,
-    tags: ['Diseño', 'Marketing', 'Remoto'],
-  },
-  {
-    name: 'Sofía G.',
-    title: 'Peluquera a domicilio',
-    description: 'Corte, color, alisado. Voy a tu casa con todo el equipo. Productos profesionales.',
-    initial: 'S',
-    barrio: 'Las Mercedes',
-    priceFromGs: 120000,
-    tags: ['Peluquería', 'Domicilio'],
-  },
-  {
-    name: 'Javier M.',
-    title: 'Plomero gasista',
-    description: 'Gas envasado, fugas, calefones. Trabajo limpio, dejo el lugar como lo encontré.',
-    initial: 'J',
-    barrio: 'Manorá',
-    priceFromGs: 180000,
-    tags: ['Plomería', 'Gas', 'Urgencia'],
-  },
-  {
-    name: 'Laura P.',
-    title: 'Profesora particular — matemática',
-    description: 'Bachillerato y primer año de universidad. Online o presencial en Asunción.',
-    initial: 'L',
-    barrio: 'Asunción centro',
-    priceFromGs: 60000,
-    tags: ['Educación', 'Online'],
-  },
-]
-
-const fmtGs = (n: number): string => `${n.toLocaleString('es-PY')} Gs`
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base
-  title="Profesionales que ofrecen su trabajo"
-  description="Listado de profesionales en Paraguay. Filtrá por categoría y barrio. Sin comisiones."
+  title="Profesionales"
+  description="Plomeros, electricistas, peluqueras, profes — encontralos en tu barrio en Asunción."
   active="specialists"
 >
-  <section class="ps-hero">
-    <h1>Profesionales en Paraguay</h1>
-    <p>Encontrá a quien necesitás. Cada perfil incluye contacto directo y reseñas reales.</p>
+  <section class="ps-section">
+    <h1>Profesionales disponibles</h1>
+    <p>Filtrá por categoría o barrio. El contacto se hace fuera de la plataforma; PyaServ solo presenta.</p>
+
+    <form id="filters" class="ps-filters" autocomplete="off">
+      <label>
+        Categoría
+        <select name="category" id="f-category">
+          <option value="">Todas</option>
+        </select>
+      </label>
+      <label>
+        Barrio
+        <input type="text" name="barrio" id="f-barrio" placeholder="Villa Morra, Carmelitas…" />
+      </label>
+    </form>
+
+    <div id="results" class="ps-cards" aria-busy="true" data-base={base}>Cargando…</div>
   </section>
 
-  <form class="ps-filter-bar" role="search" aria-label="Filtrar profesionales">
-    <input type="search" name="q" placeholder="Buscar por servicio o nombre…" autocomplete="off" />
-    <select name="category" aria-label="Categoría">
-      <option value="">Todas las categorías</option>
-      <option>Electricidad</option>
-      <option>Plomería</option>
-      <option>Idiomas</option>
-      <option>Diseño</option>
-      <option>Educación</option>
-      <option>Peluquería</option>
-      <option>Marketing</option>
-    </select>
-    <select name="barrio" aria-label="Barrio">
-      <option value="">Todos los barrios</option>
-      <option>Villa Morra</option>
-      <option>Las Mercedes</option>
-      <option>Recoleta</option>
-      <option>Carmelitas</option>
-      <option>Manorá</option>
-      <option>Asunción centro</option>
-    </select>
-  </form>
+  <script>
+    // @ts-nocheck
+    import { apiFetch, CATEGORIES } from '../lib/api.ts'
 
-  <section class="ps-list" aria-label="Profesionales">
-    {samples.map((s) => (
-      <article class="ps-listing ps-listing--offer">
-        <header class="ps-listing__head">
-          <span class="ps-listing__avatar" aria-hidden="true">{s.initial}</span>
-          <div>
-            <div class="ps-listing__name">{s.name}</div>
-            <div class="ps-listing__meta">{s.barrio} · Desde {fmtGs(s.priceFromGs)}</div>
-          </div>
-        </header>
-        <h2 class="ps-listing__title">{s.title}</h2>
-        <p class="ps-listing__body">{s.description}</p>
-        <div class="ps-listing__tags">
-          {s.tags.map((t) => <span class="ps-tag">{t}</span>)}
-        </div>
-      </article>
-    ))}
-  </section>
+    const cats = document.getElementById('f-category')
+    for (const c of CATEGORIES) {
+      const opt = document.createElement('option')
+      opt.value = c.value
+      opt.textContent = c.label
+      cats.append(opt)
+    }
 
-  <p class="ps-banner">
-    ¿Sos profesional? Cuando lancemos las cuentas vas a poder crear tu perfil acá y recibir mensajes
-    directos de clientes. Por ahora, dejá tu interés en el GitHub del proyecto.
-  </p>
+    const results = document.getElementById('results')
+    const base = results.dataset.base ?? ''
+    const form = document.getElementById('filters')
+
+    const render = (items) => {
+      results.removeAttribute('aria-busy')
+      if (items.length === 0) {
+        results.innerHTML = '<p class="ps-empty">No hay resultados con ese filtro.</p>'
+        return
+      }
+      results.innerHTML = items
+        .map(
+          (s) => `
+          <article class="ps-card">
+            <header>
+              <h2>${s.displayName}${s.verified ? ' <span class="ps-badge">✓ verificado</span>' : ''}</h2>
+              <p class="ps-card__sub">${s.barrio}</p>
+            </header>
+            <p>${s.headline}</p>
+            <p class="ps-card__cta"><a href="tel:${s.phone}">Llamar</a> · ${s.whatsapp ? `<a href="https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}">WhatsApp</a>` : ''}</p>
+          </article>`,
+        )
+        .join('')
+    }
+
+    const load = async () => {
+      const fd = new FormData(form)
+      const params = new URLSearchParams()
+      if (fd.get('barrio')) params.set('barrio', fd.get('barrio'))
+      results.setAttribute('aria-busy', 'true')
+      results.textContent = 'Cargando…'
+      try {
+        const data = await apiFetch(`/v1/specialists?${params.toString()}`)
+        const category = fd.get('category')
+        let items = data
+        if (category) {
+          const ls = await apiFetch(`/v1/listings?category=${encodeURIComponent(category)}`)
+          const allowed = new Set(ls.map((l) => l.specialistId))
+          items = items.filter((s) => allowed.has(s.id))
+        }
+        render(items)
+      } catch (err) {
+        results.removeAttribute('aria-busy')
+        results.innerHTML = `<p class="ps-error">${err.message}</p>`
+      }
+    }
+
+    form.addEventListener('input', load)
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      load()
+    })
+    load()
+  </script>
 </Base>
