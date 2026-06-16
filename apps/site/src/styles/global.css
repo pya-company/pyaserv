@@ -561,6 +561,26 @@ button { font: inherit; cursor: pointer; }
 .ps-avatar--thumb { width: 72px; height: 72px; font-size: 2rem; }
 .ps-avatar--photo { padding: 0; overflow: hidden; }
 .ps-avatar__img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+/* Initials fallback — solid indigo circle + white bold letters. Keeps the
+   detail page CLS-free even before the photo (or its 404) arrives. */
+.ps-avatar--initials { background: #4338ca; color: #fff; padding: 0; overflow: hidden; }
+.ps-avatar__initials { font: 700 1.5em/1 var(--ps-font-sans); letter-spacing: 0.02em; }
+
+/* Specialist list card with leading avatar */
+.ps-card--with-avatar { display: grid; grid-template-columns: 56px 1fr; gap: var(--ps-space-3); align-items: start; }
+.ps-card__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--ps-radius-pill);
+  background: var(--ps-surface-2);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  overflow: hidden;
+}
+.ps-card__avatar.ps-avatar--initials { background: #4338ca; color: #fff; }
+.ps-card__main { display: flex; flex-direction: column; gap: var(--ps-space-2); min-width: 0; }
+.ps-card__main h2 { margin: 0; font-size: 1rem; line-height: 1.3; }
 
 /* Photo upload widget */
 .ps-photo-widget { align-items: center; gap: var(--ps-space-3); }

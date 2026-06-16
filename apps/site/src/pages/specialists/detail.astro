@@ -60,7 +60,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
   <script>
     // @ts-nocheck
-    import { apiFetch, getToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime } from '../../lib/api.ts'
+    import { apiFetch, getToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime, initials } from '../../lib/api.ts'
     import { t } from '../../lib/i18n.ts'
 
     ;(async () => {
@@ -95,10 +95,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       document.getElementById('meta').textContent = `${spec.headline} · 📍 ${spec.barrio}`
       document.getElementById('bio').textContent = spec.bio || spec.headline
       const apiBase = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) || 'https://api.pyaserv.com'
+      const av = document.getElementById('avatar')
       if (spec.photo) {
-        const av = document.getElementById('avatar')
         av.classList.add('ps-avatar--photo')
-        av.innerHTML = `<img class="ps-avatar__img" width="160" height="160" fetchpriority="high" decoding="async" src="${apiBase}/v1/media/${escape(spec.photo)}" alt="${escape(spec.displayName)}"/>`
+        av.innerHTML = `<img class="ps-avatar__img" width="160" height="160" fetchpriority="high" decoding="async" src="${apiBase}/v1/media/${escape(spec.photo)}" alt="${escape(spec.displayName)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ps-avatar__initials',textContent:${JSON.stringify(initials(spec.displayName))}}))"/>`
+      } else {
+        av.classList.add('ps-avatar--initials')
+        av.innerHTML = `<span class="ps-avatar__initials" aria-hidden="true">${escape(initials(spec.displayName))}</span>`
       }
 
       if (spec.verified) {

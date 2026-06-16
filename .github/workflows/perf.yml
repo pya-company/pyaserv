@@ -1,0 +1,41 @@
+name: Lighthouse perf gate
+
+# Runs the lighthouse CI test against the live pyaserv.com URLs after every
+# push to main and nightly at 04:00 UTC. Fails if any public route slips below
+# the per-category thresholds defined in apps/site/tests/perf/lighthouse.ts:
+#   - performance: ≥ 0.9
+#   - accessibility / best-practices / seo: == 1.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/site/**'
+      - 'apps/site/tests/perf/**'
+      - '.github/workflows/perf.yml'
+  schedule:
+    - cron: '0 4 * * *'  # 04:00 UTC nightly
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.0
+      - name: Install
+        run: bun install --frozen-lockfile
+        env:
+          # The repo's overrides reference ../pya-platform/packages/*. CI has no
+          # sibling checkout, so we tell bun to skip resolving them. Public Pages
+          # deploy uses the same override layout; here we test the *deployed*
+          # URL so source resolution does not matter.
+          BUN_LINK_LOCAL_TIMES_OUT_FAST: '1'
+      - name: Lighthouse audit
+        run: bun --filter @pyaserv/site test:perf
+        env:
+          PYASERV_BASE_URL: https://pyaserv.com
+          PYASERV_API_URL: https://api.pyaserv.com

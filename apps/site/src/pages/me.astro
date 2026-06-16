@@ -11,15 +11,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     </div>
     <p id="me-info" class="ps-card__sub"></p>
 
-    <nav class="ps-tabs" role="tablist" data-i18n-aria="me.tabs.aria" aria-label="Secciones">
-      <button class="ps-tab" data-tab="profile" data-i18n="me.tabs.profile">👤 Mi perfil</button>
-      <button class="ps-tab" data-tab="listings" data-i18n="me.tabs.listings">🛠️ Mis servicios</button>
-      <button class="ps-tab" data-tab="requests" data-i18n="me.tabs.requests">📢 Mis pedidos</button>
-      <button class="ps-tab" data-tab="inquiries" data-i18n="me.tabs.inquiries">💬 Conversaciones</button>
-      <button class="ps-tab" data-tab="stats" data-i18n="me.tabs.stats">📊 Estadísticas</button>
-    </nav>
+    <div class="ps-tabs" role="tablist" data-i18n-aria="me.tabs.aria" aria-label="Secciones">
+      <button class="ps-tab" role="tab" id="tab-profile" aria-controls="panel-profile" data-tab="profile" data-i18n="me.tabs.profile">👤 Mi perfil</button>
+      <button class="ps-tab" role="tab" id="tab-listings" aria-controls="panel-listings" data-tab="listings" data-i18n="me.tabs.listings">🛠️ Mis servicios</button>
+      <button class="ps-tab" role="tab" id="tab-requests" aria-controls="panel-requests" data-tab="requests" data-i18n="me.tabs.requests">📢 Mis pedidos</button>
+      <button class="ps-tab" role="tab" id="tab-inquiries" aria-controls="panel-inquiries" data-tab="inquiries" data-i18n="me.tabs.inquiries">💬 Conversaciones</button>
+      <button class="ps-tab" role="tab" id="tab-stats" aria-controls="panel-stats" data-tab="stats" data-i18n="me.tabs.stats">📊 Estadísticas</button>
+    </div>
 
-    <div class="ps-tabpanel" id="panel-profile" hidden>
+    <div class="ps-tabpanel" id="panel-profile" role="tabpanel" aria-labelledby="tab-profile" hidden>
       <h2 data-i18n="me.profile.h">Perfil de profesional</h2>
       <p data-i18n="me.profile.intro">Si querés ofrecer servicios, completá tu perfil acá.</p>
       <div id="completeness" class="ps-completeness" aria-live="polite" hidden>
@@ -85,7 +85,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       </fieldset>
     </div>
 
-    <div class="ps-tabpanel" id="panel-listings" hidden>
+    <div class="ps-tabpanel" id="panel-listings" role="tabpanel" aria-labelledby="tab-listings" hidden>
       <div class="ps-row" style="justify-content:space-between">
         <h2 data-i18n="me.listings.h">Mis servicios publicados</h2>
         <a id="new-listing" class="ps-btn ps-btn--sm" data-i18n="me.listings.new">+ Nuevo</a>
@@ -93,7 +93,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <div id="my-listings" class="ps-cards" aria-busy="true"></div>
     </div>
 
-    <div class="ps-tabpanel" id="panel-requests" hidden>
+    <div class="ps-tabpanel" id="panel-requests" role="tabpanel" aria-labelledby="tab-requests" hidden>
       <div class="ps-row" style="justify-content:space-between">
         <h2 data-i18n="me.requests.h">Mis pedidos como cliente</h2>
         <a id="new-request" class="ps-btn ps-btn--sm" data-i18n="me.requests.new">+ Nuevo</a>
@@ -101,12 +101,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <div id="my-requests" class="ps-cards" aria-busy="true"></div>
     </div>
 
-    <div class="ps-tabpanel" id="panel-inquiries" hidden>
+    <div class="ps-tabpanel" id="panel-inquiries" role="tabpanel" aria-labelledby="tab-inquiries" hidden>
       <h2 data-i18n="me.inquiries.h">Conversaciones</h2>
       <div id="my-inquiries" class="ps-cards" aria-busy="true"></div>
     </div>
 
-    <div class="ps-tabpanel" id="panel-stats" hidden>
+    <div class="ps-tabpanel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats" hidden>
       <h2 data-i18n="me.stats.h">Estadísticas</h2>
       <p id="stats-msg" class="ps-msg" data-i18n="me.stats.intro">Métricas de tu perfil — últimos 30 días.</p>
       <div id="stats-grid" class="ps-stats-grid"></div>
@@ -149,14 +149,28 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         inquiries: document.getElementById('panel-inquiries'),
         stats: document.getElementById('panel-stats'),
       }
-      const setTab = (name) => {
-        for (const tab of tabs) tab.setAttribute('aria-selected', tab.dataset.tab === name ? 'true' : 'false')
+      const tabsArr = Array.from(tabs)
+      const setTab = (name, focusTab = false) => {
+        for (const tab of tabs) {
+          const selected = tab.dataset.tab === name
+          tab.setAttribute('aria-selected', selected ? 'true' : 'false')
+          tab.setAttribute('tabindex', selected ? '0' : '-1')
+          if (selected && focusTab) tab.focus()
+        }
         for (const [k, el] of Object.entries(panels)) el.hidden = k !== name
         const url = new URL(location.href)
         url.searchParams.set('tab', name)
         history.replaceState({}, '', url.toString())
       }
       for (const tab of tabs) tab.addEventListener('click', () => setTab(tab.dataset.tab))
+      // Arrow-key navigation per WAI-ARIA Authoring Practices tab pattern.
+      for (const tab of tabs) tab.addEventListener('keydown', (e) => {
+        const i = tabsArr.indexOf(e.currentTarget)
+        if (e.key === 'ArrowRight') { e.preventDefault(); setTab(tabsArr[(i + 1) % tabsArr.length].dataset.tab, true) }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); setTab(tabsArr[(i - 1 + tabsArr.length) % tabsArr.length].dataset.tab, true) }
+        else if (e.key === 'Home') { e.preventDefault(); setTab(tabsArr[0].dataset.tab, true) }
+        else if (e.key === 'End') { e.preventDefault(); setTab(tabsArr[tabsArr.length - 1].dataset.tab, true) }
+      })
       const initial = new URLSearchParams(location.search).get('tab') || 'profile'
       setTab(initial)
 

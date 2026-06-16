@@ -38,7 +38,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
   <script>
     // @ts-nocheck
-    import { apiFetch, CATEGORIES, categoryLabel, categoryEmoji } from '../lib/api.ts'
+    import { apiFetch, CATEGORIES, categoryLabel, categoryEmoji, initials, mediaUrl } from '../lib/api.ts'
     import { t } from '../lib/i18n.ts'
 
     const sec = document.querySelector('.ps-section')
@@ -67,15 +67,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       status.textContent = `${items.length} ${items.length === 1 ? t('specialists.count.one') : t('specialists.count.many')}`
       const verifiedLabel = t('specialists.card.verified')
       const cta = t('specialists.card.cta')
+      const renderStars = (n) => '★★★★★'.slice(0, Math.round(n)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(n))
       results.innerHTML = items.map((s) => `
-        <a class="ps-card" href="${base}/specialists/detail/?id=${escape(s.id)}">
-          <div class="ps-row">
-            <h2>${escape(s.displayName)}</h2>
-            ${s.verified ? `<span class="ps-badge">${verifiedLabel}</span>` : ''}
+        <a class="ps-card ps-card--with-avatar" href="${base}/specialists/detail/?id=${escape(s.id)}">
+          <div class="ps-card__avatar ${s.photo ? 'ps-avatar--photo' : 'ps-avatar--initials'}">
+            ${s.photo
+              ? `<img class="ps-avatar__img" width="56" height="56" loading="lazy" decoding="async" alt="" src="${mediaUrl(s.photo)}"/>`
+              : `<span class="ps-avatar__initials" aria-hidden="true">${escape(initials(s.displayName))}</span>`}
           </div>
-          <p class="ps-card__sub">📍 ${escape(s.barrio)}${s.distanceKm != null ? ` · ${s.distanceKm} km` : ''}</p>
-          <p class="ps-card__body">${escape(s.headline)}</p>
-          <div class="ps-card__cta"><span>${cta}</span></div>
+          <div class="ps-card__main">
+            <div class="ps-row">
+              <h2>${escape(s.displayName)}</h2>
+              ${s.verified ? `<span class="ps-badge">${verifiedLabel}</span>` : ''}
+            </div>
+            <p class="ps-card__sub">📍 ${escape(s.barrio)}${s.distanceKm != null ? ` · ${s.distanceKm} km` : ''}</p>
+            ${s.primaryCategory ? `<div class="ps-row"><span class="ps-chip">${categoryEmoji(s.primaryCategory)} ${categoryLabel(s.primaryCategory)}</span>${s.ratingCount > 0 ? `<span class="ps-stars-inline" aria-label="${s.ratingAvg} de 5">${renderStars(s.ratingAvg)}</span><span class="ps-card__sub">${s.ratingAvg} (${s.ratingCount})</span>` : ''}</div>` : ''}
+            <p class="ps-card__body">${escape(s.headline)}</p>
+            <div class="ps-card__cta"><span>${cta}</span></div>
+          </div>
         </a>`).join('')
     }
 

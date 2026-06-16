@@ -97,6 +97,16 @@ export const uploadImage = async (file: File): Promise<string> => {
 // Build a fully-qualified URL to a media object (R2/KV) served by the API.
 export const mediaUrl = (key: string): string => `${API}/v1/media/${key}`
 
+// Initials avatar fallback — first letter of the first two words, uppercased.
+// Used when a profile has no photo (or the photo 404s) so we render a stable
+// colored circle instead of a broken thumbnail.
+export const initials = (displayName: string): string => {
+  const parts = displayName.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return (parts[0]?.[0] ?? '?').toUpperCase()
+  return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase()
+}
+
 // Curated list of common Asunción + Gran Asunción barrios used in
 // autocomplete <datalist> on every barrio input. Order alphabetical to
 // match user expectations when scrolling the dropdown.

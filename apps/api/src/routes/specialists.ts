@@ -55,8 +55,26 @@ export const specialistsRoutes = new Hono<AppEnv>()
       where.push('barrio = ?')
       params.push(barrio)
     }
-    const sql = `SELECT * FROM specialist_profiles WHERE ${where.join(' AND ')} ORDER BY verified DESC, updated_at DESC LIMIT 100`
-    const result = await c.env.DB.prepare(sql).bind(...params).all<SpecialistRow>()
+    // LEFT JOIN aggregates: avg/count of client-role reviews for this specialist's user_id,
+    // plus a single example category from one of their listings. Keeps the list call to a
+    // single round trip — no N+1 reviews/listings fetches on the client side.
+    const sql = `
+      SELECT s.*,
+             COALESCE(r.avg_stars, 0) AS rating_avg,
+             COALESCE(r.n, 0) AS rating_count,
+             l.category AS primary_category
+      FROM specialist_profiles s
+      LEFT JOIN (
+        SELECT ratee_user_id, AVG(stars) AS avg_stars, COUNT(*) AS n
+        FROM reviews WHERE role = 'client'
+        GROUP BY ratee_user_id
+      ) r ON r.ratee_user_id = s.user_id
+      LEFT JOIN (
+        SELECT specialist_id, MIN(category) AS category FROM listings WHERE status='active' GROUP BY specialist_id
+      ) l ON l.specialist_id = s.id
+      WHERE ${where.join(' AND ')}
+      ORDER BY s.verified DESC, s.updated_at DESC LIMIT 100`
+    const result = await c.env.DB.prepare(sql).bind(...params).all<SpecialistRow & { rating_avg: number; rating_count: number; primary_category: string | null }>()
     const rows = result.results
     // Optional ?near=lat,lng — Haversine in JS keeps the SQL portable across
     // workers + lets us return distance to the client. Profiles without
@@ -80,12 +98,25 @@ export const specialistsRoutes = new Hono<AppEnv>()
         return c.json({
           data: rows.map((r) => {
             const km = distance(r)
-            return { ...toDto(r), distanceKm: Number.isFinite(km) ? Math.round(km * 10) / 10 : null }
+            return {
+              ...toDto(r),
+              ratingAvg: Math.round((r.rating_avg as number) * 10) / 10,
+              ratingCount: r.rating_count as number,
+              primaryCategory: r.primary_category,
+              distanceKm: Number.isFinite(km) ? Math.round(km * 10) / 10 : null,
+            }
           }),
         })
       }
     }
-    return c.json({ data: rows.map(toDto) })
+    return c.json({
+      data: rows.map((r) => ({
+        ...toDto(r),
+        ratingAvg: Math.round((r.rating_avg as number) * 10) / 10,
+        ratingCount: r.rating_count as number,
+        primaryCategory: r.primary_category,
+      })),
+    })
   })
   .get('/:id', async (c) => {
     const row = await c.env.DB.prepare('SELECT * FROM specialist_profiles WHERE id = ?')

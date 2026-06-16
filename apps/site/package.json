@@ -9,13 +9,16 @@
     "build": "astro build",
     "preview": "astro preview",
     "type-check": "astro check",
-    "astro": "astro"
+    "astro": "astro",
+    "test:perf": "bun tests/perf/lighthouse.ts"
   },
   "dependencies": {
     "astro": "^5.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "chrome-launcher": "^1.1.2",
+    "lighthouse": "^12.3.0",
     "typescript": "^5.7.2"
   }
 }
