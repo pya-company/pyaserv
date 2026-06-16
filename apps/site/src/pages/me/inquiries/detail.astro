@@ -24,7 +24,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <textarea name="body" required minlength="1" maxlength="2000" data-i18n-placeholder="inquiry.compose_placeholder" placeholder="Escribí un mensaje…"></textarea>
         <button type="submit" class="ps-btn" data-i18n="common.send">Enviar</button>
       </form>
-      <p id="msg" class="ps-msg" aria-live="polite"></p>
+      <p id="msg" class="ps-msg" role="alert"></p>
 
       <div id="review-form" class="ps-banner ps-hidden" role="region" aria-labelledby="review-form-h">
         <h2 id="review-form-h" data-i18n="inquiry.review_h">Calificar trabajo</h2>
@@ -35,7 +35,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
             <textarea name="body" maxlength="1000" rows="3" data-i18n-placeholder="inquiry.review_body_placeholder" placeholder="Contale a otros cómo fue."></textarea>
           </label>
           <button type="submit" class="ps-btn" data-i18n="inquiry.review_submit">Enviar reseña</button>
-          <p id="review-msg" class="ps-msg" aria-live="polite"></p>
+          <p id="review-msg" class="ps-msg" role="alert"></p>
         </form>
       </div>
     </div>
@@ -109,9 +109,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           const data = await apiFetch(`/v1/inquiries/${id}`)
           cachedInquiry = data.inquiry
           cachedReviews = data.reviews || []
-          if (data.messages.length !== lastCount) {
-            lastCount = data.messages.length
+          if (data.messages.length > lastCount) {
             msgsEl.removeAttribute('aria-busy')
+            // Append only the new messages — keeps aria-relevant="additions" intact and
+            // avoids SR re-reading the entire history every 5s.
+            const frag = document.createDocumentFragment()
+            for (let i = lastCount; i < data.messages.length; i++) {
+              const m = data.messages[i]
+              const mine = m.senderUserId === me.userId
+              const div = document.createElement('div')
+              div.className = `ps-bubble ps-bubble--${mine ? 'mine' : 'them'}`
+              div.innerHTML = `${escape(m.body)}<span class="ps-bubble__time">${formatRelativeTime(m.createdAt)}</span>`
+              frag.appendChild(div)
+            }
+            msgsEl.appendChild(frag)
+            lastCount = data.messages.length
+            msgsEl.scrollTop = msgsEl.scrollHeight
+          } else if (data.messages.length < lastCount) {
+            // Rare: server side replaced the thread; do a full re-render once.
+            lastCount = data.messages.length
             msgsEl.innerHTML = data.messages.map((m) => {
               const mine = m.senderUserId === me.userId
               return `<div class="ps-bubble ps-bubble--${mine ? 'mine' : 'them'}">${escape(m.body)}<span class="ps-bubble__time">${formatRelativeTime(m.createdAt)}</span></div>`

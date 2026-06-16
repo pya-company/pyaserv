@@ -50,6 +50,7 @@ const href = (path: string): string => `${base}${path}`
     </script>
   </head>
   <body>
+    <a href="#main-content" class="ps-skip" data-i18n="nav.skip">Saltar al contenido</a>
     <header class="ps-topbar" id="topbar">
       <a href={href('/')} class="ps-topbar__brand">
         <span class="ps-topbar__brand-em">Pya</span>Serv
@@ -75,7 +76,7 @@ const href = (path: string): string => `${base}${path}`
         </button>
       </nav>
     </header>
-    <main class="ps-shell">
+    <main id="main-content" class="ps-shell">
       <slot />
     </main>
     <footer class="ps-foot">

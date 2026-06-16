@@ -83,6 +83,7 @@ const ES: Dict = {
   'nav.lang_es_aria': 'Cambiar a español',
   'nav.lang_en_aria': 'Cambiar a inglés',
   'nav.theme_label': 'Cambiar tema (claro/oscuro/auto)',
+  'nav.skip': 'Saltar al contenido',
 
   // home
   'home.title': 'Servicios en Paraguay sin comisiones',
@@ -381,6 +382,7 @@ const EN: Dict = {
   'nav.lang_es_aria': 'Switch to Spanish',
   'nav.lang_en_aria': 'Switch to English',
   'nav.theme_label': 'Toggle theme (light/dark/auto)',
+  'nav.skip': 'Skip to content',
 
   // home
   'home.title': 'Services in Paraguay without fees',

@@ -60,7 +60,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       results.removeAttribute('aria-busy')
       if (items.length === 0) {
         results.innerHTML = ''
-        status.innerHTML = `<span class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">${t('clients.empty.title')}</strong>${t('clients.empty.hint')}</span>`
+        status.innerHTML = `<span class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">${t('clients.empty.title')}</strong><span class="ps-empty__hint">${t('clients.empty.hint')}</span></span>`
         return
       }
       status.textContent = `${items.length} ${items.length === 1 ? t('clients.count.one') : t('clients.count.many')}`

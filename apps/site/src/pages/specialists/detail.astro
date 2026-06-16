@@ -47,7 +47,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <button type="submit" class="ps-btn" data-i18n="common.send">Enviar</button>
           <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost" data-i18n="common.cancel">Cancelar</button>
         </div>
-        <p id="composer-msg" class="ps-msg" aria-live="polite"></p>
+        <p id="composer-msg" class="ps-msg" role="alert"></p>
       </form>
     </div>
   </section>
@@ -168,7 +168,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         btn.addEventListener('click', () => {
           pickedListingId = btn.dataset.id
           composer.classList.remove('ps-hidden')
-          composer.scrollIntoView({ behavior: 'smooth' })
+          composer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          composerForm.querySelector('textarea')?.focus()
         })
       }
 
@@ -178,7 +179,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
       document.getElementById('contact-btn').addEventListener('click', () => {
         composer.classList.remove('ps-hidden')
-        composer.scrollIntoView({ behavior: 'smooth' })
+        composer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        composerForm.querySelector('textarea')?.focus()
       })
       document.getElementById('composer-cancel').addEventListener('click', () => composer.classList.add('ps-hidden'))
 

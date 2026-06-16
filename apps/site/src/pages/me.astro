@@ -41,7 +41,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <input type="hidden" name="photo" id="photo-key" />
         <label>
           <span data-i18n="me.profile.display_name">Nombre que mostramos</span>
-          <input name="displayName" required maxlength="80" />
+          <input name="displayName" required maxlength="80" autocomplete="name" />
         </label>
         <label>
           <span data-i18n="me.profile.headline">Frase corta (headline)</span>
@@ -49,11 +49,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         </label>
         <label>
           <span data-i18n="me.profile.phone">Teléfono</span>
-          <input name="phone" required data-i18n-placeholder="me.profile.phone.placeholder" placeholder="+595 981 234567" />
+          <input name="phone" required type="tel" autocomplete="tel" data-i18n-placeholder="me.profile.phone.placeholder" placeholder="+595 981 234567" />
         </label>
         <label>
           <span data-i18n="me.profile.whatsapp">WhatsApp (opcional)</span>
-          <input name="whatsapp" data-i18n-placeholder="me.profile.whatsapp.placeholder" placeholder="+595 981 234567" />
+          <input name="whatsapp" type="tel" autocomplete="tel" data-i18n-placeholder="me.profile.whatsapp.placeholder" placeholder="+595 981 234567" />
         </label>
         <label>
           <span data-i18n="me.profile.barrio">Barrio</span>
@@ -72,7 +72,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <textarea name="bio" rows="4" maxlength="2000" data-i18n-placeholder="me.profile.bio.placeholder" placeholder="Contales tu experiencia, herramientas, zonas que cubrís…"></textarea>
         </label>
         <button type="submit" class="ps-btn" data-i18n="common.save">Guardar</button>
-        <p id="profile-msg" class="ps-msg" aria-live="polite"></p>
+        <p id="profile-msg" class="ps-msg" role="alert"></p>
       </form>
 
       <fieldset class="ps-banner ps-stack ps-notif-fieldset">
@@ -291,7 +291,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const refreshListings = async () => {
         if (!myProfile) {
           lEl.removeAttribute('aria-busy')
-          lEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">👤</span><strong class="ps-empty__title">${t('me.listings.empty_profile.title')}</strong>${t('me.listings.empty_profile.hint')}</p>`
+          lEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">👤</span><strong class="ps-empty__title">${t('me.listings.empty_profile.title')}</strong><span class="ps-empty__hint">${t('me.listings.empty_profile.hint')}</span></p>`
           return
         }
         lEl.setAttribute('aria-busy', 'true')
@@ -299,7 +299,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           const items = await apiFetch(`/v1/listings?specialist_id=${myProfile.id}`)
           lEl.removeAttribute('aria-busy')
           if (items.length === 0) {
-            lEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">${t('me.listings.empty.title')}</strong>${t('me.listings.empty.hint')}</p>`
+            lEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">📦</span><strong class="ps-empty__title">${t('me.listings.empty.title')}</strong><span class="ps-empty__hint">${t('me.listings.empty.hint')}</span></p>`
             return
           }
           const priceFrom = t('me.listings.price_from')
@@ -339,7 +339,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           const mine = await apiFetch('/v1/me/requests')
           rEl.removeAttribute('aria-busy')
           if (mine.length === 0) {
-            rEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">${t('me.requests.empty.title')}</strong>${t('me.requests.empty.hint')}</p>`
+            rEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">📭</span><strong class="ps-empty__title">${t('me.requests.empty.title')}</strong><span class="ps-empty__hint">${t('me.requests.empty.hint')}</span></p>`
             return
           }
           const statusOpen = t('me.requests.status.open')
@@ -369,7 +369,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         const items = await apiFetch('/v1/inquiries')
         iEl.removeAttribute('aria-busy')
         if (items.length === 0) {
-          iEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">💬</span><strong class="ps-empty__title">${t('me.inquiries.empty.title')}</strong>${t('me.inquiries.empty.hint')}</p>`
+          iEl.innerHTML = `<p class="ps-empty"><span class="ps-empty__icon">💬</span><strong class="ps-empty__title">${t('me.inquiries.empty.title')}</strong><span class="ps-empty__hint">${t('me.inquiries.empty.hint')}</span></p>`
         } else {
           const asClient = t('me.inquiries.as_client')
           const asSpec = t('me.inquiries.as_specialist')

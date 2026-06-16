@@ -6,7 +6,7 @@
   --ps-surface-2: #f0f2f5;
   --ps-text: #111827;
   --ps-text-muted: #6b7280;
-  --ps-text-soft: #9ca3af;
+  --ps-text-soft: #6b7280;
   --ps-border: #e5e7eb;
   --ps-border-strong: #d1d5db;
   --ps-acc: #4f46e5;
@@ -495,9 +495,28 @@ button { font: inherit; cursor: pointer; }
 .ps-form button:focus-visible,
 .ps-lang-btn:focus-visible,
 .ps-tab:focus-visible,
-.ps-star:focus-visible {
+.ps-star:focus-visible,
+.ps-topbar__menu:focus-visible,
+.ps-topbar__nav a:focus-visible {
   outline: 2px solid var(--ps-acc);
   outline-offset: 2px;
+}
+
+/* Skip-link — invisible until focused, then anchored top-left over everything */
+.ps-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--ps-acc);
+  color: #fff;
+  padding: var(--ps-space-3) var(--ps-space-4);
+  border-radius: var(--ps-radius-md);
+  z-index: 9999;
+  font-weight: 600;
+}
+.ps-skip:focus-visible {
+  left: var(--ps-space-3);
+  top: var(--ps-space-3);
 }
 
 /* Star rating button */
@@ -752,7 +771,8 @@ a.ps-card:focus-visible {
   color: var(--ps-text-muted);
 }
 .ps-empty__icon { font-size: 2rem; display: block; margin-bottom: var(--ps-space-2); }
-.ps-empty__title { margin: 0 0 var(--ps-space-2); color: var(--ps-text); font-size: 1rem; font-weight: 700; }
+.ps-empty__title { display: block; margin: 0 0 var(--ps-space-2); color: var(--ps-text); font-size: 1rem; font-weight: 700; }
+.ps-empty__hint { display: block; }
 
 .ps-msg { color: var(--ps-text-muted); font-size: 0.9375rem; padding: var(--ps-space-3) 0; }
 .ps-msg--ok { color: var(--ps-good); }
