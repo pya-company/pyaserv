@@ -160,7 +160,10 @@ const ES: Dict = {
 
   // login
   'login.title': 'Iniciar sesión',
+  'login.description': 'Entrá a PyaServ con tu email — sin contraseña. Código de 6 dígitos por correo.',
   'login.intro': 'Sin contraseñas — te mandamos un código de 6 dígitos por email.',
+  'specialist.detail.description': 'Perfil del profesional en PyaServ. Contactá directo sin comisiones.',
+  'request.detail.description': 'Pedido publicado por un cliente. Postulate sin comisión.',
   'login.email': 'Email',
   'login.email.placeholder': 'tunombre@correo.com',
   'login.send_code': 'Enviar código',
@@ -459,7 +462,10 @@ const EN: Dict = {
 
   // login
   'login.title': 'Sign in',
+  'login.description': 'Sign in to PyaServ with your email — no password. 6-digit code by email.',
   'login.intro': 'No passwords — we email you a 6-digit code.',
+  'specialist.detail.description': 'Specialist profile on PyaServ. Reach out directly, no commissions.',
+  'request.detail.description': 'Request posted by a client. Apply directly, no commission.',
   'login.email': 'Email',
   'login.email.placeholder': 'yourname@email.com',
   'login.send_code': 'Send code',

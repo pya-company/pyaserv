@@ -14,15 +14,24 @@ interface Props {
 const { title, description, active = 'home', titleKey, descriptionKey } = Astro.props
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const href = (path: string): string => `${base}${path}`
+const fallbackDesc = 'PyaServ — marketplace de servicios en Paraguay sin comisiones. Conectá con plomeros, electricistas, peluqueras, profes y más, directo y sin intermediarios.'
+const canonical = `https://pyaserv.com${Astro.url.pathname}`
 ---
 <html lang="es" data-title-key={titleKey} data-desc-key={descriptionKey}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title} · PyaServ</title>
-    {description !== undefined && <meta name="description" content={description} />}
+    <meta name="description" content={description ?? fallbackDesc} />
+    <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#4f46e5" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${title} · PyaServ`} />
+    <meta property="og:description" content={description ?? fallbackDesc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="PyaServ" />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
     <link rel="preconnect" href="https://api.pyaserv.com" crossorigin />
     <link rel="dns-prefetch" href="https://api.pyaserv.com" />

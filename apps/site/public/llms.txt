@@ -1,0 +1,25 @@
+# PyaServ
+
+> Marketplace de servicios en Paraguay sin comisiones. Conecta clientes con profesionales (plomeros, electricistas, peluqueras, profes, fotógrafos, traductores) en Asunción y Gran Asunción.
+
+PyaServ es un sitio público bilingüe (español + inglés) operado desde Paraguay. El sitio es estático (Astro + Cloudflare Pages); la API está en `https://api.pyaserv.com` (Cloudflare Worker + D1). El acceso es passwordless por OTP por email.
+
+## Catálogo
+- [Profesionales](https://pyaserv.com/specialists/): lista filtrable por categoría y barrio, con sort opcional por distancia.
+- [Pedidos abiertos](https://pyaserv.com/clients/): clientes buscando servicio.
+- [Inicio](https://pyaserv.com/): vista panorámica con conteo de profesionales y pedidos activos.
+
+## API pública
+- `GET https://api.pyaserv.com/v1/specialists` — lista profesionales.
+- `GET https://api.pyaserv.com/v1/specialists/:id` — perfil individual.
+- `GET https://api.pyaserv.com/v1/specialists/:id/reviews` — promedio + últimas 5 reseñas.
+- `GET https://api.pyaserv.com/v1/listings` — servicios publicados (filterable `?category=`, `?specialist_id=`).
+- `GET https://api.pyaserv.com/v1/requests` — pedidos abiertos.
+
+## Política
+- El contacto entre cliente y profesional ocurre fuera de la plataforma (teléfono, WhatsApp). PyaServ solo presenta.
+- No hay pagos en plataforma; sin comisión por contacto.
+- Los datos de perfil son públicos solo después de login del consultante (anti-scraping).
+
+## Soporte
+- Issues: https://github.com/pya-company/pyaserv/issues

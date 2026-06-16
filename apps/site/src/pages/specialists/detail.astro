@@ -2,7 +2,13 @@
 import Base from '../../layouts/Base.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
-<Base title="Perfil" titleKey="specialist.detail.title" active="specialists">
+<Base
+  title="Perfil"
+  titleKey="specialist.detail.title"
+  description="Perfil del profesional en PyaServ. Contactá directo sin comisiones."
+  descriptionKey="specialist.detail.description"
+  active="specialists"
+>
   <section class="ps-section" data-base={base}>
     <p id="status" class="ps-msg ps-hidden" aria-live="polite" data-i18n="common.loading">Cargando…</p>
     <div id="profile" class="ps-detail" aria-busy="true">
@@ -92,7 +98,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       if (spec.photo) {
         const av = document.getElementById('avatar')
         av.classList.add('ps-avatar--photo')
-        av.innerHTML = `<img class="ps-avatar__img" src="${apiBase}/v1/media/${escape(spec.photo)}" alt="${escape(spec.displayName)}"/>`
+        av.innerHTML = `<img class="ps-avatar__img" width="160" height="160" fetchpriority="high" decoding="async" src="${apiBase}/v1/media/${escape(spec.photo)}" alt="${escape(spec.displayName)}"/>`
       }
 
       if (spec.verified) {

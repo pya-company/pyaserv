@@ -456,7 +456,10 @@ button { font: inherit; cursor: pointer; }
   justify-content: center;
   gap: var(--ps-space-2);
   padding: var(--ps-space-3) var(--ps-space-5);
-  background: var(--ps-acc);
+  /* fixed dark-enough indigo so white text passes WCAG AA on both themes.
+     light-mode --ps-acc (#4f46e5) gives 5.4:1, but dark-mode (#818cf8) gives 2.98:1.
+     Lock the button bg to a single value that always passes. */
+  background: #4338ca;
   color: #fff;
   border: 0;
   border-radius: var(--ps-radius-md);
@@ -476,7 +479,7 @@ button { font: inherit; cursor: pointer; }
   .ps-form button[type="submit"] { width: auto; }
 }
 .ps-btn:hover,
-.ps-form button:hover { background: var(--ps-acc-hover); }
+.ps-form button:hover { background: #3730a3; }
 .ps-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .ps-btn--ghost {
   background: transparent;
@@ -707,7 +710,11 @@ a.ps-card:focus-visible {
 .ps-card__cta a:hover { text-decoration: underline; }
 .ps-card--mini { padding: var(--ps-space-3) var(--ps-space-4); gap: var(--ps-space-2); }
 
-.ps-card--request .ps-chip { background: color-mix(in srgb, var(--ps-warn) 14%, transparent); color: var(--ps-warn); }
+.ps-card--request .ps-chip { background: #fff3e0; color: #92400e; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ps-card--request .ps-chip { background: #3a2a05; color: #fde68a; }
+}
+:root[data-theme="dark"] .ps-card--request .ps-chip { background: #3a2a05; color: #fde68a; }
 
 /* ---------- chips / badges / status ---------- */
 .ps-chip {
@@ -716,11 +723,15 @@ a.ps-card:focus-visible {
   gap: var(--ps-space-1);
   font-size: 0.75rem;
   padding: 2px 10px;
-  background: color-mix(in srgb, var(--ps-acc) 12%, transparent);
-  color: var(--ps-acc);
+  background: #e0e7ff; /* indigo-100 — solid, AAA on text below */
+  color: #312e81; /* indigo-900, ~10:1 on the chip bg */
   border-radius: var(--ps-radius-pill);
   font-weight: 600;
 }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ps-chip { background: #1e1b4b; color: #c7d2fe; }
+}
+:root[data-theme="dark"] .ps-chip { background: #1e1b4b; color: #c7d2fe; }
 .ps-badge {
   display: inline-flex;
   align-items: center;
@@ -945,7 +956,14 @@ a.ps-card:focus-visible {
   color: var(--ps-text);
   font-size: 0.9375rem;
 }
-.ps-banner--warn { background: var(--ps-warn-soft); border-color: var(--ps-warn); }
+/* Force a darker text on the soft amber background — default --ps-warn (#d97706) on
+   --ps-warn-soft (#fffbeb) is ~3.2:1, fails AA. amber-800 (#92400e) gives ~7:1. */
+.ps-banner--warn { background: var(--ps-warn-soft); border-color: var(--ps-warn); color: #92400e; }
+.ps-banner--warn a { color: inherit; text-decoration: underline; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ps-banner--warn { color: #fde68a; }
+}
+:root[data-theme="dark"] .ps-banner--warn { color: #fde68a; }
 
 /* ---------- utility ---------- */
 .ps-grid-2col { display: grid; grid-template-columns: 1fr; gap: var(--ps-space-3); }
