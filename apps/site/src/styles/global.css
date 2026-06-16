@@ -573,6 +573,25 @@ button { font: inherit; cursor: pointer; }
 /* Stack gap modifiers */
 .ps-stack--gap-4 { gap: var(--ps-space-4); }
 
+/* Skeleton placeholder — keeps reserved space + subtle shimmer until content lands */
+.ps-skeleton-block {
+  background: linear-gradient(90deg, var(--ps-surface-2) 0%, var(--ps-surface) 50%, var(--ps-surface-2) 100%);
+  background-size: 200% 100%;
+  border-radius: var(--ps-radius-md);
+  animation: ps-shimmer 1.4s linear infinite;
+  color: transparent;
+}
+[aria-busy="false"] .ps-skeleton-block,
+[aria-busy="true"] .ps-skeleton-block:not(:empty):not(:has(*)) { /* once content arrives */
+  background: none;
+  animation: none;
+  color: inherit;
+}
+@keyframes ps-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* Theme button */
 .ps-theme-btn {
   appearance: none;

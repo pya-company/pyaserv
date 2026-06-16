@@ -66,6 +66,7 @@ export const listingsRoutes = new Hono<AppEnv>()
       ORDER BY s.verified DESC, l.updated_at DESC
       LIMIT 100`
     const result = await c.env.DB.prepare(sql).bind(...params).all<ListingRow & { sp_name: string; sp_barrio: string; sp_verified: number }>()
+    c.header('Cache-Control', 'public, max-age=30, stale-while-revalidate=600')
     return c.json({
       data: result.results.map((r) => ({
         ...toDto(r),

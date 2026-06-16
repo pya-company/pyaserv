@@ -24,6 +24,8 @@ const href = (path: string): string => `${base}${path}`
     <meta name="theme-color" content="#4f46e5" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
+    <link rel="preconnect" href="https://api.pyaserv.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.pyaserv.com" />
     <script>
       // Apply locale + theme to the root element before paint to avoid FOUC.
       // @ts-nocheck

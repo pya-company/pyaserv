@@ -92,6 +92,10 @@ export const specialistsRoutes = new Hono<AppEnv>()
       .bind(c.req.param('id'))
       .first<SpecialistRow>()
     if (!row) throw new NotFoundError({ resource: 'specialist' })
+    // 60s edge cache + 600s stale-while-revalidate — profiles change rarely; PATCH
+    // path invalidates implicitly by returning a new updatedAt that the client uses
+    // to bust if needed. CF's edge cache + browser will both honor.
+    c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600')
     return c.json({ data: toDto(row) })
   })
   .post('/', requireAuth, async (c) => {

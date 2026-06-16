@@ -36,6 +36,7 @@ export const reviewsRoutes = new Hono<AppEnv>()
     )
       .bind(profile.user_id)
       .all<ReviewRow>()
+    c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600')
     return c.json({
       data: {
         average: agg ? Math.round(agg.avg * 10) / 10 : 0,
