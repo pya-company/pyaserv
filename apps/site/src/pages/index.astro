@@ -1,8 +1,33 @@
 ---
 import Base from '~/layouts/Base.astro'
 import T from '~/components/T.astro'
+import { tFor, interp } from '~/lib/i18n.ts'
+
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const href = (p: string): string => `${base}${p}`
+
+// Build-time stats. Fetched once during `astro build`; numbers refresh every
+// deploy. Lets us SSR the social-proof line into the initial HTML so there's
+// no API roundtrip, no MutationObserver-visible swap, no fade-in pop on load.
+const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+  'https://api.pyaserv.com'
+
+const fetchCount = async (path: string): Promise<number> => {
+  try {
+    const r = await fetch(`${API}${path}`)
+    if (!r.ok) return 0
+    const body = await r.json() as { data?: unknown[] }
+    return Array.isArray(body?.data) ? body.data.length : 0
+  } catch { return 0 }
+}
+
+const [specs, reqs] = await Promise.all([
+  fetchCount('/v1/specialists'),
+  fetchCount('/v1/requests'),
+])
+const showStats = specs + reqs > 0
+const statsEs = showStats ? interp(tFor('es', 'home.stats'), { specs, reqs }) : ''
+const statsEn = showStats ? interp(tFor('en', 'home.stats'), { specs, reqs }) : ''
 ---
 <Base
   title="Servicios en Paraguay sin comisiones"
@@ -42,7 +67,12 @@ const href = (p: string): string => `${base}${p}`
   <section class="ps-hero">
     <T k="home.hero.title" as="h1" />
     <T k="home.hero.body" as="p" />
-    <p id="home-stats" class="ps-home-stats" aria-live="polite"></p>
+    {showStats && (
+      <p class="ps-home-stats">
+        <span lang="es" set:html={statsEs} />
+        <span lang="en" set:html={statsEn} />
+      </p>
+    )}
   </section>
 
   <div class="ps-mode-grid">
@@ -68,27 +98,4 @@ const href = (p: string): string => `${base}${p}`
     <T k="home.banner.tail" />
   </p>
 
-  <script>
-    // @ts-nocheck
-    import { apiFetch } from '../lib/api.ts'
-    import { tFor, interp } from '../lib/i18n.ts'
-    ;(async () => {
-      const el = document.getElementById('home-stats')
-      if (!el) return
-      try {
-        const [specs, reqs] = await Promise.all([
-          apiFetch('/v1/specialists').catch(() => []),
-          apiFetch('/v1/requests').catch(() => []),
-        ])
-        const vars = { specs: specs?.length ?? 0, reqs: reqs?.length ?? 0 }
-        if (vars.specs + vars.reqs === 0) return
-        el.innerHTML =
-          `<span lang="es">${interp(tFor('es', 'home.stats'), vars)}</span>` +
-          `<span lang="en">${interp(tFor('en', 'home.stats'), vars)}</span>`
-        el.classList.add('is-loaded')
-      } catch {
-        // network/API failure — leave placeholder height, no error UI here
-      }
-    })()
-  </script>
 </Base>

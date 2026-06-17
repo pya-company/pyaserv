@@ -698,13 +698,7 @@ html[lang="en"] [lang="es"] { display: none; }
   margin: var(--ps-space-4) 0 0;
   font-size: 1rem;
   color: var(--ps-text-muted);
-  min-height: 1.5rem;
-  opacity: 0;
-  transition: opacity 280ms ease-out;
-}
-.ps-home-stats.is-loaded { opacity: 1; }
-@media (prefers-reduced-motion: reduce) {
-  .ps-home-stats { transition: none; }
+  font-variant-numeric: tabular-nums;
 }
 .ps-home-stats strong { color: var(--ps-acc); font-weight: 700; }
 

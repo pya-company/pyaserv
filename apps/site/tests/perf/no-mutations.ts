@@ -63,7 +63,6 @@ const main = async (): Promise<void> => {
             // Ignore stats-line text that legitimately injects later (it's
             // pre-reserved height; never shifts layout).
             const id = target.id || target.parentElement?.id
-            if (id === 'home-stats') continue
             // Loading-state status messages (Cargando… → "N profesionales")
             // live in containers with reserved height.
             if (id === 'status' || id === 'reviews-summary') continue
