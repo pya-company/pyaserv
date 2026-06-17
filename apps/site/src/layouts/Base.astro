@@ -111,8 +111,11 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       // @ts-nocheck
       import { applyI18n, getLocale, setLocale, t } from '../lib/i18n.ts'
 
-      // 1. Walk DOM and translate everything tagged with data-i18n*
+      // 1. Walk DOM and translate everything tagged with data-i18n*. Mark the
+      //    root as ready so the body visibility guard reveals the page for
+      //    non-Spanish locales (Spanish painted directly from the static HTML).
       applyI18n(document)
+      document.documentElement.dataset.i18nReady = '1'
 
       // 2. Localized <title> (use titleKey if provided)
       const titleKey = document.documentElement.dataset.titleKey

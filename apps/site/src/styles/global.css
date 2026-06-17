@@ -514,6 +514,18 @@ html[data-auth="user"] [data-nav-login] { display: none; }
 html[data-loc="es"] .ps-lang-btn[data-lang="es"],
 html[data-loc="en"] .ps-lang-btn[data-lang="en"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
 
+/* Flash-of-wrong-language guard: the HTML is shipped in Spanish (server-side
+   static). For Spanish users (default) the painted text is already correct —
+   show immediately. For English users, we'd paint Spanish first then JS swaps
+   to English → visible flash and text-width reflow. Hide the body until
+   applyI18n() finishes, marked by html[data-i18n-ready=1]. Safety: if JS
+   never runs (disabled or error), reveal after 1.5s so the page is usable. */
+@keyframes ps-reveal-fallback { to { visibility: visible; } }
+html[data-loc="en"]:not([data-i18n-ready]) body {
+  visibility: hidden;
+  animation: ps-reveal-fallback 0s 1.5s forwards;
+}
+
 /* Skip-link — invisible until focused, then anchored top-left over everything */
 .ps-skip {
   position: absolute;
