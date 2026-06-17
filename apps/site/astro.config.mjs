@@ -1,22 +1,20 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
+import swManifest from './src/integrations/sw-manifest.ts'
 
-// Long-term home is https://pyaserv.com (custom domain via GitHub Pages).
-// While the domain is still being acquired, the site also serves on
-// https://undeadliner.github.io/pyaserv/ — set BASE_PATH=/pyaserv/ before
-// `bun run build` to make all links work under that prefix.
 const base = process.env.BASE_PATH ?? '/'
 
 export default defineConfig({
   site: 'https://pyaserv.com',
   base,
   output: 'static',
-  build: {
-    format: 'directory',
-  },
+  build: { format: 'directory' },
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en'],
     routing: { prefixDefaultLocale: false },
   },
+  // sw-manifest: compiles src/sw/sw.ts to dist/sw.js with a precache list of
+  // every emitted route. Registered from Base.astro via setupSwUpdate.
+  integrations: [swManifest()],
 })

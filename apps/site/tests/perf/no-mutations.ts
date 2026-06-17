@@ -95,9 +95,10 @@ const main = async (): Promise<void> => {
             // Loading-state status messages on filtered list pages — Cargando…
             // → "N profesionales" is in a polite live region, fixed height.
             if (id === 'status' || id === 'reviews-summary') continue
-            // Theme button glyph is a single emoji char swap (🌓 → ☀️/🌙) of
-            // identical width — no layout impact.
-            if (id === 'theme-icon') continue
+            // Theme glyph is now rendered via CSS ::before keyed off
+            // html[data-theme] — no JS textContent assignment, no mutation.
+            // Whitelist removed; if a regression re-introduces JS swap, the gate
+            // will (correctly) catch it.
             // Chat compose & dynamic review threads — auth-gated paths only,
             // never visible on the landing/browse routes this gate covers.
             const klass = target.className || target.parentElement?.className || ''

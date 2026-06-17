@@ -17,3 +17,9 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=()
   X-Frame-Options: DENY
+
+# Never let CF Pages cache the service worker — its update logic depends on
+# fresh byte-checks against /sw.js on every load.
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /

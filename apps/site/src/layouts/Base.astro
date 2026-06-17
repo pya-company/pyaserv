@@ -1,6 +1,7 @@
 ---
 import '~/styles/global.css'
 import T from '~/components/T.astro'
+import { ClientRouter } from 'astro:transitions'
 
 interface Props {
   readonly title: string
@@ -40,6 +41,9 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
          pre-paint. External file so CSP can drop 'unsafe-inline' from script-src.
          Parser-blocking position in <head> guarantees pre-body execution. -->
     <script src={href('/bootstrap.js')}></script>
+    <!-- Astro's MPA-style view transitions — fade between pages, persist scroll
+         position, keep our pre-paint <html data-…> attrs across navigations. -->
+    <ClientRouter />
   </head>
   <body>
     <a href="#main-content" class="ps-skip"><T k="nav.skip" /></a>
@@ -64,7 +68,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
         </div>
         <button type="button" class="ps-theme-btn" id="theme-btn" data-i18n-aria="nav.theme_label" aria-label="Cambiar tema">
-          <span id="theme-icon" aria-hidden="true">🌓</span>
+          <span class="ps-theme-icon" aria-hidden="true"></span>
         </button>
       </nav>
     </header>
@@ -108,9 +112,10 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       const token = sessionStorage.getItem('pyaserv.token')
       document.documentElement.dataset.auth = token ? 'user' : 'guest'
 
-      // 5. Theme cycle button — light → dark → auto
+      // 5. Theme cycle button — light → dark → auto.
+      // Pre-paint state was already set by bootstrap.js (html[data-theme]).
+      // CSS draws the icon from that attribute; no JS textContent swap, no flash.
       const themeBtn = document.getElementById('theme-btn')
-      const themeIcon = document.getElementById('theme-icon')
       const isTheme = (v) => v === 'light' || v === 'dark' || v === 'auto'
       const readTheme = () => {
         try {
@@ -120,11 +125,8 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       }
       const writeTheme = (v) => {
         try { localStorage.setItem('pyaserv.theme', v) } catch {}
-        if (v === 'auto') delete document.documentElement.dataset.theme
-        else document.documentElement.dataset.theme = v
-        themeIcon.textContent = v === 'light' ? '☀️' : v === 'dark' ? '🌙' : '🌓'
+        document.documentElement.dataset.theme = v
       }
-      writeTheme(readTheme())
       themeBtn?.addEventListener('click', () => {
         const cur = readTheme()
         writeTheme(cur === 'light' ? 'dark' : cur === 'dark' ? 'auto' : 'light')
@@ -146,6 +148,24 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         setOpen(false)
       })
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
+    </script>
+    <script>
+      // @ts-nocheck
+      // Service-worker registration with forced rollover on new deploys.
+      // Logic in features/sw-update/register-sw.ts (testable, IO injected).
+      // Skipped on localhost so dev iterates without cache surprises.
+      import { setupSwUpdate } from '../features/sw-update/register-sw.ts'
+      if ('serviceWorker' in navigator && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        setupSwUpdate(
+          {
+            hasController: () => !!navigator.serviceWorker.controller,
+            register: () => navigator.serviceWorker.register('/sw.js'),
+            onControllerChange: (h) =>
+              navigator.serviceWorker.addEventListener('controllerchange', h),
+          },
+          { reload: () => location.reload() },
+        )
+      }
     </script>
   </body>
 </html>

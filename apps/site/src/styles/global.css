@@ -121,6 +121,11 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Reserve scrollbar gutter so layout doesn't jump horizontally when the page
+   gains/loses a scrollbar (e.g. dropdown opens, content shrinks). Stable both
+   keeps the gutter mirrored if a left scrollbar appears (RTL). */
+html { scrollbar-gutter: stable; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -651,6 +656,12 @@ html[lang="en"] [lang="es"] { display: none; }
 }
 .ps-theme-btn:hover { background: var(--ps-acc-soft); border-color: var(--ps-acc); }
 .ps-theme-btn:focus-visible { outline: 2px solid var(--ps-acc); outline-offset: 2px; }
+/* Theme glyph rendered from html[data-theme] — bootstrap.js sets the attribute
+   synchronously in <head>, so the right icon is committed on the first frame.
+   Removed: JS textContent swap that caused a brief sun-flash on dark reload. */
+.ps-theme-icon::before { content: '🌓'; }
+html[data-theme="light"] .ps-theme-icon::before { content: '☀️'; }
+html[data-theme="dark"] .ps-theme-icon::before { content: '🌙'; }
 
 /* Stats grid (specialist dashboard) */
 .ps-stats-grid {
