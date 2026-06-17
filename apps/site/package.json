@@ -10,8 +10,9 @@
     "preview": "astro preview",
     "type-check": "astro check",
     "astro": "astro",
-    "test:perf": "bun tests/perf/lighthouse.ts && bun tests/perf/no-mutations.ts",
-    "test:mut": "bun tests/perf/no-mutations.ts"
+    "test:perf": "bun tests/perf/lighthouse.ts && bun tests/perf/ssr-payload.ts && bun tests/perf/no-mutations.ts",
+    "test:mut": "bun tests/perf/no-mutations.ts",
+    "test:ssr": "bun tests/perf/ssr-payload.ts"
   },
   "dependencies": {
     "astro": "^5.0.0"

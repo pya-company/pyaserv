@@ -2,7 +2,53 @@
 import Base from '~/layouts/Base.astro'
 import BarriosDatalist from '~/components/BarriosDatalist.astro'
 import T from '~/components/T.astro'
+import { tFor } from '~/lib/i18n.ts'
+import { CATEGORIES, initials, mediaUrl } from '~/lib/api.ts'
+
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+// Build-time fetch of the initial (unfiltered) specialist list. SSR'd into the
+// page so users see real cards from FCP — no skeleton, no post-paint mutation,
+// no layout jump. Filter inputs still re-fetch client-side and replace cards,
+// but that's USER-INITIATED so it doesn't count against the CLS gate.
+const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+  'https://api.pyaserv.com'
+
+interface Specialist {
+  readonly id: string
+  readonly displayName: string
+  readonly headline: string
+  readonly barrio: string
+  readonly photo: string | null
+  readonly verified: boolean
+  readonly primaryCategory: string | null
+  readonly ratingAvg: number
+  readonly ratingCount: number
+}
+
+const fetchSpecialists = async (): Promise<ReadonlyArray<Specialist>> => {
+  try {
+    const r = await fetch(`${API}/v1/specialists`)
+    if (!r.ok) return []
+    const body = await r.json() as { data?: ReadonlyArray<Specialist> }
+    return body.data ?? []
+  } catch { return [] }
+}
+
+const items = await fetchSpecialists()
+const categoryEmoji = (value: string | null): string =>
+  CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
+const renderStars = (n: number): string =>
+  '★★★★★'.slice(0, Math.round(n)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(n))
+
+const countOneEs = tFor('es', 'specialists.count.one')
+const countManyEs = tFor('es', 'specialists.count.many')
+const countOneEn = tFor('en', 'specialists.count.one')
+const countManyEn = tFor('en', 'specialists.count.many')
+const ctaEs = tFor('es', 'specialists.card.cta')
+const ctaEn = tFor('en', 'specialists.card.cta')
+const verifiedEs = tFor('es', 'specialists.card.verified')
+const verifiedEn = tFor('en', 'specialists.card.verified')
 ---
 <Base
   title="Profesionales"
@@ -31,8 +77,58 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <button type="button" id="near-me-btn" class="ps-btn ps-btn--ghost ps-btn--sm"><T k="specialists.filter.near_me" /></button>
     </form>
 
-    <p id="status" class="ps-msg" aria-live="polite"><T k="common.loading" /></p>
-    <div id="results" class="ps-cards" aria-busy="true"></div>
+    <p id="status" class="ps-msg" aria-live="polite">
+      <span lang="es">{items.length} {items.length === 1 ? countOneEs : countManyEs}</span>
+      <span lang="en">{items.length} {items.length === 1 ? countOneEn : countManyEn}</span>
+    </p>
+    <div id="results" class="ps-cards">
+      {items.map((s) => {
+        const catLabelEs = s.primaryCategory ? tFor('es', `category.${s.primaryCategory}`) : null
+        const catLabelEn = s.primaryCategory ? tFor('en', `category.${s.primaryCategory}`) : null
+        return (
+          <a class="ps-card ps-card--with-avatar" href={`${base}/specialists/detail/?id=${s.id}`}>
+            <div class={`ps-card__avatar ${s.photo ? 'ps-avatar--photo' : 'ps-avatar--initials'}`}>
+              {s.photo
+                ? <img class="ps-avatar__img" width="56" height="56" loading="lazy" decoding="async" alt="" src={mediaUrl(s.photo)} />
+                : <span class="ps-avatar__initials" aria-hidden="true">{initials(s.displayName)}</span>}
+            </div>
+            <div class="ps-card__main">
+              <div class="ps-row">
+                <h2>{s.displayName}</h2>
+                {s.verified && (
+                  <span class="ps-badge">
+                    <span lang="es">{verifiedEs}</span>
+                    <span lang="en">{verifiedEn}</span>
+                  </span>
+                )}
+              </div>
+              <p class="ps-card__sub">📍 {s.barrio}</p>
+              {s.primaryCategory && (
+                <div class="ps-row">
+                  <span class="ps-chip">
+                    {categoryEmoji(s.primaryCategory)}
+                    {' '}
+                    <span lang="es">{catLabelEs}</span>
+                    <span lang="en">{catLabelEn}</span>
+                  </span>
+                  {s.ratingCount > 0 && (
+                    <>
+                      <span class="ps-stars-inline" aria-label={`${s.ratingAvg} de 5`}>{renderStars(s.ratingAvg)}</span>
+                      <span class="ps-card__sub">{s.ratingAvg} ({s.ratingCount})</span>
+                    </>
+                  )}
+                </div>
+              )}
+              <p class="ps-card__body">{s.headline}</p>
+              <div class="ps-card__cta">
+                <span lang="es">{ctaEs}</span>
+                <span lang="en">{ctaEn}</span>
+              </div>
+            </div>
+          </a>
+        )
+      })}
+    </div>
   </section>
 
   <BarriosDatalist />
@@ -135,6 +231,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 },
       )
     })
-    load()
+    // NOTE: no initial load() — cards are SSR'd inline. Filter input still triggers it.
   </script>
 </Base>

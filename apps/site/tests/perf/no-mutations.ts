@@ -1,28 +1,38 @@
 // @ts-nocheck
-// CI gate test: no DOM mutations to visible content after First Contentful Paint.
+// CI gate test: no post-FCP visible-content mutations AND zero layout shift.
 //
-// User report: "text pops in after layout" on landing with English browser.
-// Root cause was the JS i18n swap (applyI18n rewrote every data-i18n
-// textContent post-paint). The fix is build-time dual-render via <T>
-// component + CSS-based locale hide. This test guards against any future
-// regression — if anyone re-introduces a JS-driven text/layout swap, the
-// CI gate catches it.
+// History:
+// 1. User reported "text pops in after layout" on landing with English browser
+//    — root cause was the JS i18n swap (applyI18n rewrote every data-i18n
+//    textContent post-paint). Fixed via build-time dual-render (<T> component).
+// 2. User then reported a perceived layout jump after the home-stats widget
+//    fade-in. CLS measured 0 (height was reserved) but the widget materialised
+//    visibly post-paint. Fixed by SSR-ing the numbers in index.astro frontmatter
+//    and applying the same to /specialists and /clients listing pages.
+//
+// This test asserts BOTH:
+//   - Zero mutations to visible-content nodes after FCP.
+//   - Zero cumulative layout shift (sum of layout-shift entries without recent
+//     input). Strict — no skeleton-block whitelist. Any future regression
+//     that re-introduces a post-paint render fails CI.
 //
 // Method:
 // - Launch headless Chrome via puppeteer-core (chrome-launcher gives us a port).
 // - Set localStorage.pyaserv.locale = 'en' BEFORE navigation so the page
-//   thinks the user prefers English.
-// - Inject a MutationObserver before <html> parse via Page.addInitScript.
+//   thinks the user prefers English (the most-likely flash case).
+// - Inject a MutationObserver + PerformanceObserver(layout-shift) + FCP
+//   capture via Page.addInitScript.
 // - Navigate, wait for load + 2s settle.
-// - Read the observer's collected mutations.
-// - Filter to those after FCP that touch text or visible-content layout.
-// - Assert the filtered count is 0.
+// - Read the observers' collected data.
+// - Filter mutations to those after FCP that touch visible content.
+// - Assert mutation count = 0 AND cumulative shift < 0.01 per route.
 
 import puppeteer from 'puppeteer-core'
 import { launch } from 'chrome-launcher'
 
 const BASE = process.env.PYASERV_BASE_URL ?? 'https://pyaserv.com'
 const ROUTES = ['/', '/specialists/', '/clients/', '/login/']
+const CLS_BUDGET = 0.01
 
 const main = async (): Promise<void> => {
   const chrome = await launch({
@@ -42,9 +52,11 @@ const main = async (): Promise<void> => {
       await page.evaluateOnNewDocument(() => {
         try { localStorage.setItem('pyaserv.locale', 'en') } catch {}
       })
-      // Install the observer at the earliest possible moment.
+      // Install the observers at the earliest possible moment.
       await page.evaluateOnNewDocument(() => {
         window.__mutations = []
+        window.__shifts = []
+        window.__fcp = null
         const safe = (n) => n && (n.tagName || n.nodeName)
         const interesting = (target) => {
           const tag = safe(target)
@@ -60,23 +72,18 @@ const main = async (): Promise<void> => {
           for (const r of records) {
             const target = r.type === 'characterData' ? r.target.parentElement : r.target
             if (!interesting(target)) continue
-            // Ignore stats-line text that legitimately injects later (it's
-            // pre-reserved height; never shifts layout).
             const id = target.id || target.parentElement?.id
-            // Loading-state status messages (Cargando… → "N profesionales")
-            // live in containers with reserved height.
+            // Loading-state status messages on filtered list pages — Cargando…
+            // → "N profesionales" is in a polite live region, fixed height.
             if (id === 'status' || id === 'reviews-summary') continue
             // Theme button glyph is a single emoji char swap (🌓 → ☀️/🌙) of
             // identical width — no layout impact.
             if (id === 'theme-icon') continue
-            // Ignore listing/results/reviews dynamic containers — they have
-            // reserved min-heights via .ps-skeleton-block and are expected
-            // to inject async content.
+            // Chat compose & dynamic review threads — auth-gated paths only,
+            // never visible on the landing/browse routes this gate covers.
             const klass = target.className || target.parentElement?.className || ''
             if (typeof klass === 'string' && (
-              klass.includes('ps-cards') ||
               klass.includes('ps-chat') ||
-              klass.includes('ps-skeleton-block') ||
               klass.includes('reviews-list') ||
               klass.includes('ps-stat-card')
             )) continue
@@ -109,6 +116,28 @@ const main = async (): Promise<void> => {
             }
           }).observe({ type: 'paint', buffered: true })
         } catch {}
+        // Capture layout shifts (CLS contributors).
+        try {
+          new PerformanceObserver((list) => {
+            for (const e of list.getEntries()) {
+              const sources = []
+              for (const s of (e.sources || [])) {
+                const n = s.node
+                sources.push({
+                  tag: safe(n),
+                  id: n?.id || null,
+                  cls: n?.classList ? [...n.classList].slice(0, 3).join(' ') : null,
+                })
+              }
+              window.__shifts.push({
+                value: e.value,
+                hadRecentInput: e.hadRecentInput,
+                startTime: e.startTime,
+                sources,
+              })
+            }
+          }).observe({ type: 'layout-shift', buffered: true })
+        } catch {}
       })
 
       const url = `${BASE}${path}`
@@ -119,14 +148,32 @@ const main = async (): Promise<void> => {
 
       const result = await page.evaluate(() => {
         const fcp = window.__fcp || 0
-        const mutations = window.__mutations || []
-        const after = mutations.filter((m) => m.ts > fcp)
-        return { fcp, total: mutations.length, after: after.length, sample: after.slice(0, 5) }
+        const muts = window.__mutations || []
+        const afterMuts = muts.filter((m) => m.ts > fcp)
+        const shifts = window.__shifts || []
+        const cls = shifts
+          .filter((s) => !s.hadRecentInput)
+          .reduce((acc, s) => acc + s.value, 0)
+        const topShifts = shifts
+          .filter((s) => !s.hadRecentInput && s.value > 0)
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 3)
+          .map((s) => ({ v: s.value.toFixed(4), ts: Math.round(s.startTime), sources: s.sources }))
+        return {
+          fcp,
+          mutationsAfter: afterMuts.length,
+          mutationSample: afterMuts.slice(0, 5),
+          cls,
+          topShifts,
+        }
       })
 
-      console.log(`  FCP=${Math.round(result.fcp)}ms  mutations after FCP=${result.after}`)
-      if (result.after > 0) {
-        failures.push(`${path}: ${result.after} mutation(s) after FCP — sample: ${JSON.stringify(result.sample)}`)
+      console.log(`  FCP=${Math.round(result.fcp)}ms  mutations after FCP=${result.mutationsAfter}  CLS=${result.cls.toFixed(4)}`)
+      if (result.mutationsAfter > 0) {
+        failures.push(`${path}: ${result.mutationsAfter} mutation(s) after FCP — sample: ${JSON.stringify(result.mutationSample)}`)
+      }
+      if (result.cls > CLS_BUDGET) {
+        failures.push(`${path}: CLS ${result.cls.toFixed(4)} > budget ${CLS_BUDGET} — top: ${JSON.stringify(result.topShifts)}`)
       }
       await page.close()
     }
@@ -137,11 +184,11 @@ const main = async (): Promise<void> => {
   }
 
   if (failures.length > 0) {
-    console.error('\n❌ Post-FCP mutations detected:')
+    console.error('\n❌ Post-FCP regressions detected:')
     for (const f of failures) console.error('  -', f)
     process.exit(1)
   }
-  console.log('\n✅ No post-FCP visible-content mutations on any tested route.')
+  console.log('\n✅ Zero post-FCP mutations AND CLS=0 on every tested route.')
 }
 
 main().catch((e) => {

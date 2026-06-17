@@ -2,7 +2,69 @@
 import Base from '~/layouts/Base.astro'
 import BarriosDatalist from '~/components/BarriosDatalist.astro'
 import T from '~/components/T.astro'
+import { tFor, formatGs as formatGsFor } from '~/lib/i18n.ts'
+import { CATEGORIES } from '~/lib/api.ts'
+
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+// Build-time fetch of the initial (unfiltered) requests list. Same approach
+// as specialists.astro — SSR the cards into the HTML so users see real
+// requests at FCP. Filter input still triggers client-side re-fetch.
+const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+  'https://api.pyaserv.com'
+
+interface ClientRequest {
+  readonly id: string
+  readonly category: string
+  readonly title: string
+  readonly description: string
+  readonly budgetGs: number
+  readonly barrio: string
+  readonly createdAt: number
+}
+
+const fetchRequests = async (): Promise<ReadonlyArray<ClientRequest>> => {
+  try {
+    const r = await fetch(`${API}/v1/requests`)
+    if (!r.ok) return []
+    const body = await r.json() as { data?: ReadonlyArray<ClientRequest> }
+    return body.data ?? []
+  } catch { return [] }
+}
+
+const items = await fetchRequests()
+const categoryEmoji = (value: string): string =>
+  CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
+
+const countOneEs = tFor('es', 'clients.count.one')
+const countManyEs = tFor('es', 'clients.count.many')
+const countOneEn = tFor('en', 'clients.count.one')
+const countManyEn = tFor('en', 'clients.count.many')
+const ctaEs = tFor('es', 'clients.card.cta')
+const ctaEn = tFor('en', 'clients.card.cta')
+
+// Relative time — render BOTH locales server-side. Reuses i18n locale-aware formatter.
+const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
+  const seconds = Math.floor(Date.now() / 1000) - ts
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  if (loc === 'es') {
+    if (seconds < 60) return 'hace un momento'
+    if (minutes < 60) return `hace ${minutes} min`
+    if (hours < 24) return `hace ${hours} h`
+    if (days < 30) return `hace ${days} d`
+    return `hace ${Math.floor(days / 30)} m`
+  }
+  if (seconds < 60) return 'just now'
+  if (minutes < 60) return `${minutes} min ago`
+  if (hours < 24) return `${hours} h ago`
+  if (days < 30) return `${days} d ago`
+  return `${Math.floor(days / 30)} mo ago`
+}
+
+const formatGs = (n: number): string => `Gs ${n.toLocaleString('es-PY')}`
+const truncate = (s: string, n = 220): string => s.length > n ? `${s.slice(0, n)}…` : s
 ---
 <Base
   title="Pedidos"
@@ -30,8 +92,39 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       </label>
     </form>
 
-    <p id="status" class="ps-msg" aria-live="polite"><T k="common.loading" /></p>
-    <div id="results" class="ps-cards" aria-busy="true"></div>
+    <p id="status" class="ps-msg" aria-live="polite">
+      <span lang="es">{items.length} {items.length === 1 ? countOneEs : countManyEs}</span>
+      <span lang="en">{items.length} {items.length === 1 ? countOneEn : countManyEn}</span>
+    </p>
+    <div id="results" class="ps-cards">
+      {items.map((r) => {
+        const catLabelEs = tFor('es', `category.${r.category}`)
+        const catLabelEn = tFor('en', `category.${r.category}`)
+        return (
+          <a class="ps-card ps-card--request" href={`${base}/clients/detail/?id=${r.id}`}>
+            <div class="ps-row">
+              <span class="ps-chip">
+                {categoryEmoji(r.category)}
+                {' '}
+                <span lang="es">{catLabelEs}</span>
+                <span lang="en">{catLabelEn}</span>
+              </span>
+              <span class="ps-card__sub">
+                <span lang="es">{relativeFor(r.createdAt, 'es')}</span>
+                <span lang="en">{relativeFor(r.createdAt, 'en')}</span>
+              </span>
+            </div>
+            <h2>{r.title}</h2>
+            <p class="ps-card__sub">📍 {r.barrio} · 💰 {formatGs(r.budgetGs)}</p>
+            <p class="ps-card__body">{truncate(r.description)}</p>
+            <div class="ps-card__cta">
+              <span lang="es">{ctaEs}</span>
+              <span lang="en">{ctaEn}</span>
+            </div>
+          </a>
+        )
+      })}
+    </div>
   </section>
 
   <BarriosDatalist />
@@ -98,6 +191,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
     form.addEventListener('input', load)
     form.addEventListener('submit', (e) => { e.preventDefault(); load() })
-    load()
+    // NOTE: no initial load() — cards are SSR'd inline. Filter input still triggers it.
   </script>
 </Base>
