@@ -1,6 +1,7 @@
 ---
 import Base from '~/layouts/Base.astro'
 import BarriosDatalist from '~/components/BarriosDatalist.astro'
+import T from '~/components/T.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base
@@ -12,25 +13,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 >
   <section class="ps-section" data-base={base}>
     <div class="ps-page-head">
-      <h1 data-i18n="specialists.heading">Profesionales disponibles</h1>
-      <p data-i18n="specialists.intro">Filtrá por categoría o barrio. El contacto se hace fuera de la plataforma; PyaServ solo presenta.</p>
+      <T k="specialists.heading" as="h1" />
+      <T k="specialists.intro" as="p" />
     </div>
 
     <form id="filters" class="ps-filters" autocomplete="off">
       <label>
-        <span data-i18n="specialists.filter.category">Categoría</span>
-        <select name="category" id="f-category">
+        <T k="specialists.filter.category" as="span" />
+        <select name="category" id="f-category" aria-label="Categoría">
           <option value="" data-i18n="specialists.filter.category.all">Todas</option>
         </select>
       </label>
       <label>
-        <span data-i18n="specialists.filter.barrio">Barrio</span>
+        <T k="specialists.filter.barrio" as="span" />
         <input type="text" name="barrio" id="f-barrio" list="ps-barrios" data-i18n-placeholder="specialists.filter.barrio.placeholder" placeholder="Villa Morra, Carmelitas…" />
       </label>
-      <button type="button" id="near-me-btn" class="ps-btn ps-btn--ghost ps-btn--sm" data-i18n="specialists.filter.near_me">📍 Cerca de mí</button>
+      <button type="button" id="near-me-btn" class="ps-btn ps-btn--ghost ps-btn--sm"><T k="specialists.filter.near_me" /></button>
     </form>
 
-    <p id="status" class="ps-msg" aria-live="polite" data-i18n="common.loading">Cargando…</p>
+    <p id="status" class="ps-msg" aria-live="polite"><T k="common.loading" /></p>
     <div id="results" class="ps-cards" aria-busy="true"></div>
   </section>
 

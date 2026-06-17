@@ -1,5 +1,6 @@
 ---
 import '~/styles/global.css'
+import T from '~/components/T.astro'
 
 interface Props {
   readonly title: string
@@ -41,7 +42,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
     <script src={href('/bootstrap.js')}></script>
   </head>
   <body>
-    <a href="#main-content" class="ps-skip" data-i18n="nav.skip">Saltar al contenido</a>
+    <a href="#main-content" class="ps-skip"><T k="nav.skip" /></a>
     <header class="ps-topbar" id="topbar">
       <a href={href('/')} class="ps-topbar__brand">
         <span class="ps-topbar__brand-em">Pya</span>Serv
@@ -54,13 +55,13 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         </svg>
       </button>
       <nav class="ps-topbar__nav" id="topnav" data-i18n-aria="nav.primary_aria" aria-label="Principal">
-        <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined} data-i18n="nav.specialists">Profesionales</a>
-        <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined} data-i18n="nav.clients">Pedidos</a>
-        <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me data-i18n="nav.me">Mi panel</a>
-        <a href={href('/login/')} aria-current={active === 'login' ? 'page' : undefined} data-nav-login data-i18n="nav.login">Ingresar</a>
+        <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}><T k="nav.specialists" /></a>
+        <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}><T k="nav.clients" /></a>
+        <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me><T k="nav.me" /></a>
+        <a href={href('/login/')} aria-current={active === 'login' ? 'page' : undefined} data-nav-login><T k="nav.login" /></a>
         <div class="ps-lang-switch" role="group" data-i18n-aria="nav.lang_label" aria-label="Idioma">
-          <button type="button" class="ps-lang-btn" data-lang="es" data-i18n="nav.lang_es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
-          <button type="button" class="ps-lang-btn" data-lang="en" data-i18n="nav.lang_en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
+          <button type="button" class="ps-lang-btn" data-lang="es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
+          <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
         </div>
         <button type="button" class="ps-theme-btn" id="theme-btn" data-i18n-aria="nav.theme_label" aria-label="Cambiar tema">
           <span id="theme-icon" aria-hidden="true">🌓</span>
@@ -71,7 +72,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       <slot />
     </main>
     <footer class="ps-foot">
-      © PyaServ · <a href={href('/')} data-i18n="foot.brother">hermano de PyaEats</a> · <span data-i18n="foot.built_on">construido sobre pya-platform</span>
+      © PyaServ · <a href={href('/')}><T k="foot.brother" /></a> · <T k="foot.built_on" />
     </footer>
     <script>
       // @ts-nocheck

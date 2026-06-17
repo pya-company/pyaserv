@@ -1,5 +1,6 @@
 ---
 import Base from '~/layouts/Base.astro'
+import T from '~/components/T.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base
@@ -10,26 +11,26 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   active="login"
 >
   <section class="ps-section" data-base={base} style="max-width:28rem;margin:auto">
-    <h1 data-i18n="login.title">Iniciar sesión</h1>
-    <p data-i18n="login.intro">Sin contraseñas — te mandamos un código de 6 dígitos por email.</p>
+    <T k="login.title" as="h1" />
+    <T k="login.intro" as="p" />
 
     <div class="ps-login-card">
     <form id="start-form" class="ps-form">
       <label>
-        <span data-i18n="login.email">Email</span>
+        <T k="login.email" as="span" />
         <input type="email" name="email" required autocomplete="email" data-i18n-placeholder="login.email.placeholder" placeholder="tunombre@correo.com" />
       </label>
-      <button type="submit" class="ps-btn" data-i18n="login.send_code">Enviar código</button>
+      <button type="submit" class="ps-btn"><T k="login.send_code" /></button>
     </form>
 
     <form id="verify-form" class="ps-form" hidden>
       <label>
-        <span data-i18n="login.code">Código (6 dígitos)</span>
+        <T k="login.code" as="span" />
         <input type="text" name="code" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" maxlength="6" />
       </label>
       <div class="ps-row">
-        <button type="submit" class="ps-btn" data-i18n="login.confirm">Confirmar</button>
-        <button type="button" id="back" class="ps-btn ps-btn--ghost" data-i18n="login.change_email">Cambiar email</button>
+        <button type="submit" class="ps-btn"><T k="login.confirm" /></button>
+        <button type="button" id="back" class="ps-btn ps-btn--ghost"><T k="login.change_email" /></button>
       </div>
     </form>
 

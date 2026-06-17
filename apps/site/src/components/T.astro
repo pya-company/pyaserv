@@ -1,0 +1,31 @@
+---
+/* Dual-language inline render. Emits BOTH Spanish and English text at build
+   time wrapped in lang-tagged spans; CSS in global.css hides the non-active
+   one based on <html lang>. Result: zero runtime text swap, zero pop-in
+   flash for English (or any other) users.
+
+   Usage:
+     <T k="home.hero.title" />
+     <T k="home.hero.title" as="h1" class="page-h1" />
+*/
+import { ES, EN } from '../lib/i18n.ts'
+
+interface Props {
+  /** i18n key — must exist in both ES and EN dictionaries */
+  readonly k: string
+  /** Tag to render. Defaults to <span>. Use 'h1', 'p', 'strong' etc. */
+  readonly as?: string
+  /** Optional class on the outer element. */
+  readonly class?: string
+  /** Optional fallback for keys missing in a dict — defaults to the key. */
+  readonly fallback?: string
+}
+
+const { k, as = 'span', class: cls, fallback } = Astro.props
+
+const es = (ES as Record<string, string>)[k] ?? fallback ?? k
+const en = (EN as Record<string, string>)[k] ?? fallback ?? k
+
+const Tag = as as keyof HTMLElementTagNameMap
+---
+<Tag class={cls}><span lang="es">{es}</span><span lang="en">{en}</span></Tag>

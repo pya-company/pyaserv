@@ -47,7 +47,7 @@ export const setLocale = (l: Locale): void => {
 
 type Dict = Readonly<Record<string, string>>
 
-const ES: Dict = {
+export const ES: Dict = {
   // -------- common --------
   'common.loading': 'Cargando…',
   'common.sending': 'Enviando…',
@@ -353,7 +353,7 @@ const ES: Dict = {
   'error.network': 'Error de red. Intentá de nuevo.',
 }
 
-const EN: Dict = {
+export const EN: Dict = {
   // -------- common --------
   'common.loading': 'Loading…',
   'common.sending': 'Sending…',

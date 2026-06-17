@@ -1,5 +1,6 @@
 ---
 import Base from '~/layouts/Base.astro'
+import T from '~/components/T.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const href = (p: string): string => `${base}${p}`
 ---
@@ -39,59 +40,31 @@ const href = (p: string): string => `${base}${p}`
     ],
   })} />
   <section class="ps-hero">
-    <h1 data-i18n="home.hero.title">Servicios en Paraguay, sin intermediarios.</h1>
-    <p data-i18n="home.hero.body">
-      Si ofrecés un servicio o si buscás a alguien que resuelva algo concreto,
-      PyaServ tiene un lado para vos. Nada de comisiones por presentar — el trato lo cierran ustedes.
-    </p>
+    <T k="home.hero.title" as="h1" />
+    <T k="home.hero.body" as="p" />
     <p id="home-stats" class="ps-home-stats" aria-live="polite"></p>
   </section>
 
   <div class="ps-mode-grid">
     <a href={href('/specialists/')} class="ps-mode-card ps-mode-card--specialist">
       <span class="ps-mode-card__icon" aria-hidden="true">🛠️</span>
-      <h2 class="ps-mode-card__title" data-i18n="home.specialists.title">Necesito a un profesional</h2>
-      <p class="ps-mode-card__desc" data-i18n="home.specialists.desc">
-        Plomeros, electricistas, profes, peluqueras — buscá por barrio y categoría.
-        Contactá directo cuando te decidas.
-      </p>
-      <span class="ps-mode-card__cta" data-i18n="home.specialists.cta">Ver profesionales →</span>
+      <T k="home.specialists.title" as="h2" class="ps-mode-card__title" />
+      <T k="home.specialists.desc" as="p" class="ps-mode-card__desc" />
+      <T k="home.specialists.cta" as="span" class="ps-mode-card__cta" />
     </a>
 
     <a href={href('/clients/')} class="ps-mode-card ps-mode-card--client">
       <span class="ps-mode-card__icon" aria-hidden="true">📢</span>
-      <h2 class="ps-mode-card__title" data-i18n="home.clients.title">Ofrezco un servicio</h2>
-      <p class="ps-mode-card__desc" data-i18n="home.clients.desc">
-        Mirá los pedidos abiertos en tu zona. Si encaja con lo tuyo, escribiles directo —
-        sin filtros, sin pago para postularte.
-      </p>
-      <span class="ps-mode-card__cta" data-i18n="home.clients.cta">Ver pedidos →</span>
+      <T k="home.clients.title" as="h2" class="ps-mode-card__title" />
+      <T k="home.clients.desc" as="p" class="ps-mode-card__desc" />
+      <T k="home.clients.cta" as="span" class="ps-mode-card__cta" />
     </a>
   </div>
 
   <p class="ps-banner" id="home-banner">
-    <strong data-i18n="home.banner.status_label">Estado:</strong>
-    <span data-i18n="home.banner.body">MVP en vivo. Crearás tu perfil de profesional o tu pedido en el panel</span>
-    <a href={href('/me/')} data-i18n="home.banner.cta">Mi panel</a>.
-    <span data-i18n="home.banner.tail">Si todavía no tenés cuenta, te creamos una con tu email — sin contraseñas.</span>
+    <T k="home.banner.status_label" as="strong" />
+    <T k="home.banner.body" />
+    <a href={href('/me/')}><T k="home.banner.cta" /></a>.
+    <T k="home.banner.tail" />
   </p>
-
-  <script>
-    // @ts-nocheck
-    import { apiFetch } from '../lib/api.ts'
-    import { interp, t } from '../lib/i18n.ts'
-    ;(async () => {
-      try {
-        const [specs, reqs] = await Promise.all([
-          apiFetch('/v1/specialists').catch(() => []),
-          apiFetch('/v1/requests').catch(() => []),
-        ])
-        const total = (specs?.length ?? 0) + (reqs?.length ?? 0)
-        if (total === 0) return
-        const el = document.getElementById('home-stats')
-        if (!el) return
-        el.innerHTML = interp(t('home.stats'), { specs: specs.length, reqs: reqs.length })
-      } catch {}
-    })()
-  </script>
 </Base>

@@ -514,17 +514,14 @@ html[data-auth="user"] [data-nav-login] { display: none; }
 html[data-loc="es"] .ps-lang-btn[data-lang="es"],
 html[data-loc="en"] .ps-lang-btn[data-lang="en"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
 
-/* Flash-of-wrong-language guard: the HTML is shipped in Spanish (server-side
-   static). For Spanish users (default) the painted text is already correct —
-   show immediately. For English users, we'd paint Spanish first then JS swaps
-   to English → visible flash and text-width reflow. Hide the body until
-   applyI18n() finishes, marked by html[data-i18n-ready=1]. Safety: if JS
-   never runs (disabled or error), reveal after 1.5s so the page is usable. */
-@keyframes ps-reveal-fallback { to { visibility: visible; } }
-html[data-loc="en"]:not([data-i18n-ready]) body {
-  visibility: hidden;
-  animation: ps-reveal-fallback 0s 1.5s forwards;
-}
+/* Dual-language render — see components/T.astro. We ship both ES and EN text
+   in the HTML and hide the wrong one via html[lang]. Zero JS, zero pop-in,
+   zero text width swap. Works on the first frame because the head inline
+   bootstrap.js sets <html lang> + <html data-loc> before <body> parses. */
+html[lang="es"] [lang="en"],
+html[lang="en"] [lang="es"] { display: none; }
+/* Reset that's only for descendants of our T component — we don't want to
+   accidentally hide content that uses lang for genuine multilingual quoting. */
 
 /* Skip-link — invisible until focused, then anchored top-left over everything */
 .ps-skip {
