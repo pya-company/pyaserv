@@ -10,6 +10,7 @@
 // reverts to client-side rendering, the gate trips.
 
 const BASE = process.env.PYASERV_BASE_URL ?? 'https://pyaserv.com'
+const API = process.env.PYASERV_API_URL ?? 'https://api.pyaserv.com'
 
 interface RouteCheck {
   readonly path: string
@@ -18,7 +19,44 @@ interface RouteCheck {
   readonly mustContain: ReadonlyArray<{ readonly label: string; readonly re: RegExp }>
 }
 
-const CHECKS: ReadonlyArray<RouteCheck> = [
+// Pick a real specialist/request id from the live API so we can audit the
+// SSR'd detail page that actually exists at build time.
+const pickFirstId = async (collection: 'specialists' | 'requests'): Promise<string | null> => {
+  try {
+    const r = await fetch(`${API}/v1/${collection}`)
+    if (!r.ok) return null
+    const body = await r.json() as { data?: ReadonlyArray<{ id: string }> }
+    return body.data?.[0]?.id ?? null
+  } catch { return null }
+}
+
+const buildChecks = async (): Promise<ReadonlyArray<RouteCheck>> => {
+  const specId = await pickFirstId('specialists')
+  const reqId = await pickFirstId('requests')
+  const out: RouteCheck[] = [...STATIC_CHECKS]
+  if (specId) out.push({
+    path: `/specialists/${specId}/`,
+    mustContain: [
+      { label: 'name SSR\'d as h1', re: /<h1[^>]*class="ps-detail__name"[^>]*>[^<]{2,}<\/h1>/i },
+      { label: 'avatar block', re: /class="ps-detail__avatar/i },
+      { label: 'bio article', re: /class="ps-detail__bio">[^<]{2,}<\/article>/i },
+      { label: 'guest-locked banner SSR\'d', re: /data-auth-guest/i },
+      { label: 'auth-user contact block SSR\'d', re: /data-auth-user/i },
+    ],
+  })
+  if (reqId) out.push({
+    path: `/clients/${reqId}/`,
+    mustContain: [
+      { label: 'request title SSR\'d', re: /<h1[^>]*>[^<]{3,}<\/h1>/i },
+      { label: 'budget visible (ES)', re: /lang="es"[^>]*>📍/i },
+      { label: 'budget visible (EN)', re: /lang="en"[^>]*>📍/i },
+      { label: 'description article', re: /class="ps-detail__bio">[^<]{2,}<\/article>/i },
+    ],
+  })
+  return out
+}
+
+const STATIC_CHECKS: ReadonlyArray<RouteCheck> = [
   {
     path: '/',
     mustContain: [
@@ -38,7 +76,7 @@ const CHECKS: ReadonlyArray<RouteCheck> = [
       // At least one SSR'd specialist card with an avatar block.
       { label: 'card with avatar block', re: /class="[^"]*ps-card[^"]*ps-card--with-avatar/i },
       { label: 'avatar (img OR initials)', re: /class="[^"]*ps-card__avatar/i },
-      { label: 'specialist link', re: /href="[^"]*\/specialists\/detail\/\?id=/i },
+      { label: 'specialist link', re: /href="[^"]*\/specialists\/[0-9a-f-]+\/"/i },
       // Dual-render CTA on the card.
       { label: 'card CTA ES (Ver perfil)', re: /lang="es"[^>]*>[^<]*Ver perfil/i },
       { label: 'card CTA EN (View profile)', re: /lang="en"[^>]*>[^<]*View profile/i },
@@ -49,7 +87,7 @@ const CHECKS: ReadonlyArray<RouteCheck> = [
     mustContain: [
       // At least one SSR'd request card.
       { label: 'request card', re: /class="[^"]*ps-card[^"]*ps-card--request/i },
-      { label: 'request link', re: /href="[^"]*\/clients\/detail\/\?id=/i },
+      { label: 'request link', re: /href="[^"]*\/clients\/[0-9a-f-]+\/"/i },
       // Title of the SSR'd request comes through.
       { label: 'request title visible', re: /<h2[^>]*>[^<]{3,}<\/h2>/i },
       { label: 'card CTA ES (Postularme)', re: /lang="es"[^>]*>[^<]*Postularme/i },
@@ -73,6 +111,7 @@ const fetchText = async (url: string): Promise<string> => {
 
 const main = async (): Promise<void> => {
   const failures: string[] = []
+  const CHECKS = await buildChecks()
 
   for (const route of CHECKS) {
     const url = `${BASE}${route.path}`

@@ -1,0 +1,190 @@
+---
+import Base from '~/layouts/Base.astro'
+import { tFor } from '~/lib/i18n.ts'
+import { CATEGORIES } from '~/lib/api.ts'
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+  'https://api.pyaserv.com'
+
+interface ClientRequest {
+  readonly id: string
+  readonly category: string
+  readonly title: string
+  readonly description: string
+  readonly budgetGs: number
+  readonly barrio: string
+  readonly status: string
+  readonly createdAt: number
+}
+
+const fetchJson = async <T,>(path: string, fallback: T): Promise<T> => {
+  try {
+    const r = await fetch(`${API}${path}`)
+    if (!r.ok) return fallback
+    const body = await r.json() as { data?: T }
+    return (body.data ?? fallback) as T
+  } catch { return fallback }
+}
+
+export async function getStaticPaths(): Promise<ReadonlyArray<{ params: { id: string } }>> {
+  // getStaticPaths runs in an isolated scope — frontmatter consts aren't visible here.
+  const apiBase = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+    'https://api.pyaserv.com'
+  try {
+    const r = await fetch(`${apiBase}/v1/requests`)
+    if (!r.ok) return []
+    const body = await r.json() as { data?: ReadonlyArray<{ id: string }> }
+    return (body.data ?? []).map((s) => ({ params: { id: s.id } }))
+  } catch { return [] }
+}
+
+const { id } = Astro.params
+const req = await fetchJson<ClientRequest | null>(`/v1/requests/${id}`, null)
+
+if (!req) {
+  return Astro.redirect(`${base}/clients/`)
+}
+
+const categoryEmoji = (value: string): string =>
+  CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
+const formatGsEs = (n: number): string => `Gs ${n.toLocaleString('es-PY')}`
+const formatGsEn = (n: number): string => `${n.toLocaleString('en-US')} Gs`
+
+const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
+  const seconds = Math.floor(Date.now() / 1000) - ts
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  if (loc === 'es') {
+    if (seconds < 60) return 'hace un momento'
+    if (minutes < 60) return `hace ${minutes} min`
+    if (hours < 24) return `hace ${hours} h`
+    if (days < 30) return `hace ${days} d`
+    return `hace ${Math.floor(days / 30)} m`
+  }
+  if (seconds < 60) return 'just now'
+  if (minutes < 60) return `${minutes} min ago`
+  if (hours < 24) return `${hours} h ago`
+  if (days < 30) return `${days} d ago`
+  return `${Math.floor(days / 30)} mo ago`
+}
+
+const isOpen = req.status === 'open'
+const statusKey = isOpen ? 'request.detail.status.open' : 'request.detail.status.closed'
+const statusClass = isOpen ? 'ps-badge' : 'ps-badge ps-badge--neutral'
+---
+<Base
+  title={`${req.title} · PyaServ`}
+  description={req.description.slice(0, 160)}
+  titleKey="request.detail.title"
+  descriptionKey="request.detail.description"
+  active="clients"
+>
+  <section class="ps-section" data-base={base} data-req-id={req.id} data-req-status={req.status}>
+    <article id="detail" class="ps-stack">
+      <div class="ps-row">
+        <span class="ps-chip">
+          {categoryEmoji(req.category)}{' '}
+          <span lang="es">{tFor('es', `category.${req.category}`)}</span>
+          <span lang="en">{tFor('en', `category.${req.category}`)}</span>
+        </span>
+        <span class={statusClass}>
+          <span lang="es">{tFor('es', statusKey)}</span>
+          <span lang="en">{tFor('en', statusKey)}</span>
+        </span>
+      </div>
+      <h1>{req.title}</h1>
+      <p class="ps-card__sub">
+        <span lang="es">📍 {req.barrio} · 💰 {formatGsEs(req.budgetGs)} · {relativeFor(req.createdAt, 'es')}</span>
+        <span lang="en">📍 {req.barrio} · 💰 {formatGsEn(req.budgetGs)} · {relativeFor(req.createdAt, 'en')}</span>
+      </p>
+      <article class="ps-detail__bio">{req.description}</article>
+
+      {isOpen && (
+        <>
+          <div data-auth-guest class="ps-banner ps-banner--warn">
+            <span lang="es">{tFor('es', 'request.detail.locked')} <a id="login-link-es">{tFor('es', 'request.detail.locked.cta')}</a>.</span>
+            <span lang="en">{tFor('en', 'request.detail.locked')} <a id="login-link-en">{tFor('en', 'request.detail.locked.cta')}</a>.</span>
+          </div>
+          <button data-auth-user id="reply-btn" class="ps-btn">
+            <span lang="es">{tFor('es', 'request.detail.reply_btn')}</span>
+            <span lang="en">{tFor('en', 'request.detail.reply_btn')}</span>
+          </button>
+        </>
+      )}
+    </article>
+
+    {isOpen && (
+      <div data-auth-user id="composer" class="ps-banner ps-hidden">
+        <h2 style="margin:0 0 .5rem">
+          <span lang="es">{tFor('es', 'request.detail.compose_h')}</span>
+          <span lang="en">{tFor('en', 'request.detail.compose_h')}</span>
+        </h2>
+        <form id="composer-form" class="ps-form">
+          <label>
+            <span lang="es">{tFor('es', 'request.detail.compose.label')}</span>
+            <span lang="en">{tFor('en', 'request.detail.compose.label')}</span>
+            <textarea name="body" required minlength="1" maxlength="2000" data-i18n-placeholder="request.detail.compose.placeholder" placeholder="Hola, puedo encargarme…"></textarea>
+          </label>
+          <div class="ps-row">
+            <button type="submit" class="ps-btn">
+              <span lang="es">{tFor('es', 'common.send')}</span>
+              <span lang="en">{tFor('en', 'common.send')}</span>
+            </button>
+            <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost">
+              <span lang="es">{tFor('es', 'common.cancel')}</span>
+              <span lang="en">{tFor('en', 'common.cancel')}</span>
+            </button>
+          </div>
+          <p id="composer-msg" class="ps-msg" role="alert"></p>
+        </form>
+      </div>
+    )}
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch } from '../../lib/api.ts'
+    import { t } from '../../lib/i18n.ts'
+
+    ;(() => {
+      const sec = document.querySelector('.ps-section')
+      const base = sec.dataset.base ?? ''
+      const id = sec.dataset.reqId
+      const status = sec.dataset.reqStatus
+      if (status !== 'open') return
+
+      const loginHref = `${base}/login/?next=${encodeURIComponent(location.pathname + location.search)}`
+      const esLink = document.getElementById('login-link-es')
+      const enLink = document.getElementById('login-link-en')
+      if (esLink) esLink.href = loginHref
+      if (enLink) enLink.href = loginHref
+
+      const composer = document.getElementById('composer')
+      document.getElementById('reply-btn')?.addEventListener('click', () => {
+        composer.classList.remove('ps-hidden')
+        composer.scrollIntoView({ behavior: 'smooth' })
+      })
+      document.getElementById('composer-cancel')?.addEventListener('click', () => composer.classList.add('ps-hidden'))
+
+      const cf = document.getElementById('composer-form')
+      const cm = document.getElementById('composer-msg')
+      cf?.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        cm.textContent = t('common.sending')
+        const body = new FormData(cf).get('body')
+        try {
+          const inq = await apiFetch('/v1/inquiries', {
+            method: 'POST',
+            body: JSON.stringify({ subjectType: 'request', subjectId: id, body }),
+          })
+          location.href = `${base}/me/inquiries/detail/?id=${inq.id}`
+        } catch (err) {
+          cm.innerHTML = `<span class="ps-error">${String(err.message || t('error.network')).replace(/[<>]/g, '')}</span>`
+        }
+      })
+    })()
+  </script>
+</Base>

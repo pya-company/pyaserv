@@ -101,7 +101,7 @@ const truncate = (s: string, n = 220): string => s.length > n ? `${s.slice(0, n)
         const catLabelEs = tFor('es', `category.${r.category}`)
         const catLabelEn = tFor('en', `category.${r.category}`)
         return (
-          <a class="ps-card ps-card--request" href={`${base}/clients/detail/?id=${r.id}`}>
+          <a class="ps-card ps-card--request" href={`${base}/clients/${r.id}/`}>
             <div class="ps-row">
               <span class="ps-chip">
                 {categoryEmoji(r.category)}
@@ -160,7 +160,7 @@ const truncate = (s: string, n = 220): string => s.length > n ? `${s.slice(0, n)
       status.textContent = `${items.length} ${items.length === 1 ? t('clients.count.one') : t('clients.count.many')}`
       const cta = t('clients.card.cta')
       results.innerHTML = items.map((r) => `
-        <a class="ps-card ps-card--request" href="${base}/clients/detail/?id=${escape(r.id)}">
+        <a class="ps-card ps-card--request" href="${base}/clients/${escape(r.id)}/">
           <div class="ps-row">
             <span class="ps-chip">${categoryEmoji(r.category)} ${categoryLabel(r.category)}</span>
             <span class="ps-card__sub">${formatRelativeTime(r.createdAt)}</span>

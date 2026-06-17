@@ -52,10 +52,10 @@ const main = async (): Promise<void> => {
     { path: '/clients/', thresholds: DEFAULT_T },
     { path: '/login/', thresholds: DEFAULT_T },
     ...(specId
-      ? [{ path: `/specialists/detail/?id=${specId}`, thresholds: { ...DEFAULT_T, performance: 0.85 } }]
+      ? [{ path: `/specialists/${specId}/`, thresholds: { ...DEFAULT_T, performance: 0.85 } }]
       : []),
     ...(reqId
-      ? [{ path: `/clients/detail/?id=${reqId}`, thresholds: DEFAULT_T }]
+      ? [{ path: `/clients/${reqId}/`, thresholds: DEFAULT_T }]
       : []),
   ]
 

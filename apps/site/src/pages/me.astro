@@ -370,7 +370,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
               <p class="ps-card__sub">📍 ${escape(r.barrio)} · 💰 ${escape(formatGs(r.budgetGs))}</p>
               <div class="ps-card__cta">
                 <a href="${base}/me/requests/edit/?id=${r.id}">${editLabel}</a>
-                <a href="${base}/clients/detail/?id=${r.id}">${publicView}</a>
+                <a href="${base}/clients/${r.id}/">${publicView}</a>
               </div>
             </article>`).join('')
         } catch (err) { rEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }

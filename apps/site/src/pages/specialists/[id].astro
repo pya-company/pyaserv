@@ -1,0 +1,342 @@
+---
+import Base from '~/layouts/Base.astro'
+import T from '~/components/T.astro'
+import { tFor } from '~/lib/i18n.ts'
+import { CATEGORIES, initials, mediaUrl } from '~/lib/api.ts'
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+// Build-time per-specialist pre-rendering. Each known specialist gets its own
+// static HTML at /specialists/<id>/, with name/bio/listings/reviews SSR'd into
+// the payload. Contact info (phone/whatsapp) is also rendered server-side but
+// the visibility is gated by pre-paint <html data-auth="…">: CSS hides it for
+// guests, shows it for authenticated users — no post-FCP mutation either way.
+
+const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+  'https://api.pyaserv.com'
+
+interface Specialist {
+  readonly id: string
+  readonly displayName: string
+  readonly headline: string
+  readonly bio: string | null
+  readonly phone: string
+  readonly whatsapp: string | null
+  readonly barrio: string
+  readonly photo: string | null
+  readonly verified: boolean
+}
+
+interface Listing {
+  readonly id: string
+  readonly category: string
+  readonly title: string
+  readonly description: string
+  readonly priceFromGs: number | null
+  readonly priceUnit: string | null
+}
+
+interface Review {
+  readonly stars: number
+  readonly body: string | null
+  readonly createdAt: number
+}
+
+interface ReviewSummary {
+  readonly average: number
+  readonly count: number
+  readonly items: ReadonlyArray<Review>
+}
+
+const fetchJson = async <T,>(path: string, fallback: T): Promise<T> => {
+  try {
+    const r = await fetch(`${API}${path}`)
+    if (!r.ok) return fallback
+    const body = await r.json() as { data?: T }
+    return (body.data ?? fallback) as T
+  } catch { return fallback }
+}
+
+export async function getStaticPaths(): Promise<ReadonlyArray<{ params: { id: string } }>> {
+  // getStaticPaths runs in an isolated scope — frontmatter consts aren't visible here.
+  const apiBase = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+    'https://api.pyaserv.com'
+  try {
+    const r = await fetch(`${apiBase}/v1/specialists`)
+    if (!r.ok) return []
+    const body = await r.json() as { data?: ReadonlyArray<{ id: string }> }
+    return (body.data ?? []).map((s) => ({ params: { id: s.id } }))
+  } catch { return [] }
+}
+
+const { id } = Astro.params
+const spec = await fetchJson<Specialist | null>(`/v1/specialists/${id}`, null)
+const listings = await fetchJson<ReadonlyArray<Listing>>(`/v1/listings?specialist_id=${id}`, [])
+const reviews = await fetchJson<ReviewSummary>(`/v1/specialists/${id}/reviews`, { average: 0, count: 0, items: [] })
+
+if (!spec) {
+  return Astro.redirect(`${base}/specialists/`)
+}
+
+const categoryEmoji = (value: string): string =>
+  CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
+const renderStars = (n: number): string =>
+  '★★★★★'.slice(0, Math.round(n)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(n))
+const formatGsEs = (n: number): string => `Gs ${n.toLocaleString('es-PY')}`
+const formatGsEn = (n: number): string => `${n.toLocaleString('en-US')} Gs`
+
+const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
+  const seconds = Math.floor(Date.now() / 1000) - ts
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  if (loc === 'es') {
+    if (seconds < 60) return 'hace un momento'
+    if (minutes < 60) return `hace ${minutes} min`
+    if (hours < 24) return `hace ${hours} h`
+    if (days < 30) return `hace ${days} d`
+    return `hace ${Math.floor(days / 30)} m`
+  }
+  if (seconds < 60) return 'just now'
+  if (minutes < 60) return `${minutes} min ago`
+  if (hours < 24) return `${hours} h ago`
+  if (days < 30) return `${days} d ago`
+  return `${Math.floor(days / 30)} mo ago`
+}
+---
+<Base
+  title={`${spec.displayName} · PyaServ`}
+  description={spec.headline}
+  titleKey="specialist.detail.title"
+  descriptionKey="specialist.detail.description"
+  active="specialists"
+>
+  <section class="ps-section" data-base={base} data-spec-id={spec.id}>
+    <div id="profile" class="ps-detail">
+      <aside class="ps-detail__side">
+        <div class={`ps-detail__avatar ${spec.photo ? 'ps-avatar--photo' : 'ps-avatar--initials'}`} aria-hidden="true">
+          {spec.photo
+            ? <img class="ps-avatar__img" width="160" height="160" fetchpriority="high" decoding="async" src={mediaUrl(spec.photo)} alt={spec.displayName} />
+            : <span class="ps-avatar__initials" aria-hidden="true">{initials(spec.displayName)}</span>}
+        </div>
+        <h1 class="ps-detail__name">{spec.displayName}</h1>
+        <p class="ps-detail__meta">{spec.headline} · 📍 {spec.barrio}</p>
+        {spec.verified && (
+          <div class="ps-row" style="justify-content:center;min-height:1.5rem">
+            <span class="ps-badge">
+              <span lang="es">{tFor('es', 'specialist.detail.verified')}</span>
+              <span lang="en">{tFor('en', 'specialist.detail.verified')}</span>
+            </span>
+          </div>
+        )}
+
+        <div data-auth-user class="ps-detail__contact ps-stack">
+          <a id="phone-link" href={`tel:${spec.phone.replace(/[^+0-9]/g, '')}`}>📞 <span>{spec.phone}</span></a>
+          {spec.whatsapp && (
+            <a id="whatsapp-link" href={`https://wa.me/${spec.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener">💬 WhatsApp</a>
+          )}
+        </div>
+        <p data-auth-guest class="ps-banner ps-banner--warn">
+          <span lang="es">{tFor('es', 'specialist.detail.locked')} <a id="login-link-es">{tFor('es', 'specialist.detail.locked.cta')}</a>.</span>
+          <span lang="en">{tFor('en', 'specialist.detail.locked')} <a id="login-link-en">{tFor('en', 'specialist.detail.locked.cta')}</a>.</span>
+        </p>
+        <button data-auth-user id="contact-btn" class="ps-btn">
+          <span lang="es">{tFor('es', 'specialist.detail.contact_btn')}</span>
+          <span lang="en">{tFor('en', 'specialist.detail.contact_btn')}</span>
+        </button>
+      </aside>
+
+      <div class="ps-detail__body">
+        <article class="ps-detail__bio">{spec.bio || spec.headline}</article>
+
+        <section class="ps-stack ps-stack--gap-4" aria-labelledby="reviews-h">
+          <h2 id="reviews-h">
+            <span lang="es">{tFor('es', 'reviews.h')}</span>
+            <span lang="en">{tFor('en', 'reviews.h')}</span>
+          </h2>
+          <p class="ps-card__sub">
+            {reviews.count > 0 ? (
+              <>
+                <span class="ps-stars-inline" aria-hidden="true">{renderStars(reviews.average)}</span>
+                {' '}
+                <strong>{reviews.average.toFixed(1)}</strong> · {reviews.count}{' '}
+                <span lang="es">{reviews.count === 1 ? tFor('es', 'reviews.avg_one') : tFor('es', 'reviews.avg_many')}</span>
+                <span lang="en">{reviews.count === 1 ? tFor('en', 'reviews.avg_one') : tFor('en', 'reviews.avg_many')}</span>
+              </>
+            ) : (
+              <>
+                <span lang="es">{tFor('es', 'reviews.empty')}</span>
+                <span lang="en">{tFor('en', 'reviews.empty')}</span>
+              </>
+            )}
+          </p>
+          <div class="ps-stack">
+            {reviews.items.map((r) => (
+              <article class="ps-card">
+                <div class="ps-row">
+                  <span class="ps-stars-inline" aria-label={`${r.stars} ★`}>{renderStars(r.stars)}</span>
+                  <span class="ps-card__sub">
+                    <span lang="es">{relativeFor(r.createdAt, 'es')}</span>
+                    <span lang="en">{relativeFor(r.createdAt, 'en')}</span>
+                  </span>
+                </div>
+                {r.body && <p class="ps-card__body">{r.body}</p>}
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <h2>
+          <span lang="es">{tFor('es', 'specialist.detail.services_h')}</span>
+          <span lang="en">{tFor('en', 'specialist.detail.services_h')}</span>
+        </h2>
+        <div id="listings" class="ps-cards">
+          {listings.length === 0 ? (
+            <p class="ps-empty">
+              <span class="ps-empty__icon">📦</span>
+              <strong class="ps-empty__title">
+                <span lang="es">{tFor('es', 'specialist.detail.no_services.title')}</span>
+                <span lang="en">{tFor('en', 'specialist.detail.no_services.title')}</span>
+              </strong>
+            </p>
+          ) : listings.map((l) => (
+            <article class="ps-card" data-listing-id={l.id}>
+              <div class="ps-row">
+                <span class="ps-chip">
+                  {categoryEmoji(l.category)}{' '}
+                  <span lang="es">{tFor('es', `category.${l.category}`)}</span>
+                  <span lang="en">{tFor('en', `category.${l.category}`)}</span>
+                </span>
+              </div>
+              <h3>{l.title}</h3>
+              <p class="ps-card__body">{l.description}</p>
+              <p class="ps-card__sub">
+                {l.priceFromGs ? (
+                  <>
+                    <span lang="es">
+                      {tFor('es', 'specialist.detail.price_from')} {formatGsEs(l.priceFromGs)}
+                      {l.priceUnit && ` / ${l.priceUnit === 'hour' ? tFor('es', 'specialist.detail.per_hour') : tFor('es', 'specialist.detail.per_job')}`}
+                    </span>
+                    <span lang="en">
+                      {tFor('en', 'specialist.detail.price_from')} {formatGsEn(l.priceFromGs)}
+                      {l.priceUnit && ` / ${l.priceUnit === 'hour' ? tFor('en', 'specialist.detail.per_hour') : tFor('en', 'specialist.detail.per_job')}`}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span lang="es">{tFor('es', 'specialist.detail.price_tbd')}</span>
+                    <span lang="en">{tFor('en', 'specialist.detail.price_tbd')}</span>
+                  </>
+                )}
+              </p>
+              <div data-auth-user class="ps-card__cta">
+                <button type="button" class="ps-btn ps-btn--sm js-pick-listing" data-id={l.id}>
+                  <span lang="es">{tFor('es', 'specialist.detail.ask_about')}</span>
+                  <span lang="en">{tFor('en', 'specialist.detail.ask_about')}</span>
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div data-auth-user id="composer" class="ps-banner ps-hidden">
+      <h2>
+        <span lang="es">{tFor('es', 'specialist.detail.compose_h')}</span>
+        <span lang="en">{tFor('en', 'specialist.detail.compose_h')}</span>
+      </h2>
+      <form id="composer-form" class="ps-form">
+        <label>
+          <span lang="es">{tFor('es', 'specialist.detail.compose.label')}</span>
+          <span lang="en">{tFor('en', 'specialist.detail.compose.label')}</span>
+          <textarea name="body" required minlength="1" maxlength="2000" data-i18n-placeholder="specialist.detail.compose.placeholder" placeholder="Hola, me interesa…"></textarea>
+        </label>
+        <div class="ps-row">
+          <button type="submit" class="ps-btn">
+            <span lang="es">{tFor('es', 'common.send')}</span>
+            <span lang="en">{tFor('en', 'common.send')}</span>
+          </button>
+          <button type="button" id="composer-cancel" class="ps-btn ps-btn--ghost">
+            <span lang="es">{tFor('es', 'common.cancel')}</span>
+            <span lang="en">{tFor('en', 'common.cancel')}</span>
+          </button>
+        </div>
+        <p id="composer-msg" class="ps-msg" role="alert"></p>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch } from '../../lib/api.ts'
+    import { t } from '../../lib/i18n.ts'
+
+    const sec = document.querySelector('.ps-section')
+    const base = sec.dataset.base ?? ''
+    const id = sec.dataset.specId
+    const composer = document.getElementById('composer')
+    const composerForm = document.getElementById('composer-form')
+    const composerMsg = document.getElementById('composer-msg')
+    const listingsEl = document.getElementById('listings')
+
+    // Login link href — same destination both languages.
+    const loginHref = `${base}/login/?next=${encodeURIComponent(location.pathname + location.search)}`
+    const esLink = document.getElementById('login-link-es')
+    const enLink = document.getElementById('login-link-en')
+    if (esLink) esLink.href = loginHref
+    if (enLink) enLink.href = loginHref
+
+    // Fire-and-forget profile_view event. Auth-aware — backend dedupes self-views.
+    try { apiFetch('/v1/analytics', { method: 'POST', body: JSON.stringify({ event: 'profile_view', subjectId: id }) }) } catch {}
+
+    // Phone-click analytics (only fires when auth contact block is visible).
+    const phoneLink = document.getElementById('phone-link')
+    if (phoneLink) phoneLink.addEventListener('click', () => {
+      try { apiFetch('/v1/analytics', { method: 'POST', body: JSON.stringify({ event: 'phone_click', subjectId: id }) }) } catch {}
+    })
+    const waLink = document.getElementById('whatsapp-link')
+    if (waLink) waLink.addEventListener('click', () => {
+      try { apiFetch('/v1/analytics', { method: 'POST', body: JSON.stringify({ event: 'whatsapp_click', subjectId: id }) }) } catch {}
+    })
+
+    // First listing is the default-pick for the composer; clicking a per-listing
+    // "Consultar" button overrides it.
+    let pickedListingId = listingsEl?.querySelector('[data-listing-id]')?.dataset.listingId ?? null
+    for (const btn of listingsEl?.querySelectorAll('.js-pick-listing') ?? []) {
+      btn.addEventListener('click', () => {
+        pickedListingId = btn.dataset.id
+        composer.classList.remove('ps-hidden')
+        composer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        composerForm.querySelector('textarea')?.focus()
+      })
+    }
+
+    document.getElementById('contact-btn')?.addEventListener('click', () => {
+      composer.classList.remove('ps-hidden')
+      composer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      composerForm.querySelector('textarea')?.focus()
+    })
+    document.getElementById('composer-cancel')?.addEventListener('click', () => composer.classList.add('ps-hidden'))
+
+    composerForm?.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      composerMsg.textContent = t('common.sending')
+      const body = new FormData(composerForm).get('body')
+      const subjectId = pickedListingId
+      if (!subjectId) {
+        composerMsg.innerHTML = `<span class="ps-error">${t('specialist.detail.no_listings_err')}</span>`
+        return
+      }
+      try {
+        const inq = await apiFetch('/v1/inquiries', {
+          method: 'POST',
+          body: JSON.stringify({ subjectType: 'listing', subjectId, body }),
+        })
+        location.href = `${base}/me/inquiries/detail/?id=${inq.id}`
+      } catch (err) {
+        composerMsg.innerHTML = `<span class="ps-error">${String(err.message || t('error.network')).replace(/[<>]/g, '')}</span>`
+      }
+    })
+  </script>
+</Base>

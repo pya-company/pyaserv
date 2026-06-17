@@ -508,8 +508,10 @@ button { font: inherit; cursor: pointer; }
 /* Pre-paint auth gate — rules apply on the first frame because <html data-auth>
    is set synchronously in the head inline script. Kills the visible nav shift
    when JS later hides Mi panel / Ingresar. */
-html[data-auth="guest"] [data-nav-me] { display: none; }
-html[data-auth="user"] [data-nav-login] { display: none; }
+html[data-auth="guest"] [data-nav-me],
+html[data-auth="guest"] [data-auth-user] { display: none; }
+html[data-auth="user"] [data-nav-login],
+html[data-auth="user"] [data-auth-guest] { display: none; }
 /* Pre-paint locale highlight on lang buttons */
 html[data-loc="es"] .ps-lang-btn[data-lang="es"],
 html[data-loc="en"] .ps-lang-btn[data-lang="en"] { background: var(--ps-acc-soft); color: var(--ps-acc); }

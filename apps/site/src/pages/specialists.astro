@@ -86,7 +86,7 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
         const catLabelEs = s.primaryCategory ? tFor('es', `category.${s.primaryCategory}`) : null
         const catLabelEn = s.primaryCategory ? tFor('en', `category.${s.primaryCategory}`) : null
         return (
-          <a class="ps-card ps-card--with-avatar" href={`${base}/specialists/detail/?id=${s.id}`}>
+          <a class="ps-card ps-card--with-avatar" href={`${base}/specialists/${s.id}/`}>
             <div class={`ps-card__avatar ${s.photo ? 'ps-avatar--photo' : 'ps-avatar--initials'}`}>
               {s.photo
                 ? <img class="ps-avatar__img" width="56" height="56" loading="lazy" decoding="async" alt="" src={mediaUrl(s.photo)} />
@@ -166,7 +166,7 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
       const cta = t('specialists.card.cta')
       const renderStars = (n) => '★★★★★'.slice(0, Math.round(n)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(n))
       results.innerHTML = items.map((s) => `
-        <a class="ps-card ps-card--with-avatar" href="${base}/specialists/detail/?id=${escape(s.id)}">
+        <a class="ps-card ps-card--with-avatar" href="${base}/specialists/${escape(s.id)}/">
           <div class="ps-card__avatar ${s.photo ? 'ps-avatar--photo' : 'ps-avatar--initials'}">
             ${s.photo
               ? `<img class="ps-avatar__img" width="56" height="56" loading="lazy" decoding="async" alt="" src="${mediaUrl(s.photo)}"/>`

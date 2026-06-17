@@ -31,10 +31,29 @@ import puppeteer from 'puppeteer-core'
 import { launch } from 'chrome-launcher'
 
 const BASE = process.env.PYASERV_BASE_URL ?? 'https://pyaserv.com'
-const ROUTES = ['/', '/specialists/', '/clients/', '/login/']
+const API = process.env.PYASERV_API_URL ?? 'https://api.pyaserv.com'
 const CLS_BUDGET = 0.01
 
+const pickFirstId = async (collection: 'specialists' | 'requests'): Promise<string | null> => {
+  try {
+    const r = await fetch(`${API}/v1/${collection}`)
+    if (!r.ok) return null
+    const body = await r.json() as { data?: ReadonlyArray<{ id: string }> }
+    return body.data?.[0]?.id ?? null
+  } catch { return null }
+}
+
+const buildRoutes = async (): Promise<ReadonlyArray<string>> => {
+  const specId = await pickFirstId('specialists')
+  const reqId = await pickFirstId('requests')
+  const r = ['/', '/specialists/', '/clients/', '/login/']
+  if (specId) r.push(`/specialists/${specId}/`)
+  if (reqId) r.push(`/clients/${reqId}/`)
+  return r
+}
+
 const main = async (): Promise<void> => {
+  const ROUTES = await buildRoutes()
   const chrome = await launch({
     chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu'],
   })
