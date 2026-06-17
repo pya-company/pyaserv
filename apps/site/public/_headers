@@ -1,0 +1,19 @@
+/*
+  # Security / privacy headers applied to every Cloudflare Pages response.
+  #
+  # CSP locked down to:
+  #   - script-src: 'self' + 'unsafe-inline' for the inline FOUC/locale init
+  #     scripts in Base.astro. We use Trusted Types so DOM XSS is blocked at
+  #     the sink level even if a string gets injected somewhere.
+  #   - connect-src: 'self' + api.pyaserv.com (our worker)
+  #   - frame-ancestors 'none' replaces X-Frame-Options
+  #   - upgrade-insecure-requests for any stray http://
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://api.pyaserv.com; font-src 'self' data:; connect-src 'self' https://api.pyaserv.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default ps-html
+  Content-Security-Policy-Report-Only: require-trusted-types-for 'script'
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=()
+  X-Frame-Options: DENY

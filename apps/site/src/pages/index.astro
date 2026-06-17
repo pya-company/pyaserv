@@ -10,6 +10,34 @@ const href = (p: string): string => `${base}${p}`
   descriptionKey="home.description"
   active="home"
 >
+  <script type="application/ld+json" is:inline set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://pyaserv.com/#org',
+        name: 'PyaServ',
+        url: 'https://pyaserv.com/',
+        logo: 'https://pyaserv.com/favicon.svg',
+        sameAs: ['https://github.com/pya-company/pyaserv'],
+        areaServed: { '@type': 'Country', name: 'Paraguay' },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://pyaserv.com/#site',
+        url: 'https://pyaserv.com/',
+        name: 'PyaServ',
+        description: 'Marketplace de servicios en Paraguay sin comisiones.',
+        publisher: { '@id': 'https://pyaserv.com/#org' },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://pyaserv.com/specialists/?barrio={search_term_string}',
+          'query-input': 'required name=search_term_string',
+        },
+        inLanguage: ['es', 'en'],
+      },
+    ],
+  })} />
   <section class="ps-hero">
     <h1 data-i18n="home.hero.title">Servicios en Paraguay, sin intermediarios.</h1>
     <p data-i18n="home.hero.body">
