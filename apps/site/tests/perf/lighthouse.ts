@@ -22,10 +22,10 @@ interface RouteSpec {
 const BASE = process.env.PYASERV_BASE_URL ?? 'https://pyaserv.com'
 const API = process.env.PYASERV_API_URL ?? 'https://api.pyaserv.com'
 
-// Performance is more sensitive to network jitter on synthetic 4G — we let it
-// breathe slightly below 100 to avoid flake. A11y / BP / SEO are deterministic
-// — those must be a flat 100.
-const DEFAULT_T = { performance: 0.9, accessibility: 1.0, 'best-practices': 1.0, seo: 1.0 }
+// All categories must be high. Performance gets a slim 0.05 buffer because
+// synthetic 4G + cold start to Cloudflare can jitter — a11y/BP/SEO are
+// deterministic and must be a flat 100.
+const DEFAULT_T = { performance: 0.95, accessibility: 1.0, 'best-practices': 1.0, seo: 1.0 }
 
 interface ApiList<T> {
   readonly data: ReadonlyArray<T>

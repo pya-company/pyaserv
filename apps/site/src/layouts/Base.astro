@@ -36,7 +36,14 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
     <link rel="preconnect" href="https://api.pyaserv.com" crossorigin />
     <link rel="dns-prefetch" href="https://api.pyaserv.com" />
     <script>
-      // Apply locale + theme to the root element before paint to avoid FOUC.
+      // Apply locale + theme + auth to the root element BEFORE first paint to
+      // kill the visible re-render shifts that user devices reported. CLS
+      // sources before this fix:
+      //   - nav items (Mi panel / Ingresar) hidden post-paint via JS
+      //   - language buttons highlighted post-paint
+      //   - theme icon swapped post-paint
+      // After: CSS reads html[data-auth] / html[data-theme] / html[data-loc]
+      // and renders the final state on first frame.
       // @ts-nocheck
       ;(() => {
         const isLoc = (v) => v === 'es' || v === 'en'
@@ -56,7 +63,14 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         if (!loc) loc = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'es'
         if (!theme) theme = 'auto'
         document.documentElement.lang = loc
-        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+        document.documentElement.dataset.loc = loc
+        document.documentElement.dataset.theme = theme
+        try {
+          const hasAuth = !!sessionStorage.getItem('pyaserv.token')
+          document.documentElement.dataset.auth = hasAuth ? 'user' : 'guest'
+        } catch {
+          document.documentElement.dataset.auth = 'guest'
+        }
       })()
     </script>
   </head>
@@ -118,12 +132,11 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         })
       }
 
-      // 4. Auth-gate the nav items
+      // 4. Auth-gate is now applied pre-paint via html[data-auth] in the head
+      //    inline script + CSS rules. Keeping data-auth in sync if the token
+      //    state changes mid-session (logout button etc).
       const token = sessionStorage.getItem('pyaserv.token')
-      const me = document.querySelector('[data-nav-me]')
-      const login = document.querySelector('[data-nav-login]')
-      if (token) login?.classList.add('ps-hidden')
-      else me?.classList.add('ps-hidden')
+      document.documentElement.dataset.auth = token ? 'user' : 'guest'
 
       // 5. Theme cycle button — light → dark → auto
       const themeBtn = document.getElementById('theme-btn')

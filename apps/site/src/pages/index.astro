@@ -41,16 +41,12 @@ const href = (p: string): string => `${base}${p}`
     </a>
   </div>
 
-  <p class="ps-banner" id="home-banner" data-i18n-html="home.banner.html">
-    <strong>Estado:</strong> MVP en vivo. Crearás tu perfil de profesional o tu pedido en el panel
-    <a href={href('/me/')}>Mi panel</a>. Si todavía no tenés cuenta, te creamos una con tu email — sin contraseñas.
+  <p class="ps-banner" id="home-banner">
+    <strong data-i18n="home.banner.status_label">Estado:</strong>
+    <span data-i18n="home.banner.body">MVP en vivo. Crearás tu perfil de profesional o tu pedido en el panel</span>
+    <a href={href('/me/')} data-i18n="home.banner.cta">Mi panel</a>.
+    <span data-i18n="home.banner.tail">Si todavía no tenés cuenta, te creamos una con tu email — sin contraseñas.</span>
   </p>
-
-  <script define:vars={{ meHref: href('/me/') }}>
-    // Wire up the data-banner-link href after i18n-html injected fresh markup.
-    const link = document.querySelector('#home-banner [data-banner-link]')
-    if (link) link.setAttribute('href', meHref)
-  </script>
 
   <script>
     // @ts-nocheck

@@ -505,6 +505,15 @@ button { font: inherit; cursor: pointer; }
   outline-offset: 2px;
 }
 
+/* Pre-paint auth gate — rules apply on the first frame because <html data-auth>
+   is set synchronously in the head inline script. Kills the visible nav shift
+   when JS later hides Mi panel / Ingresar. */
+html[data-auth="guest"] [data-nav-me] { display: none; }
+html[data-auth="user"] [data-nav-login] { display: none; }
+/* Pre-paint locale highlight on lang buttons */
+html[data-loc="es"] .ps-lang-btn[data-lang="es"],
+html[data-loc="en"] .ps-lang-btn[data-lang="en"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
+
 /* Skip-link — invisible until focused, then anchored top-left over everything */
 .ps-skip {
   position: absolute;
@@ -673,14 +682,16 @@ button { font: inherit; cursor: pointer; }
   transition: width 220ms ease-out;
 }
 
-/* Landing hero stats */
+/* Landing hero stats — reserve final height so the late API response doesn't
+   push the mode cards down. The empty/skeleton state shows a single non-
+   breaking space so the line keeps its baseline. */
 .ps-home-stats {
   margin: var(--ps-space-4) 0 0;
   font-size: 1rem;
   color: var(--ps-text-muted);
+  min-height: 1.5rem;
 }
 .ps-home-stats strong { color: var(--ps-acc); font-weight: 700; }
-.ps-home-stats:empty { display: none; }
 
 /* ---------- cards ---------- */
 .ps-cards {
