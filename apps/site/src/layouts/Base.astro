@@ -51,13 +51,6 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       <a href={href('/')} class="ps-topbar__brand">
         <span class="ps-topbar__brand-em">Pya</span>Serv
       </a>
-      <button class="ps-topbar__menu" type="button" id="menu-btn" data-i18n-aria="nav.menu_open" aria-label="Abrir menú" aria-expanded="false" aria-controls="topnav">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
-          <line x1="4" y1="7" x2="20" y2="7"/>
-          <line x1="4" y1="12" x2="20" y2="12"/>
-          <line x1="4" y1="17" x2="20" y2="17"/>
-        </svg>
-      </button>
       <nav class="ps-topbar__nav" id="topnav" data-i18n-aria="nav.primary_aria" aria-label="Principal">
         <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}><T k="nav.specialists" /></a>
         <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}><T k="nav.clients" /></a>
@@ -72,6 +65,36 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         </button>
       </nav>
     </header>
+    <!--
+      Mobile floating menu. Uses @igor-ganov/flying-menu (Lit web component):
+      draggable, snaps to corners, persists position via localStorage. Replaces
+      the old hamburger drawer on mobile. Hidden on desktop via CSS.
+      Slots: trigger (the icon) and menu (the nav links).
+    -->
+    <flying-menu class="ps-fly" corner="bottom-right" storage-key="pyaserv.fly-corner">
+      <button slot="trigger" type="button" class="ps-fly__trigger" id="menu-btn" data-i18n-aria="nav.menu_open" aria-label="Abrir menú">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+      <div slot="menu" class="ps-fly__menu" role="menu">
+        <a href={href('/specialists/')} role="menuitem"><T k="nav.specialists" /></a>
+        <a href={href('/clients/')} role="menuitem"><T k="nav.clients" /></a>
+        <a href={href('/me/')} role="menuitem" data-nav-me><T k="nav.me" /></a>
+        <a href={href('/login/')} role="menuitem" data-nav-login><T k="nav.login" /></a>
+        <div class="ps-fly__row">
+          <div class="ps-lang-switch" role="group" data-i18n-aria="nav.lang_label" aria-label="Idioma">
+            <button type="button" class="ps-lang-btn" data-lang="es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
+            <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
+          </div>
+          <button type="button" class="ps-theme-btn" data-i18n-aria="nav.theme_label" aria-label="Cambiar tema">
+            <span class="ps-theme-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </flying-menu>
     <main id="main-content" class="ps-shell">
       <slot />
     </main>
@@ -80,43 +103,67 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
     </footer>
     <script>
       // @ts-nocheck
+      // Register the <flying-menu> custom element (mobile nav). Lit-based,
+      // side-effect import — defines the element on first execution.
+      import '@igor-ganov/flying-menu'
       import { applyI18n, getLocale, setLocale, t } from '../lib/i18n.ts'
 
-      // 1. Walk DOM and translate everything tagged with data-i18n*. Mark the
-      //    root as ready so the body visibility guard reveals the page for
-      //    non-Spanish locales (Spanish painted directly from the static HTML).
-      applyI18n(document)
-      document.documentElement.dataset.i18nReady = '1'
+      // ClientRouter swaps the body but does NOT re-run inline scripts.
+      // Everything that touches DOM-state per-page must run on every
+      // astro:page-load (which Astro also fires on the very first load).
+      // Document-level handlers below are attached ONCE (delegated) so they
+      // survive every swap automatically.
 
-      // 2. Localized <title> (use titleKey if provided)
-      const titleKey = document.documentElement.dataset.titleKey
-      const descKey = document.documentElement.dataset.descKey
-      if (titleKey) document.title = `${t(titleKey)} · PyaServ`
-      if (descKey) {
-        const meta = document.querySelector('meta[name="description"]')
-        if (meta) meta.setAttribute('content', t(descKey))
-      }
-
-      // 3. Mark active language button
-      const loc = getLocale()
-      for (const b of document.querySelectorAll('.ps-lang-btn')) {
-        b.setAttribute('aria-pressed', b.dataset.lang === loc ? 'true' : 'false')
-        b.addEventListener('click', () => {
-          if (b.dataset.lang && b.dataset.lang !== loc) setLocale(b.dataset.lang)
-        })
-      }
-
-      // 4. Auth-gate is now applied pre-paint via html[data-auth] in the head
-      //    inline script + CSS rules. Keeping data-auth in sync if the token
-      //    state changes mid-session (logout button etc).
-      const token = sessionStorage.getItem('pyaserv.token')
-      document.documentElement.dataset.auth = token ? 'user' : 'guest'
-
-      // 5. Theme cycle button — light → dark → auto.
-      // Pre-paint state was already set by bootstrap.js (html[data-theme]).
-      // CSS draws the icon from that attribute; no JS textContent swap, no flash.
-      const themeBtn = document.getElementById('theme-btn')
       const isTheme = (v) => v === 'light' || v === 'dark' || v === 'auto'
+      const isLoc = (v) => v === 'es' || v === 'en'
+
+      // --- per-page wireup ---------------------------------------------------
+      const initPage = () => {
+        // 1. Re-apply locale + theme + auth from storage to <html>. ClientRouter
+        //    swaps in the SSR'd <html lang="es"> for every new page; without
+        //    this the EN-locale user sees ES UI from /specialists/ onward.
+        try {
+          const stored = localStorage.getItem('pyaserv.locale')
+          const loc = isLoc(stored) ? stored : (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'es'
+          document.documentElement.lang = loc
+          document.documentElement.dataset.loc = loc
+        } catch {}
+        try {
+          const stTheme = localStorage.getItem('pyaserv.theme')
+          document.documentElement.dataset.theme = isTheme(stTheme) ? stTheme : 'auto'
+        } catch {}
+        try {
+          const token = sessionStorage.getItem('pyaserv.token')
+          document.documentElement.dataset.auth = token ? 'user' : 'guest'
+        } catch {}
+
+        // 2. Apply i18n to data-i18n* attributes (placeholder/aria, not visible
+        //    text — visible text is dual-rendered SSR'd).
+        applyI18n(document)
+        document.documentElement.dataset.i18nReady = '1'
+
+        // 3. Localized <title>/<meta description>
+        const titleKey = document.documentElement.dataset.titleKey
+        const descKey = document.documentElement.dataset.descKey
+        if (titleKey) document.title = `${t(titleKey)} · PyaServ`
+        if (descKey) {
+          const meta = document.querySelector('meta[name="description"]')
+          if (meta) meta.setAttribute('content', t(descKey))
+        }
+
+        // 4. Mark active language button (aria-pressed only — click is delegated)
+        const loc = getLocale()
+        for (const b of document.querySelectorAll('.ps-lang-btn')) {
+          b.setAttribute('aria-pressed', b.dataset.lang === loc ? 'true' : 'false')
+        }
+
+        // 5. Defensively close any flying-menu that may be left open across nav
+        const fly = document.querySelector('flying-menu')
+        if (fly && typeof fly.closeMenu === 'function') fly.closeMenu()
+      }
+
+      // --- document-level delegation (attached ONCE) -------------------------
+      // Survives every ClientRouter body swap because document is the host.
       const readTheme = () => {
         try {
           const v = localStorage.getItem('pyaserv.theme')
@@ -127,27 +174,35 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         try { localStorage.setItem('pyaserv.theme', v) } catch {}
         document.documentElement.dataset.theme = v
       }
-      themeBtn?.addEventListener('click', () => {
-        const cur = readTheme()
-        writeTheme(cur === 'light' ? 'dark' : cur === 'dark' ? 'auto' : 'light')
+
+      document.addEventListener('click', (e) => {
+        const tEl = e.target instanceof Element ? e.target : null
+        if (!tEl) return
+        // Theme cycle (matches both topbar button and flying-menu duplicate)
+        const themeBtn = tEl.closest('.ps-theme-btn, #theme-btn')
+        if (themeBtn) {
+          const cur = readTheme()
+          writeTheme(cur === 'light' ? 'dark' : cur === 'dark' ? 'auto' : 'light')
+          return
+        }
+        // Language switch
+        const langBtn = tEl.closest('.ps-lang-btn')
+        if (langBtn) {
+          const want = langBtn.dataset.lang
+          if (isLoc(want) && want !== getLocale()) setLocale(want)
+          return
+        }
+        // Tapping a flying-menu nav link → close the menu (Astro then navigates)
+        const flyLink = tEl.closest('.ps-fly__menu a')
+        if (flyLink) {
+          const fly = document.querySelector('flying-menu')
+          if (fly && typeof fly.closeMenu === 'function') fly.closeMenu()
+        }
       })
 
-      // 6. Mobile menu toggle
-      const topbar = document.getElementById('topbar')
-      const btn = document.getElementById('menu-btn')
-      const setOpen = (open) => {
-        if (!topbar || !btn) return
-        topbar.dataset.open = open ? 'true' : 'false'
-        btn.setAttribute('aria-expanded', open ? 'true' : 'false')
-      }
-      btn?.addEventListener('click', () => setOpen(topbar?.dataset.open !== 'true'))
-      document.addEventListener('click', (e) => {
-        if (!topbar || topbar.dataset.open !== 'true') return
-        const tEl = e.target
-        if (tEl instanceof Element && topbar.contains(tEl)) return
-        setOpen(false)
-      })
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
+      // --- run on first load AND every ClientRouter swap --------------------
+      initPage()
+      document.addEventListener('astro:after-swap', initPage)
     </script>
     <script>
       // @ts-nocheck

@@ -177,47 +177,58 @@ button { font: inherit; cursor: pointer; }
 }
 .ps-topbar__brand-em { color: var(--ps-acc); }
 
-/* Mobile: hamburger toggle controls drawer. Desktop: classic inline nav. */
-.ps-topbar__menu {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  background: transparent;
-  border: 1px solid var(--ps-border);
-  border-radius: var(--ps-radius-md);
-  cursor: pointer;
-  color: var(--ps-text);
-  font-size: 1.25rem;
-}
-.ps-topbar__menu:active { background: var(--ps-surface-2); }
-@media (min-width: 720px) { .ps-topbar__menu { display: none; } }
-
+/* Desktop: classic inline nav. Mobile: hidden — <flying-menu> replaces it. */
 .ps-topbar__nav {
   display: flex;
   gap: var(--ps-space-1);
-  flex-direction: column;
+  flex-direction: row;
 }
-@media (min-width: 720px) {
-  .ps-topbar__nav { flex-direction: row; }
+@media (max-width: 719.98px) {
+  .ps-topbar__nav { display: none; }
 }
 
-/* Mobile: drawer panel — hidden by default, shown when [data-open] on topbar */
-@media (max-width: 719.98px) {
-  .ps-topbar__nav {
-    position: absolute;
-    top: 100%;
-    right: var(--ps-space-3);
-    left: var(--ps-space-3);
-    background: var(--ps-surface);
-    border: 1px solid var(--ps-border);
-    border-radius: var(--ps-radius-md);
-    padding: var(--ps-space-2);
-    margin-top: var(--ps-space-2);
-    box-shadow: var(--ps-shadow-lg);
-    display: none;
-  }
-  .ps-topbar[data-open="true"] .ps-topbar__nav { display: flex; }
+/* ----- flying-menu integration (mobile only) -----------------------------
+   Custom element from @igor-ganov/flying-menu. Draggable, corner-snapping
+   floating button on mobile. ::part(trigger) / ::part(menu) come from the
+   library. We theme the slotted children. */
+.ps-fly { --fly-trigger-bg: var(--ps-surface); }
+@media (min-width: 720px) { .ps-fly { display: none; } }
+.ps-fly::part(trigger) {
+  border-radius: 999px;
+  box-shadow: var(--ps-shadow-md);
+  background: var(--ps-surface);
+}
+.ps-fly__trigger {
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  background: var(--ps-acc); color: #fff;
+  border: none; border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--ps-shadow-md);
+}
+.ps-fly__menu {
+  display: flex; flex-direction: column;
+  gap: var(--ps-space-1);
+  padding: var(--ps-space-3);
+  background: var(--ps-surface);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  box-shadow: var(--ps-shadow-lg);
+  min-width: 12rem;
+}
+.ps-fly__menu a {
+  text-decoration: none; color: var(--ps-text);
+  padding: var(--ps-space-3) var(--ps-space-4);
+  border-radius: var(--ps-radius-md);
+  font-weight: 600;
+}
+.ps-fly__menu a:hover { background: var(--ps-surface-2); }
+.ps-fly__row {
+  display: flex; gap: var(--ps-space-2);
+  margin-top: var(--ps-space-2);
+  padding-top: var(--ps-space-2);
+  border-top: 1px solid var(--ps-border);
+  align-items: center; justify-content: space-between;
 }
 
 .ps-topbar__nav a {
@@ -266,7 +277,7 @@ button { font: inherit; cursor: pointer; }
   transition: color 120ms, background 120ms;
 }
 .ps-lang-btn:hover,
-.ps-lang-btn:focus-visible { color: var(--ps-text); outline: none; }
+.ps-lang-btn:focus-visible { color: var(--ps-text); }
 .ps-lang-btn[aria-pressed="true"] {
   background: var(--ps-surface);
   color: var(--ps-acc);
@@ -349,7 +360,6 @@ button { font: inherit; cursor: pointer; }
   transform: translateY(-3px);
   border-color: var(--ps-acc);
   box-shadow: var(--ps-shadow-md);
-  outline: none;
 }
 .ps-mode-card:hover::after,
 .ps-mode-card:focus-visible::after { opacity: 1; }
@@ -498,17 +508,36 @@ button { font: inherit; cursor: pointer; }
 .ps-btn--danger:hover { background: color-mix(in srgb, var(--ps-bad) 80%, black); }
 .ps-btn--sm { padding: var(--ps-space-2) var(--ps-space-3); min-height: 44px; font-size: 0.875rem; }
 
-/* Keyboard focus ring — WCAG 2.4.7 */
-.ps-btn:focus-visible,
-.ps-form button:focus-visible,
-.ps-lang-btn:focus-visible,
-.ps-tab:focus-visible,
-.ps-star:focus-visible,
-.ps-topbar__menu:focus-visible,
-.ps-topbar__nav a:focus-visible {
+/* ------------------------------------------------------------------------
+   Universal keyboard focus ring (WCAG 2.4.7).
+
+   Applied to EVERY interactive element via a single rule keyed off the role,
+   not per-class. Replaces 11 ad-hoc focus-visible rules. New interactives
+   inherit the ring automatically — no more "I added a new .ps-foo button
+   and forgot to wire focus".
+
+   Use class `.ps-no-default-focus` to opt out (e.g. when a custom inner
+   shadow ring is needed). The primitive `.ps-interactive` adds rounded
+   corners + touch-flash kill on top.
+   ------------------------------------------------------------------------ */
+:where(a[href], button, input, select, textarea,
+       [role="button"], [role="link"], [role="tab"], [role="option"],
+       [tabindex]:not([tabindex="-1"])):focus-visible {
   outline: 2px solid var(--ps-acc);
   outline-offset: 2px;
+  border-radius: inherit;
 }
+.ps-no-default-focus:focus-visible { outline: none; }
+
+/* Interactive primitive — opt-in base class with touch-flash kill and a
+   focusable hit target. Every new interactive (.ps-card etc.) should use it. */
+.ps-interactive {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.ps-interactive:disabled,
+.ps-interactive[aria-disabled="true"] { cursor: not-allowed; opacity: .55; }
 
 /* Pre-paint auth gate — rules apply on the first frame because <html data-auth>
    is set synchronously in the head inline script. Kills the visible nav shift
@@ -655,7 +684,7 @@ html[lang="en"] [lang="es"] { display: none; }
   -webkit-tap-highlight-color: transparent;
 }
 .ps-theme-btn:hover { background: var(--ps-acc-soft); border-color: var(--ps-acc); }
-.ps-theme-btn:focus-visible { outline: 2px solid var(--ps-acc); outline-offset: 2px; }
+/* .ps-theme-btn focus ring now provided by the universal :where() rule above. */
 /* Theme glyph rendered from html[data-theme] — bootstrap.js sets the attribute
    synchronously in <head>, so the right icon is committed on the first frame.
    Removed: JS textContent swap that caused a brief sun-flash on dark reload. */
@@ -752,7 +781,6 @@ a.ps-card:focus-visible {
   transform: translateY(-2px);
   box-shadow: var(--ps-shadow-md);
   border-color: var(--ps-acc);
-  outline: none;
 }
 .ps-card h2 { margin: 0; font-size: 1.0625rem; letter-spacing: -0.01em; }
 .ps-card h3 { margin: 0; font-size: 1rem; letter-spacing: -0.005em; }
