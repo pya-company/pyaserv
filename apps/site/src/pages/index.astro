@@ -67,4 +67,28 @@ const href = (p: string): string => `${base}${p}`
     <a href={href('/me/')}><T k="home.banner.cta" /></a>.
     <T k="home.banner.tail" />
   </p>
+
+  <script>
+    // @ts-nocheck
+    import { apiFetch } from '../lib/api.ts'
+    import { tFor, interp } from '../lib/i18n.ts'
+    ;(async () => {
+      const el = document.getElementById('home-stats')
+      if (!el) return
+      try {
+        const [specs, reqs] = await Promise.all([
+          apiFetch('/v1/specialists').catch(() => []),
+          apiFetch('/v1/requests').catch(() => []),
+        ])
+        const vars = { specs: specs?.length ?? 0, reqs: reqs?.length ?? 0 }
+        if (vars.specs + vars.reqs === 0) return
+        el.innerHTML =
+          `<span lang="es">${interp(tFor('es', 'home.stats'), vars)}</span>` +
+          `<span lang="en">${interp(tFor('en', 'home.stats'), vars)}</span>`
+        el.classList.add('is-loaded')
+      } catch {
+        // network/API failure — leave placeholder height, no error UI here
+      }
+    })()
+  </script>
 </Base>

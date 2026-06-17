@@ -699,6 +699,12 @@ html[lang="en"] [lang="es"] { display: none; }
   font-size: 1rem;
   color: var(--ps-text-muted);
   min-height: 1.5rem;
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+.ps-home-stats.is-loaded { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .ps-home-stats { transition: none; }
 }
 .ps-home-stats strong { color: var(--ps-acc); font-weight: 700; }
 
