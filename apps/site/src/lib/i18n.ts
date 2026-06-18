@@ -216,6 +216,7 @@ export const ES: Dict = {
   'me.profile.geoloc.denied': 'Acceso a ubicación denegado',
   'me.profile.geoloc.unavailable': 'Geolocalización no disponible',
   'me.profile.completeness': 'Perfil completo: {pct}%',
+  'me.profile.completeness.empty': 'Perfil completo: 0%',
 
   'me.listings.h': 'Mis servicios publicados',
   'me.listings.new': '+ Nuevo',
@@ -522,6 +523,7 @@ export const EN: Dict = {
   'me.profile.geoloc.denied': 'Location access denied',
   'me.profile.geoloc.unavailable': 'Geolocation unavailable',
   'me.profile.completeness': 'Profile complete: {pct}%',
+  'me.profile.completeness.empty': 'Profile complete: 0%',
 
   'me.listings.h': 'My published services',
   'me.listings.new': '+ New',

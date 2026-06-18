@@ -19,12 +19,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <button class="ps-tab" role="tab" id="tab-stats" aria-controls="panel-stats" data-tab="stats" data-i18n="me.tabs.stats">📊 Estadísticas</button>
     </div>
 
-    <div class="ps-tabpanel" id="panel-profile" role="tabpanel" aria-labelledby="tab-profile" hidden>
+    <!-- Default tab; rendered visible in SSR so its content height is reserved
+         on the first frame. Tabs strip + footer don't jump when JS later
+         populates form values (input dimensions don't depend on value). -->
+    <div class="ps-tabpanel" id="panel-profile" role="tabpanel" aria-labelledby="tab-profile">
       <h2 data-i18n="me.profile.h">Perfil de profesional</h2>
       <p data-i18n="me.profile.intro">Si querés ofrecer servicios, completá tu perfil acá.</p>
-      <div id="completeness" class="ps-completeness" aria-live="polite" hidden>
-        <div class="ps-completeness__bar"><div class="ps-completeness__fill" id="completeness-fill"></div></div>
-        <p class="ps-card__sub"><span id="completeness-label"></span></p>
+      <!-- Always rendered at 0% so the bar's height + label line are reserved.
+           JS just updates the % once /v1/me returns. -->
+      <div id="completeness" class="ps-completeness" aria-live="polite">
+        <div class="ps-completeness__bar"><div class="ps-completeness__fill" id="completeness-fill" style="width:0%"></div></div>
+        <p class="ps-card__sub"><span id="completeness-label" data-i18n="me.profile.completeness.empty">Perfil completo: 0%</span></p>
       </div>
       <form id="profile-form" class="ps-form">
         <div class="ps-row ps-photo-widget">
@@ -278,7 +283,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         const pct = Math.round((score / total) * 100)
         completenessFill.style.width = pct + '%'
         completenessLabel.textContent = interp(t('me.profile.completeness'), { pct })
-        completenessEl.hidden = false
       }
       pf.addEventListener('input', computeCompleteness)
       photoInput.addEventListener('change', () => setTimeout(computeCompleteness, 50))
