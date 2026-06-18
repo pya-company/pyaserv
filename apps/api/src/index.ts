@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { checkRateLimit } from './rate-limit.ts'
 import { analyticsRoutes } from './routes/analytics.ts'
+import { devLoginRoutes } from './routes/dev-login.ts'
 import { inquiriesRoutes } from './routes/inquiries.ts'
 import { listingsRoutes } from './routes/listings.ts'
 import { mediaRoutes } from './routes/media.ts'
@@ -69,6 +70,10 @@ const app = new Hono<AppEnv>()
     await next()
   })
   .route('/api/auth', passwordlessRoutes)
+  // Header-gated dev login for E2E. Returns 404 when DEV_AUTH_BYPASS_KEY is
+  // unset (route invisible from outside), 403 on wrong header, real session
+  // when the secret matches.
+  .route('/api/dev', devLoginRoutes)
   .get('/v1/me', requireAuth, (c) => {
     const session = c.var.session
     return c.json({ data: { userId: session.userId, roles: session.roles } })
