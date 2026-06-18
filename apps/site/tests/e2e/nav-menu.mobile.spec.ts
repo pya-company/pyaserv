@@ -8,10 +8,9 @@
  */
 import { expect, test } from '@playwright/test'
 
-// flying-menu only renders on mobile viewports — desktop uses inline nav.
+// Scoped to mobile-chrome project via playwright.config testMatch suffix —
+// no runtime skip, the file simply isn't picked up by the desktop project.
 test.describe('mobile flying-menu', () => {
-  test.skip(({ viewport }) => !!viewport && viewport.width >= 720, 'flying-menu is mobile-only')
-
   test('opens on first page load', async ({ page }) => {
     await page.goto('/')
     const fly = page.locator('flying-menu')

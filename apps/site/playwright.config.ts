@@ -19,12 +19,18 @@ export default defineConfig({
   },
   projects: [
     {
+      // Filename suffix carries the viewport scope. mobile-chrome runs files
+      // ending in .mobile.spec.ts or .common.spec.ts; desktop-chrome runs
+      // .desktop.spec.ts or .common.spec.ts. No skips at runtime — each
+      // project owns its own viewport-appropriate tests.
       name: 'mobile-chrome',
       use: { ...devices['Pixel 7'] },
+      testMatch: /.*\.(mobile|common)\.spec\.ts/,
     },
     {
       name: 'desktop-chrome',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: /.*\.(desktop|common)\.spec\.ts/,
     },
   ],
 })
