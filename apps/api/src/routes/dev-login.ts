@@ -18,6 +18,7 @@
 import { newSessionId, writeSession } from '@pya-company/auth'
 import { uuidV7 } from '@pya-company/shared'
 import { Hono } from 'hono'
+import { translatePair } from '../lib/translate.ts'
 
 const HEADER_NAME = 'X-Dev-Bypass-Key'
 
@@ -77,4 +78,51 @@ export const devLoginRoutes = new Hono<{ Bindings: Env }>().post('/login', async
   })
 
   return c.json({ data: { ok: true, userId, email, sessionToken: sid } })
+}).post('/backfill-translations', async (c) => {
+  // Same secret gate as /login. Walks specialist_profiles, listings, requests
+  // and fills *_es/*_en columns where the EN copy is NULL. Source assumed ES
+  // (every pre-translation row was entered in Spanish). Idempotent.
+  const expected = (c.env as { DEV_AUTH_BYPASS_KEY?: string }).DEV_AUTH_BYPASS_KEY
+  if (typeof expected !== 'string' || expected.length === 0) return c.notFound()
+  if (c.req.header(HEADER_NAME) !== expected) return c.body(null, 403)
+
+  const stats = { specialists: 0, listings: 0, requests: 0 }
+
+  const specs = await c.env.DB.prepare(
+    "SELECT id, headline, bio FROM specialist_profiles WHERE headline_en IS NULL",
+  ).all<{ id: string; headline: string; bio: string }>()
+  for (const r of (specs.results ?? [])) {
+    const h = await translatePair(c.env, 'es', r.headline)
+    const b = await translatePair(c.env, 'es', r.bio)
+    await c.env.DB.prepare(
+      "UPDATE specialist_profiles SET headline_es=?, headline_en=?, bio_es=?, bio_en=? WHERE id=?",
+    ).bind(h.es, h.en, b.es, b.en, r.id).run()
+    stats.specialists++
+  }
+
+  const lst = await c.env.DB.prepare(
+    "SELECT id, title, description FROM listings WHERE title_en IS NULL",
+  ).all<{ id: string; title: string; description: string }>()
+  for (const r of (lst.results ?? [])) {
+    const t = await translatePair(c.env, 'es', r.title)
+    const d = await translatePair(c.env, 'es', r.description)
+    await c.env.DB.prepare(
+      "UPDATE listings SET title_es=?, title_en=?, description_es=?, description_en=? WHERE id=?",
+    ).bind(t.es, t.en, d.es, d.en, r.id).run()
+    stats.listings++
+  }
+
+  const req = await c.env.DB.prepare(
+    "SELECT id, title, description FROM requests WHERE title_en IS NULL",
+  ).all<{ id: string; title: string; description: string }>()
+  for (const r of (req.results ?? [])) {
+    const t = await translatePair(c.env, 'es', r.title)
+    const d = await translatePair(c.env, 'es', r.description)
+    await c.env.DB.prepare(
+      "UPDATE requests SET title_es=?, title_en=?, description_es=?, description_en=? WHERE id=?",
+    ).bind(t.es, t.en, d.es, d.en, r.id).run()
+    stats.requests++
+  }
+
+  return c.json({ data: { ok: true, ...stats } })
 })

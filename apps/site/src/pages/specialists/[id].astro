@@ -20,6 +20,10 @@ interface Specialist {
   readonly displayName: string
   readonly headline: string
   readonly bio: string | null
+  readonly headlineEs: string
+  readonly headlineEn: string
+  readonly bioEs: string | null
+  readonly bioEn: string | null
   readonly phone: string
   readonly whatsapp: string | null
   readonly barrio: string
@@ -120,7 +124,10 @@ const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
             : <span class="ps-avatar__initials" aria-hidden="true">{initials(spec.displayName)}</span>}
         </div>
         <h1 class="ps-detail__name">{spec.displayName}</h1>
-        <p class="ps-detail__meta">{spec.headline} · 📍 {spec.barrio}</p>
+        <p class="ps-detail__meta">
+          <span lang="es">{spec.headlineEs} · 📍 {spec.barrio}</span>
+          <span lang="en">{spec.headlineEn} · 📍 {spec.barrio}</span>
+        </p>
         {spec.verified && (
           <div class="ps-row" style="justify-content:center;min-height:1.5rem">
             <span class="ps-badge">
@@ -147,7 +154,10 @@ const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
       </aside>
 
       <div class="ps-detail__body">
-        <article class="ps-detail__bio">{spec.bio || spec.headline}</article>
+        <article class="ps-detail__bio">
+          <span lang="es">{spec.bioEs || spec.headlineEs}</span>
+          <span lang="en">{spec.bioEn || spec.headlineEn}</span>
+        </article>
 
         <section class="ps-stack ps-stack--gap-4" aria-labelledby="reviews-h">
           <h2 id="reviews-h">

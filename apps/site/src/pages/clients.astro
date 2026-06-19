@@ -18,6 +18,10 @@ interface ClientRequest {
   readonly category: string
   readonly title: string
   readonly description: string
+  readonly titleEs: string
+  readonly titleEn: string
+  readonly descriptionEs: string
+  readonly descriptionEn: string
   readonly budgetGs: number
   readonly barrio: string
   readonly createdAt: number
@@ -114,9 +118,15 @@ const truncate = (s: string, n = 220): string => s.length > n ? `${s.slice(0, n)
                 <span lang="en">{relativeFor(r.createdAt, 'en')}</span>
               </span>
             </div>
-            <h2>{r.title}</h2>
+            <h2>
+              <span lang="es">{r.titleEs}</span>
+              <span lang="en">{r.titleEn}</span>
+            </h2>
             <p class="ps-card__sub">📍 {r.barrio} · 💰 {formatGs(r.budgetGs)}</p>
-            <p class="ps-card__body">{truncate(r.description)}</p>
+            <p class="ps-card__body">
+              <span lang="es">{truncate(r.descriptionEs)}</span>
+              <span lang="en">{truncate(r.descriptionEn)}</span>
+            </p>
             <div class="ps-card__cta">
               <span lang="es">{ctaEs}</span>
               <span lang="en">{ctaEn}</span>

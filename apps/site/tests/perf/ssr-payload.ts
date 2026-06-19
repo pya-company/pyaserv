@@ -39,7 +39,8 @@ const buildChecks = async (): Promise<ReadonlyArray<RouteCheck>> => {
     mustContain: [
       { label: 'name SSR\'d as h1', re: /<h1[^>]*class="ps-detail__name"[^>]*>[^<]{2,}<\/h1>/i },
       { label: 'avatar block', re: /class="ps-detail__avatar/i },
-      { label: 'bio article', re: /class="ps-detail__bio">[^<]{2,}<\/article>/i },
+      // bio now wraps both ES and EN spans inside the article.
+      { label: 'bio article', re: /class="ps-detail__bio"[^>]*>\s*<span lang="es"/i },
       { label: 'guest-locked banner SSR\'d', re: /data-auth-guest/i },
       { label: 'auth-user contact block SSR\'d', re: /data-auth-user/i },
     ],
@@ -47,10 +48,11 @@ const buildChecks = async (): Promise<ReadonlyArray<RouteCheck>> => {
   if (reqId) out.push({
     path: `/clients/${reqId}/`,
     mustContain: [
-      { label: 'request title SSR\'d', re: /<h1[^>]*>[^<]{3,}<\/h1>/i },
+      // title now contains dual-lang spans
+      { label: 'request title SSR\'d', re: /<h1[^>]*>\s*<span lang="es"[^>]*>[^<]{3,}<\/span>/i },
       { label: 'budget visible (ES)', re: /lang="es"[^>]*>📍/i },
       { label: 'budget visible (EN)', re: /lang="en"[^>]*>📍/i },
-      { label: 'description article', re: /class="ps-detail__bio">[^<]{2,}<\/article>/i },
+      { label: 'description article', re: /class="ps-detail__bio"[^>]*>\s*<span lang="es"/i },
     ],
   })
   return out
@@ -88,8 +90,8 @@ const STATIC_CHECKS: ReadonlyArray<RouteCheck> = [
       // At least one SSR'd request card.
       { label: 'request card', re: /class="[^"]*ps-card[^"]*ps-card--request/i },
       { label: 'request link', re: /href="[^"]*\/clients\/[0-9a-f-]+\/"/i },
-      // Title of the SSR'd request comes through.
-      { label: 'request title visible', re: /<h2[^>]*>[^<]{3,}<\/h2>/i },
+      // Title of the SSR'd request comes through (dual-lang spans inside <h2>).
+      { label: 'request title visible', re: /<h2[^>]*>\s*<span lang="es"[^>]*>[^<]{3,}<\/span>/i },
       { label: 'card CTA ES (Postularme)', re: /lang="es"[^>]*>[^<]*Postularme/i },
       { label: 'card CTA EN (Apply)', re: /lang="en"[^>]*>[^<]*Apply/i },
     ],

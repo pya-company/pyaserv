@@ -39,7 +39,8 @@
         { "binding": "SESSIONS", "id": "bdbd72f4629547a2b9950b2a06001759" },
         { "binding": "OAUTH_STATE", "id": "7ac1d7087a9148c6b9bf9a7564e14d40" },
         { "binding": "MEDIA_KV", "id": "e9495647da9d44c899c993f9392d0a8c" }
-      ]
+      ],
+      "ai": { "binding": "AI" }
     }
   }
 }

@@ -2,6 +2,7 @@ import { requireAuth } from '@pya-company/auth'
 import { ForbiddenError, NotFoundError, ValidationError, uuidV7 } from '@pya-company/shared'
 import { Hono } from 'hono'
 import * as v from 'valibot'
+import { translatePair } from '../lib/translate.ts'
 import { SpecialistCreateSchema, SpecialistUpdateSchema } from '../schemas.ts'
 
 interface AppEnv {
@@ -14,6 +15,10 @@ interface SpecialistRow {
   readonly display_name: string
   readonly headline: string
   readonly bio: string
+  readonly headline_es: string | null
+  readonly headline_en: string | null
+  readonly bio_es: string | null
+  readonly bio_en: string | null
   readonly phone: string
   readonly whatsapp: string | null
   readonly barrio: string
@@ -32,6 +37,12 @@ const toDto = (r: SpecialistRow) => ({
   displayName: r.display_name,
   headline: r.headline,
   bio: r.bio,
+  // Locale pair — read-side falls back to the source value when the
+  // translation column is NULL (pre-backfill rows).
+  headlineEs: r.headline_es ?? r.headline,
+  headlineEn: r.headline_en ?? r.headline,
+  bioEs: r.bio_es ?? r.bio,
+  bioEn: r.bio_en ?? r.bio,
   phone: r.phone,
   whatsapp: r.whatsapp,
   barrio: r.barrio,
@@ -136,10 +147,16 @@ export const specialistsRoutes = new Hono<AppEnv>()
     const userId = c.var.session.userId
     const now = Math.floor(Date.now() / 1000)
     const id = uuidV7()
+    // User content arrives in the active UI locale (ES by default; EN if the
+    // client opted in). Translate-on-write so reads never block on the model.
+    const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
+    const headlinePair = await translatePair(c.env, sourceLoc, parsed.output.headline)
+    const bioPair = await translatePair(c.env, sourceLoc, parsed.output.bio ?? '')
     await c.env.DB.prepare(
       `INSERT INTO specialist_profiles
-       (id, user_id, display_name, headline, bio, phone, whatsapp, barrio, lat, lng, photo, verified, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?)`,
+       (id, user_id, display_name, headline, bio, headline_es, headline_en, bio_es, bio_en,
+        phone, whatsapp, barrio, lat, lng, photo, verified, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?)`,
     )
       .bind(
         id,
@@ -147,6 +164,10 @@ export const specialistsRoutes = new Hono<AppEnv>()
         parsed.output.displayName,
         parsed.output.headline,
         parsed.output.bio ?? '',
+        headlinePair.es,
+        headlinePair.en,
+        bioPair.es,
+        bioPair.en,
         parsed.output.phone,
         parsed.output.whatsapp ?? null,
         parsed.output.barrio,
@@ -181,9 +202,18 @@ export const specialistsRoutes = new Hono<AppEnv>()
       sets.push(`${col} = ?`)
       params.push(val)
     }
+    const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
     if (o.displayName !== undefined) set('display_name', o.displayName)
-    if (o.headline !== undefined) set('headline', o.headline)
-    if (o.bio !== undefined) set('bio', o.bio)
+    if (o.headline !== undefined) {
+      set('headline', o.headline)
+      const pair = await translatePair(c.env, sourceLoc, o.headline)
+      set('headline_es', pair.es); set('headline_en', pair.en)
+    }
+    if (o.bio !== undefined) {
+      set('bio', o.bio)
+      const pair = await translatePair(c.env, sourceLoc, o.bio)
+      set('bio_es', pair.es); set('bio_en', pair.en)
+    }
     if (o.phone !== undefined) set('phone', o.phone)
     if (o.whatsapp !== undefined) set('whatsapp', o.whatsapp)
     if (o.barrio !== undefined) set('barrio', o.barrio)

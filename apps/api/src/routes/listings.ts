@@ -2,6 +2,7 @@ import { requireAuth } from '@pya-company/auth'
 import { ForbiddenError, NotFoundError, ValidationError, uuidV7 } from '@pya-company/shared'
 import { Hono } from 'hono'
 import * as v from 'valibot'
+import { translatePair } from '../lib/translate.ts'
 import { ListingCreateSchema, ListingUpdateSchema } from '../schemas.ts'
 
 interface AppEnv {
@@ -14,6 +15,10 @@ interface ListingRow {
   readonly category: string
   readonly title: string
   readonly description: string
+  readonly title_es: string | null
+  readonly title_en: string | null
+  readonly description_es: string | null
+  readonly description_en: string | null
   readonly price_from_gs: number | null
   readonly price_unit: string | null
   readonly photo: string | null
@@ -28,6 +33,10 @@ const toDto = (r: ListingRow) => ({
   category: r.category,
   title: r.title,
   description: r.description,
+  titleEs: r.title_es ?? r.title,
+  titleEn: r.title_en ?? r.title,
+  descriptionEs: r.description_es ?? r.description,
+  descriptionEn: r.description_en ?? r.description,
   priceFromGs: r.price_from_gs,
   priceUnit: r.price_unit,
   photo: r.photo,
@@ -81,10 +90,14 @@ export const listingsRoutes = new Hono<AppEnv>()
     const specialistId = await ensureMySpecialistId(c.env, c.var.session.userId)
     const now = Math.floor(Date.now() / 1000)
     const id = uuidV7()
+    const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
+    const titlePair = await translatePair(c.env, sourceLoc, parsed.output.title)
+    const descPair = await translatePair(c.env, sourceLoc, parsed.output.description ?? '')
     await c.env.DB.prepare(
       `INSERT INTO listings
-       (id, specialist_id, category, title, description, price_from_gs, price_unit, photo, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`,
+       (id, specialist_id, category, title, description, title_es, title_en, description_es, description_en,
+        price_from_gs, price_unit, photo, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`,
     )
       .bind(
         id,
@@ -92,6 +105,10 @@ export const listingsRoutes = new Hono<AppEnv>()
         parsed.output.category,
         parsed.output.title,
         parsed.output.description ?? '',
+        titlePair.es,
+        titlePair.en,
+        descPair.es,
+        descPair.en,
         parsed.output.priceFromGs ?? null,
         parsed.output.priceUnit ?? null,
         parsed.output.photo ?? null,
@@ -119,9 +136,18 @@ export const listingsRoutes = new Hono<AppEnv>()
       sets.push(`${col} = ?`)
       params.push(val)
     }
+    const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
     if (o.category !== undefined) set('category', o.category)
-    if (o.title !== undefined) set('title', o.title)
-    if (o.description !== undefined) set('description', o.description)
+    if (o.title !== undefined) {
+      set('title', o.title)
+      const pair = await translatePair(c.env, sourceLoc, o.title)
+      set('title_es', pair.es); set('title_en', pair.en)
+    }
+    if (o.description !== undefined) {
+      set('description', o.description)
+      const pair = await translatePair(c.env, sourceLoc, o.description)
+      set('description_es', pair.es); set('description_en', pair.en)
+    }
     if (o.priceFromGs !== undefined) set('price_from_gs', o.priceFromGs)
     if (o.priceUnit !== undefined) set('price_unit', o.priceUnit)
     if (o.photo !== undefined) set('photo', o.photo)

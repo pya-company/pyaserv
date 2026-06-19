@@ -18,6 +18,8 @@ interface Specialist {
   readonly id: string
   readonly displayName: string
   readonly headline: string
+  readonly headlineEs: string
+  readonly headlineEn: string
   readonly barrio: string
   readonly photo: string | null
   readonly verified: boolean
@@ -119,7 +121,10 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
                   )}
                 </div>
               )}
-              <p class="ps-card__body">{s.headline}</p>
+              <p class="ps-card__body">
+                <span lang="es">{s.headlineEs}</span>
+                <span lang="en">{s.headlineEn}</span>
+              </p>
               <div class="ps-card__cta">
                 <span lang="es">{ctaEs}</span>
                 <span lang="en">{ctaEn}</span>

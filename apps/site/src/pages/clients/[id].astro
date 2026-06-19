@@ -13,6 +13,10 @@ interface ClientRequest {
   readonly category: string
   readonly title: string
   readonly description: string
+  readonly titleEs: string
+  readonly titleEn: string
+  readonly descriptionEs: string
+  readonly descriptionEn: string
   readonly budgetGs: number
   readonly barrio: string
   readonly status: string
@@ -95,12 +99,18 @@ const statusClass = isOpen ? 'ps-badge' : 'ps-badge ps-badge--neutral'
           <span lang="en">{tFor('en', statusKey)}</span>
         </span>
       </div>
-      <h1>{req.title}</h1>
+      <h1>
+        <span lang="es">{req.titleEs}</span>
+        <span lang="en">{req.titleEn}</span>
+      </h1>
       <p class="ps-card__sub">
         <span lang="es">📍 {req.barrio} · 💰 {formatGsEs(req.budgetGs)} · {relativeFor(req.createdAt, 'es')}</span>
         <span lang="en">📍 {req.barrio} · 💰 {formatGsEn(req.budgetGs)} · {relativeFor(req.createdAt, 'en')}</span>
       </p>
-      <article class="ps-detail__bio">{req.description}</article>
+      <article class="ps-detail__bio">
+        <span lang="es">{req.descriptionEs}</span>
+        <span lang="en">{req.descriptionEn}</span>
+      </article>
 
       {isOpen && (
         <>

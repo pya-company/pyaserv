@@ -2,6 +2,7 @@ import { requireAuth } from '@pya-company/auth'
 import { ForbiddenError, NotFoundError, ValidationError, uuidV7 } from '@pya-company/shared'
 import { Hono } from 'hono'
 import * as v from 'valibot'
+import { translatePair } from '../lib/translate.ts'
 import { RequestCreateSchema, RequestUpdateSchema } from '../schemas.ts'
 
 interface AppEnv {
@@ -14,6 +15,10 @@ interface RequestRow {
   readonly category: string
   readonly title: string
   readonly description: string
+  readonly title_es: string | null
+  readonly title_en: string | null
+  readonly description_es: string | null
+  readonly description_en: string | null
   readonly budget_gs: number | null
   readonly barrio: string
   readonly status: string
@@ -27,6 +32,10 @@ const toDto = (r: RequestRow) => ({
   category: r.category,
   title: r.title,
   description: r.description,
+  titleEs: r.title_es ?? r.title,
+  titleEn: r.title_en ?? r.title,
+  descriptionEs: r.description_es ?? r.description,
+  descriptionEn: r.description_en ?? r.description,
   budgetGs: r.budget_gs,
   barrio: r.barrio,
   status: r.status,
@@ -64,10 +73,14 @@ export const requestsRoutes = new Hono<AppEnv>()
     if (!parsed.success) throw new ValidationError({ issues: parsed.issues.map((i) => ({ path: i.path?.map((p) => p.key).join(".") ?? "", message: i.message })) })
     const now = Math.floor(Date.now() / 1000)
     const id = uuidV7()
+    const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
+    const titlePair = await translatePair(c.env, sourceLoc, parsed.output.title)
+    const descPair = await translatePair(c.env, sourceLoc, parsed.output.description ?? '')
     await c.env.DB.prepare(
       `INSERT INTO requests
-       (id, client_id, category, title, description, budget_gs, barrio, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)`,
+       (id, client_id, category, title, description, title_es, title_en, description_es, description_en,
+        budget_gs, barrio, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)`,
     )
       .bind(
         id,
@@ -75,6 +88,10 @@ export const requestsRoutes = new Hono<AppEnv>()
         parsed.output.category,
         parsed.output.title,
         parsed.output.description ?? '',
+        titlePair.es,
+        titlePair.en,
+        descPair.es,
+        descPair.en,
         parsed.output.budgetGs ?? null,
         parsed.output.barrio,
         now,
@@ -100,9 +117,18 @@ export const requestsRoutes = new Hono<AppEnv>()
       sets.push(`${col} = ?`)
       params.push(val)
     }
+    const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
     if (o.category !== undefined) set('category', o.category)
-    if (o.title !== undefined) set('title', o.title)
-    if (o.description !== undefined) set('description', o.description)
+    if (o.title !== undefined) {
+      set('title', o.title)
+      const pair = await translatePair(c.env, sourceLoc, o.title)
+      set('title_es', pair.es); set('title_en', pair.en)
+    }
+    if (o.description !== undefined) {
+      set('description', o.description)
+      const pair = await translatePair(c.env, sourceLoc, o.description)
+      set('description_es', pair.es); set('description_en', pair.en)
+    }
     if (o.budgetGs !== undefined) set('budget_gs', o.budgetGs)
     if (o.barrio !== undefined) set('barrio', o.barrio)
     if (o.status !== undefined) set('status', o.status)
