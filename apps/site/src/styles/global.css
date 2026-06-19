@@ -873,17 +873,31 @@ a.ps-card:focus-visible {
 .ps-tabpanel { padding-top: var(--ps-space-3); }
 
 /* ---------- empty / loading / error / msg ---------- */
+/* `.ps-empty` is a <span> in the markup (rendered inside <p>), so we MUST
+   force display:flex — otherwise padding/border/background are inline-style
+   garbage and the icon + title + hint look like a floating wall of text on
+   mobile filter→no-match. Flex with align-items:center gives the actual card. */
 .ps-empty {
-  padding: var(--ps-space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ps-space-2);
+  padding: var(--ps-space-6) var(--ps-space-4);
+  margin: var(--ps-space-3) auto;
+  max-width: 28rem;
   text-align: center;
   background: var(--ps-surface);
   border: 1px dashed var(--ps-border-strong);
-  border-radius: var(--ps-radius-md);
+  border-radius: var(--ps-radius-lg);
   color: var(--ps-text-muted);
 }
-.ps-empty__icon { font-size: 2rem; display: block; margin-bottom: var(--ps-space-2); }
-.ps-empty__title { display: block; margin: 0 0 var(--ps-space-2); color: var(--ps-text); font-size: 1rem; font-weight: 700; }
-.ps-empty__hint { display: block; }
+.ps-empty__icon { font-size: 2.5rem; line-height: 1; margin: 0; }
+.ps-empty__title { display: block; margin: 0; color: var(--ps-text); font-size: 1.0625rem; font-weight: 700; }
+.ps-empty__hint { display: block; margin: 0; line-height: 1.5; }
+/* When .ps-empty lands inside a <p class="ps-msg"> live region the parent
+   paragraph would force inline-formatting context; opt out so the flex card
+   sits as a proper block. */
+.ps-msg:has(.ps-empty) { padding: 0; }
 
 .ps-msg { color: var(--ps-text-muted); font-size: 0.9375rem; padding: var(--ps-space-3) 0; }
 .ps-msg--ok { color: var(--ps-good); }

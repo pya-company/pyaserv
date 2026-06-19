@@ -75,4 +75,28 @@ test.describe('/me/ stability', () => {
     )
     expect(profilePanelHidden, 'panel-profile must be visible in SSR — JS-only reveal causes CLS').toBe(false)
   })
+
+  test('REGRESSION GUARD: tabs still work after ClientRouter nav away + back', async ({ page }) => {
+    const sid = await provisionSession()
+    await page.addInitScript((s) => {
+      try { sessionStorage.setItem('pyaserv.token', s) } catch {}
+    }, sid)
+
+    await page.goto('/me/')
+    // Wait for the initial /v1/me roundtrip to settle.
+    await page.waitForLoadState('networkidle')
+
+    // Navigate away through a ClientRouter swap, then back.
+    await page.goto('/specialists/')
+    await page.waitForURL(/\/specialists\/$/)
+    await page.goto('/me/')
+    await page.waitForLoadState('networkidle')
+
+    // Click the Listings tab and assert its panel becomes visible. The bug:
+    // inline script ran once at first /me/ load; after the swap the tab
+    // click listeners died, so nothing happened on click.
+    await page.locator('#tab-listings').click()
+    await expect(page.locator('#panel-listings')).toBeVisible({ timeout: 2000 })
+    await expect(page.locator('#panel-profile')).toBeHidden()
+  })
 })

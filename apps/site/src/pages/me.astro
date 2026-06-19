@@ -124,10 +124,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     // @ts-nocheck
     import { apiFetch, getToken, clearToken, categoryLabel, categoryEmoji, formatGs, formatRelativeTime, uploadImage, mediaUrl } from '../lib/api.ts'
     import { interp, t } from '../lib/i18n.ts'
+    import { completenessPct, snapshotFromForm } from '../features/me/completeness.ts'
+    import { escapeHtml } from '../features/me/sanitize.ts'
 
-    ;(async () => {
-      const base = document.querySelector('.ps-section').dataset.base ?? ''
-      const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))
+    // ClientRouter swaps body — module scripts re-execute, but we still
+    // route through astro:page-load so we get consistent re-init on both
+    // the initial paint AND every subsequent in-page navigation back to /me/.
+    // The function guards against firing on the wrong route.
+    const initMePage = async () => {
+      const section = document.querySelector('.ps-section[data-base]')
+      if (!section || !location.pathname.endsWith('/me/')) return
+      // Prevent double-init when both module evaluation and astro:page-load
+      // fire on the initial paint.
+      if (section.dataset.meInitialized === '1') return
+      section.dataset.meInitialized = '1'
+
+      const base = section.dataset.base ?? ''
+      const escape = escapeHtml
 
       const token = getToken()
       if (!token) { location.href = `${base}/login/?next=${encodeURIComponent(location.pathname)}`; return }
@@ -276,11 +289,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const completenessFill = document.getElementById('completeness-fill')
       const completenessLabel = document.getElementById('completeness-label')
       const computeCompleteness = () => {
-        const fields = ['displayName','headline','phone','barrio','bio']
-        const filled = fields.filter((k) => pf.elements[k] && String(pf.elements[k].value || '').trim().length > 0).length
-        const total = fields.length + 1
-        const score = filled + (photoKey.value ? 1 : 0)
-        const pct = Math.round((score / total) * 100)
+        const pct = completenessPct(snapshotFromForm(pf, photoKey.value || null))
         completenessFill.style.width = pct + '%'
         completenessLabel.textContent = interp(t('me.profile.completeness'), { pct })
       }
@@ -426,6 +435,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           ].join('')
         }
       } catch (err) { statsGrid.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
-    })()
+    }
+
+    // astro:page-load fires on initial paint AND after every ClientRouter
+    // swap. Both /me/ on first load and /me/ revisited get a fresh init.
+    document.addEventListener('astro:page-load', () => { void initMePage() })
   </script>
 </Base>

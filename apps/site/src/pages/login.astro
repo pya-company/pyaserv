@@ -41,7 +41,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   <script>
     // @ts-nocheck
     import { apiFetch, setToken } from '../lib/api.ts'
-    import { t } from '../lib/i18n.ts'
+    import { getLocale, t } from '../lib/i18n.ts'
 
     ;(async () => {
       const base = document.querySelector('.ps-section').dataset.base ?? ''
@@ -56,7 +56,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         msg.textContent = t('common.sending')
         email = new FormData(startForm).get('email')
         try {
-          await apiFetch('/api/auth/start', { method: 'POST', body: JSON.stringify({ email, channel: 'otp' }) })
+          await apiFetch('/api/auth/start', { method: 'POST', body: JSON.stringify({ email, channel: 'otp', locale: getLocale() }) })
           startForm.hidden = true
           verifyForm.hidden = false
           msg.innerHTML = `<span class="ps-msg--ok">${t('login.sent_ok')}</span>`
