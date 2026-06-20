@@ -9,7 +9,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <h1 data-i18n="me.heading">Mi panel</h1>
       <button id="logout" class="ps-btn ps-btn--ghost ps-btn--sm" data-i18n="me.logout">Cerrar sesión</button>
     </div>
-    <p id="me-info" class="ps-card__sub"></p>
+    <!-- Reserve one-line height so the tabs strip + form below don't jump
+         down when JS later writes "Sesión: <userId>…" into this paragraph. -->
+    <p id="me-info" class="ps-card__sub" style="min-height:1.25rem"></p>
 
     <div class="ps-tabs" role="tablist" data-i18n-aria="me.tabs.aria" aria-label="Secciones">
       <button class="ps-tab" role="tab" id="tab-profile" aria-controls="panel-profile" data-tab="profile" data-i18n="me.tabs.profile">👤 Mi perfil</button>
