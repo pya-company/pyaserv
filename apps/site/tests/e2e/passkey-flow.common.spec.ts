@@ -98,7 +98,7 @@ test.describe('passkey flows', () => {
     await expect(page.locator('#passkey-list .js-pk-delete')).toHaveCount(1)
   })
 
-  test('post-OTP login: enroll prompt appears in dialog when hasPasskey=false', async ({ page }) => {
+  test('post-OTP: dialog closes + enroll toast appears (hasPasskey=false)', async ({ page }) => {
     await page.addInitScript(() => {
       try { sessionStorage.removeItem('pyaserv.token') } catch {}
     })
@@ -122,10 +122,11 @@ test.describe('passkey flows', () => {
     await page.locator('#dlg-verify input[name="code"]').fill('123456')
     await page.locator('#dlg-verify input[name="code"]').press('Enter')
 
-    // Enroll card appears in the dialog before close — proves the post-OTP hook fires.
-    await expect(page.locator('#dlg-enroll')).toBeVisible({ timeout: 5000 })
-    await expect(page.locator('#dlg-enroll-accept')).toBeVisible()
-    await expect(page.locator('#dlg-enroll-skip')).toBeVisible()
+    // Dialog must close (authed users never see it) AND the enroll toast appears.
+    await expect(page.locator('#login-dlg')).not.toHaveAttribute('open', '', { timeout: 5000 })
+    await expect(page.locator('#enroll-toast')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('#enroll-toast-accept')).toBeVisible()
+    await expect(page.locator('#enroll-toast-skip')).toBeVisible()
   })
 
   test('dismiss enroll prompt → cooldown set in localStorage', async ({ page }) => {
@@ -145,14 +146,11 @@ test.describe('passkey flows', () => {
     await expect(page.locator('#dlg-verify')).toBeVisible()
     await page.locator('#dlg-verify input[name="code"]').fill('000000')
     await page.locator('#dlg-verify input[name="code"]').press('Enter')
-    await expect(page.locator('#dlg-enroll')).toBeVisible({ timeout: 5000 })
-    // Native <dialog> top-layer + Playwright's actionability heuristic
-    // occasionally reports <html> as the intercepted element. JS-dispatched
-    // click goes directly to the target and matches the production UX.
-    await page.locator('#dlg-enroll-skip').evaluate((el) => (el as HTMLButtonElement).click())
-
-    // Dialog closes on dismiss; we stay on / and read the cooldown.
+    // Dialog closes, toast appears — same as the post-OTP happy path.
     await expect(page.locator('#login-dlg')).not.toHaveAttribute('open', '', { timeout: 5000 })
+    await expect(page.locator('#enroll-toast')).toBeVisible({ timeout: 5000 })
+    await page.locator('#enroll-toast-skip').click()
+
     const dismissedUntil = await page.evaluate(() => localStorage.getItem('pyaserv.passkey.dismissedUntil'))
     expect(dismissedUntil).toBeTruthy()
     expect(Number(dismissedUntil)).toBeGreaterThan(Date.now())

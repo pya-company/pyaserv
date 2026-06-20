@@ -2,6 +2,7 @@
 import '~/styles/global.css'
 import T from '~/components/T.astro'
 import LoginDialog from '~/components/LoginDialog.astro'
+import EnrollToast from '~/components/EnrollToast.astro'
 import { ClientRouter } from 'astro:transitions'
 
 interface Props {
@@ -112,6 +113,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       <slot />
     </main>
     <LoginDialog />
+    <EnrollToast />
     <footer class="ps-foot">
       © PyaServ · <a href={href('/')}><T k="foot.brother" /></a> · <T k="foot.built_on" />
     </footer>
@@ -189,6 +191,13 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         const fly = document.querySelector('flying-menu')
         if (fly && typeof fly.closeMenu === 'function') fly.closeMenu()
 
+        // 5b. Defensive: authed users must never see the login dialog. If a
+        //     prior page-life cycle left it open, close it now.
+        if (document.documentElement.dataset.auth === 'user') {
+          const d = document.getElementById('login-dlg')
+          if (d && d.open && typeof d.close === 'function') d.close()
+        }
+
         // 6a. #email=...&code=... — magic-link arrival. Pulls the email +
         //     6-digit code out of the URL fragment, posts /otp/verify, signs
         //     the user in, strips the fragment. Fragments aren't sent to the
@@ -249,6 +258,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         if (data?.sid) {
           setToken(data.sid)
           document.documentElement.dataset.auth = 'user'
+          if (data.hasPasskey === false) void maybeShowEnrollToast()
           if (data.redirect) location.href = data.redirect
           // Otherwise stay on the current page — user is now signed in.
         }
@@ -331,7 +341,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         document.documentElement.dataset.theme = v
       }
 
-      document.addEventListener('click', (e) => {
+      document.addEventListener('click', async (e) => {
         const tEl = e.target instanceof Element ? e.target : null
         if (!tEl) return
         // Theme cycle (matches both topbar button and flying-menu duplicate)
@@ -366,16 +376,20 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           location.href = '/'
           return
         }
-        // Enroll accept (inside dialog)
-        if (tEl.closest('#dlg-enroll-accept')) {
+        // Enroll toast accept / skip / close (S32)
+        if (tEl.closest('#enroll-toast-accept')) {
           e.preventDefault()
-          void handleEnrollAccept()
+          const clk = { now: () => Date.now() }
+          hideEnrollToast()
+          const r = await enrollPasskey(apiFetch)
+          if (r === 'ok') muteForeverAfterEnroll(localStorage, clk)
+          else dismissPromptForCooldown(localStorage, clk)
           return
         }
-        if (tEl.closest('#dlg-enroll-skip')) {
+        if (tEl.closest('#enroll-toast-skip') || tEl.closest('#enroll-toast-close')) {
           e.preventDefault()
           dismissPromptForCooldown(localStorage, { now: () => Date.now() })
-          closeDialog(dlgState.next || '')
+          hideEnrollToast()
           return
         }
         if (tEl.closest('#dlg-back')) {
@@ -464,35 +478,34 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           }
           setToken(data.sid)
           document.documentElement.dataset.auth = 'user'
-          // S27: if no passkey yet AND platform supports + no cooldown,
-          // surface the enroll card BEFORE closing the dialog.
-          const clk = { now: () => Date.now() }
-          if (data.hasPasskey === false &&
-              passkeySupported() &&
-              !isPromptOnCooldown(localStorage, clk) &&
-              await platformAuthenticatorAvailable()) {
-            const platform = guessPlatform(navigator.userAgent)
-            dlgEl('dlg-enroll-method-es').textContent = authenticatorLabel(platform, 'es')
-            dlgEl('dlg-enroll-method-en').textContent = authenticatorLabel(platform, 'en')
-            dlgHide('dlg-verify')
-            dlgShow('dlg-enroll')
-            dlgMsg('')
-            return
-          }
+          // S32: close the dialog IMMEDIATELY on success. The enroll prompt
+          // (if eligible) surfaces as a non-modal toast — authed users must
+          // never see the login dialog.
           closeDialog(data.redirect || dlgState.next || '')
+          if (data.hasPasskey === false) void maybeShowEnrollToast()
         }
       }, true) // capture phase — runs before ClientRouter's bubble-phase intercept
 
-      const handleEnrollAccept = async () => {
-        dlgMsg(t('common.saving'))
+      // ====== Enroll toast (S32) ====================================================
+      const maybeShowEnrollToast = async () => {
+        if (!passkeySupported()) return
         const clk = { now: () => Date.now() }
-        const result = await enrollPasskey(apiFetch)
-        if (result === 'ok') {
-          muteForeverAfterEnroll(localStorage, clk)
-        } else {
-          dismissPromptForCooldown(localStorage, clk)
-        }
-        closeDialog(dlgState.next || '')
+        if (isPromptOnCooldown(localStorage, clk)) return
+        if (!(await platformAuthenticatorAvailable())) return
+        const toast = document.getElementById('enroll-toast')
+        if (!toast) return
+        const platform = guessPlatform(navigator.userAgent)
+        const es = document.getElementById('enroll-toast-method-es')
+        const en = document.getElementById('enroll-toast-method-en')
+        if (es) es.textContent = authenticatorLabel(platform, 'es')
+        if (en) en.textContent = authenticatorLabel(platform, 'en')
+        toast.hidden = false
+        // Auto-dismiss after 15s as a soft cooldown (no penalty, just clear UI).
+        setTimeout(() => { if (!toast.hidden) toast.hidden = true }, 15000)
+      }
+      const hideEnrollToast = () => {
+        const toast = document.getElementById('enroll-toast')
+        if (toast) toast.hidden = true
       }
 
       // --- run on first load AND every ClientRouter swap --------------------

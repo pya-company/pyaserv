@@ -1,0 +1,33 @@
+---
+/*
+ * Non-modal "Save this device" toast (S32). Surfaces after a successful
+ * OTP login when the user has no passkey yet AND the platform supports
+ * one AND the dismiss cooldown isn't active. Lives on every page so it
+ * can be triggered from the dialog flow OR from the magic-link auto-verify
+ * path WITHOUT keeping the LoginDialog open afterwards.
+ *
+ * Auto-dismisses after 15s. Save / Not now / ✕ all close it and set the
+ * appropriate cooldown.
+ */
+---
+<div id="enroll-toast" class="ps-toast" hidden role="status" aria-live="polite">
+  <button type="button" class="ps-toast__close" id="enroll-toast-close" aria-label="Cerrar" data-i18n-aria="common.close">✕</button>
+  <strong class="ps-toast__title">
+    <span lang="es">Guardá este dispositivo</span>
+    <span lang="en">Save this device</span>
+  </strong>
+  <p class="ps-toast__body">
+    <span lang="es">Iniciá sesión sin código — solo <span id="enroll-toast-method-es"></span>.</span>
+    <span lang="en">Sign in without a code — just <span id="enroll-toast-method-en"></span>.</span>
+  </p>
+  <div class="ps-row">
+    <button type="button" id="enroll-toast-accept" class="ps-btn ps-btn--sm">
+      <span lang="es">Guardar</span>
+      <span lang="en">Save</span>
+    </button>
+    <button type="button" id="enroll-toast-skip" class="ps-btn ps-btn--ghost ps-btn--sm">
+      <span lang="es">Ahora no</span>
+      <span lang="en">Not now</span>
+    </button>
+  </div>
+</div>

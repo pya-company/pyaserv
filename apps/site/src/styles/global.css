@@ -144,6 +144,47 @@
 .ps-dlg__close:hover { background: var(--ps-surface-2); color: var(--ps-text); }
 .ps-dlg__body { padding: 0 var(--ps-space-5) var(--ps-space-5); }
 .ps-dlg__body h2 { margin: 0 0 var(--ps-space-2); }
+/* Belt-and-suspenders: an authed user must NEVER see the login dialog,
+   even if some code path forgot to programmatic-close it. */
+html[data-auth="user"] #login-dlg { display: none; }
+
+/* Non-modal toast (post-login enroll prompt, S32). Top-right corner on
+   desktop; slides up from the bottom on narrow viewports. */
+.ps-toast {
+  position: fixed;
+  top: var(--ps-space-4);
+  right: var(--ps-space-4);
+  z-index: 9000;
+  max-width: 22rem;
+  padding: var(--ps-space-4) var(--ps-space-5);
+  background: var(--ps-surface);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-lg);
+  box-shadow: var(--ps-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-2);
+}
+.ps-toast[hidden] { display: none; }
+.ps-toast__close {
+  position: absolute;
+  top: var(--ps-space-2); right: var(--ps-space-2);
+  appearance: none; background: transparent; border: 0; cursor: pointer;
+  width: 28px; height: 28px; border-radius: 50%;
+  color: var(--ps-text-muted);
+}
+.ps-toast__close:hover { background: var(--ps-surface-2); color: var(--ps-text); }
+.ps-toast__title { display: block; margin: 0; padding-right: var(--ps-space-5); }
+.ps-toast__body { margin: 0; color: var(--ps-text-muted); font-size: 0.9375rem; line-height: 1.4; }
+@media (max-width: 559.98px) {
+  .ps-toast {
+    top: auto;
+    left: var(--ps-space-3);
+    right: var(--ps-space-3);
+    bottom: var(--ps-space-3);
+    max-width: none;
+  }
+}
 @media (min-width: 560px) {
   .ps-login-card { padding: var(--ps-space-6); }
 }
