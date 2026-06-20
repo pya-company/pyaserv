@@ -13,12 +13,10 @@ interface ListingRow {
   readonly id: string
   readonly specialist_id: string
   readonly category: string
-  readonly title: string
-  readonly description: string
-  readonly title_es: string | null
-  readonly title_en: string | null
-  readonly description_es: string | null
-  readonly description_en: string | null
+  readonly title_es: string
+  readonly title_en: string
+  readonly description_es: string
+  readonly description_en: string
   readonly price_from_gs: number | null
   readonly price_unit: string | null
   readonly photo: string | null
@@ -31,12 +29,12 @@ const toDto = (r: ListingRow) => ({
   id: r.id,
   specialistId: r.specialist_id,
   category: r.category,
-  title: r.title,
-  description: r.description,
-  titleEs: r.title_es ?? r.title,
-  titleEn: r.title_en ?? r.title,
-  descriptionEs: r.description_es ?? r.description,
-  descriptionEn: r.description_en ?? r.description,
+  title: r.title_es,
+  description: r.description_es,
+  titleEs: r.title_es,
+  titleEn: r.title_en,
+  descriptionEs: r.description_es,
+  descriptionEn: r.description_en,
   priceFromGs: r.price_from_gs,
   priceUnit: r.price_unit,
   photo: r.photo,
@@ -95,16 +93,14 @@ export const listingsRoutes = new Hono<AppEnv>()
     const descPair = await translatePair(c.env, sourceLoc, parsed.output.description ?? '')
     await c.env.DB.prepare(
       `INSERT INTO listings
-       (id, specialist_id, category, title, description, title_es, title_en, description_es, description_en,
+       (id, specialist_id, category, title_es, title_en, description_es, description_en,
         price_from_gs, price_unit, photo, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`,
     )
       .bind(
         id,
         specialistId,
         parsed.output.category,
-        parsed.output.title,
-        parsed.output.description ?? '',
         titlePair.es,
         titlePair.en,
         descPair.es,
@@ -139,12 +135,10 @@ export const listingsRoutes = new Hono<AppEnv>()
     const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
     if (o.category !== undefined) set('category', o.category)
     if (o.title !== undefined) {
-      set('title', o.title)
       const pair = await translatePair(c.env, sourceLoc, o.title)
       set('title_es', pair.es); set('title_en', pair.en)
     }
     if (o.description !== undefined) {
-      set('description', o.description)
       const pair = await translatePair(c.env, sourceLoc, o.description)
       set('description_es', pair.es); set('description_en', pair.en)
     }

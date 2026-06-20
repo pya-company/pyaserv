@@ -88,8 +88,9 @@ export const devLoginRoutes = new Hono<{ Bindings: Env }>().post('/login', async
 
   const stats = { specialists: 0, listings: 0, requests: 0 }
 
+  // Post-S22: legacy source columns dropped. Read the ES copy as source.
   const specs = await c.env.DB.prepare(
-    "SELECT id, headline, bio FROM specialist_profiles WHERE headline_en IS NULL",
+    "SELECT id, headline_es AS headline, bio_es AS bio FROM specialist_profiles WHERE headline_en IS NULL OR bio_en IS NULL",
   ).all<{ id: string; headline: string; bio: string }>()
   for (const r of (specs.results ?? [])) {
     const h = await translatePair(c.env, 'es', r.headline)
@@ -101,7 +102,7 @@ export const devLoginRoutes = new Hono<{ Bindings: Env }>().post('/login', async
   }
 
   const lst = await c.env.DB.prepare(
-    "SELECT id, title, description FROM listings WHERE title_en IS NULL",
+    "SELECT id, title_es AS title, description_es AS description FROM listings WHERE title_en IS NULL OR description_en IS NULL",
   ).all<{ id: string; title: string; description: string }>()
   for (const r of (lst.results ?? [])) {
     const t = await translatePair(c.env, 'es', r.title)
@@ -113,7 +114,7 @@ export const devLoginRoutes = new Hono<{ Bindings: Env }>().post('/login', async
   }
 
   const req = await c.env.DB.prepare(
-    "SELECT id, title, description FROM requests WHERE title_en IS NULL",
+    "SELECT id, title_es AS title, description_es AS description FROM requests WHERE title_en IS NULL OR description_en IS NULL",
   ).all<{ id: string; title: string; description: string }>()
   for (const r of (req.results ?? [])) {
     const t = await translatePair(c.env, 'es', r.title)

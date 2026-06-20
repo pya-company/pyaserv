@@ -13,12 +13,10 @@ interface RequestRow {
   readonly id: string
   readonly client_id: string
   readonly category: string
-  readonly title: string
-  readonly description: string
-  readonly title_es: string | null
-  readonly title_en: string | null
-  readonly description_es: string | null
-  readonly description_en: string | null
+  readonly title_es: string
+  readonly title_en: string
+  readonly description_es: string
+  readonly description_en: string
   readonly budget_gs: number | null
   readonly barrio: string
   readonly status: string
@@ -30,12 +28,12 @@ const toDto = (r: RequestRow) => ({
   id: r.id,
   clientId: r.client_id,
   category: r.category,
-  title: r.title,
-  description: r.description,
-  titleEs: r.title_es ?? r.title,
-  titleEn: r.title_en ?? r.title,
-  descriptionEs: r.description_es ?? r.description,
-  descriptionEn: r.description_en ?? r.description,
+  title: r.title_es,
+  description: r.description_es,
+  titleEs: r.title_es,
+  titleEn: r.title_en,
+  descriptionEs: r.description_es,
+  descriptionEn: r.description_en,
   budgetGs: r.budget_gs,
   barrio: r.barrio,
   status: r.status,
@@ -78,16 +76,14 @@ export const requestsRoutes = new Hono<AppEnv>()
     const descPair = await translatePair(c.env, sourceLoc, parsed.output.description ?? '')
     await c.env.DB.prepare(
       `INSERT INTO requests
-       (id, client_id, category, title, description, title_es, title_en, description_es, description_en,
+       (id, client_id, category, title_es, title_en, description_es, description_en,
         budget_gs, barrio, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)`,
     )
       .bind(
         id,
         c.var.session.userId,
         parsed.output.category,
-        parsed.output.title,
-        parsed.output.description ?? '',
         titlePair.es,
         titlePair.en,
         descPair.es,
@@ -120,12 +116,10 @@ export const requestsRoutes = new Hono<AppEnv>()
     const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
     if (o.category !== undefined) set('category', o.category)
     if (o.title !== undefined) {
-      set('title', o.title)
       const pair = await translatePair(c.env, sourceLoc, o.title)
       set('title_es', pair.es); set('title_en', pair.en)
     }
     if (o.description !== undefined) {
-      set('description', o.description)
       const pair = await translatePair(c.env, sourceLoc, o.description)
       set('description_es', pair.es); set('description_en', pair.en)
     }

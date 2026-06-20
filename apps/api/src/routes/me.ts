@@ -12,8 +12,10 @@ interface RequestRow {
   readonly id: string
   readonly client_id: string
   readonly category: string
-  readonly title: string
-  readonly description: string
+  readonly title_es: string
+  readonly title_en: string
+  readonly description_es: string
+  readonly description_en: string
   readonly budget_gs: number | null
   readonly barrio: string
   readonly status: string
@@ -25,8 +27,12 @@ const toRequestDto = (r: RequestRow) => ({
   id: r.id,
   clientId: r.client_id,
   category: r.category,
-  title: r.title,
-  description: r.description,
+  title: r.title_es,
+  description: r.description_es,
+  titleEs: r.title_es,
+  titleEn: r.title_en,
+  descriptionEs: r.description_es,
+  descriptionEn: r.description_en,
   budgetGs: r.budget_gs,
   barrio: r.barrio,
   status: r.status,

@@ -94,3 +94,48 @@ export const assertPasskey = async (
     return { status: 'ok', response }
   } catch { return { status: 'error' } }
 }
+
+/**
+ * Conditional UI flow. Fetches discoverable-credential options, fires a
+ * background `navigator.credentials.get({mediation:'conditional'})` that
+ * resolves ONLY when the user picks a passkey from the email-field autofill
+ * chip. If accepted, posts to /passkey/discover/verify (no email — identity
+ * comes from the assertion's userHandle) and returns the session payload.
+ *
+ * Caller passes an AbortController.signal so the conditional request can be
+ * cancelled when the user submits the regular email form first.
+ */
+export const startConditionalLogin = async (
+  apiFetch: ApiFetch,
+  signal: AbortSignal,
+): Promise<AssertResult> => {
+  if (!passkeySupported()) return { status: 'unsupported' }
+  let server: { challengeId: string; options: ServerAuthOptions }
+  try {
+    server = await apiFetch('/api/auth/passkey/discover/options', { method: 'POST' })
+  } catch { return { status: 'error' } }
+  if (signal.aborted) return { status: 'cancelled' }
+
+  let cred: PublicKeyCredential | null
+  try {
+    cred = (await navigator.credentials.get({
+      publicKey: prepGetOptions(server.options),
+      mediation: 'conditional',
+      signal,
+    } as CredentialRequestOptions)) as PublicKeyCredential | null
+  } catch (err) {
+    return { status: isCancellation(err) ? 'cancelled' : 'error' }
+  }
+  if (!cred) return { status: 'cancelled' }
+
+  try {
+    const response = await apiFetch('/api/auth/passkey/discover/verify', {
+      method: 'POST',
+      body: JSON.stringify({
+        challengeId: server.challengeId,
+        assertion: formatAssertion(cred),
+      }),
+    })
+    return { status: 'ok', response }
+  } catch { return { status: 'error' } }
+}

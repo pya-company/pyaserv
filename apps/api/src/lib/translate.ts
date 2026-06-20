@@ -7,8 +7,14 @@
  * to the source text — the column gets the same value as the source-locale
  * column, so the dual-render still shows something readable.
  *
+ * Proper-noun protection: protectTerms() swaps Paraguayan place names + brand
+ * names with sentinel tokens before the AI call (m2m100 was renaming
+ * "Asunción" to "Newcastle upon Tyne"). After translation the originals are
+ * restored verbatim. See translate-glossary.ts.
+ *
  * Pure helper; no DB access. Caller decides what to do with the result.
  */
+import { protectTerms } from './translate-glossary.ts'
 
 type SupportedLocale = 'es' | 'en'
 
@@ -35,13 +41,18 @@ const translateOne = async (
   target: SupportedLocale,
 ): Promise<string> => {
   if (text.trim().length === 0) return text
+  // Protect proper nouns BEFORE sending to the model. The masked text uses
+  // sentinel tokens that m2m100 leaves intact; we restore the originals
+  // verbatim after the model returns.
+  const { masked, restore } = protectTerms(text)
   try {
     const out = (await binding.run(MODEL, {
-      text,
+      text: masked,
       source_lang: source,
       target_lang: target,
     })) as { translated_text?: string }
-    return out.translated_text?.trim() || text
+    const translated = out.translated_text?.trim() || masked
+    return restore(translated)
   } catch {
     // Best-effort: returning source text keeps the dual-render usable.
     return text

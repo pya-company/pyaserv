@@ -63,6 +63,20 @@ const enableVirtualAuthenticator = async (
 }
 
 test.describe('passkey flows', () => {
+  test.beforeEach(async ({ page, context }) => {
+    // Wipe per-origin storage exactly once at test start so cooldown set by
+    // a prior test doesn't bleed in. We can't use addInitScript here — it
+    // fires on EVERY navigation, including when the test re-visits /login/
+    // to read the freshly-set cooldown.
+    await context.clearCookies()
+    await page.goto('about:blank')
+    // The login page fires startConditionalLogin in the background — let it
+    // 404 fast so it doesn't race with the test's explicit form-submit flow.
+    await page.route('**/api/auth/passkey/discover/options', (route) =>
+      route.fulfill({ status: 404, body: '' }),
+    )
+  })
+
   test('manual enroll from /me/ adds a passkey and lists it', async ({ page }) => {
     const { email, sessionToken } = await provisionSession(freshEmail())
     await page.addInitScript((s) => {
@@ -130,10 +144,10 @@ test.describe('passkey flows', () => {
     await expect(page.locator('#enroll-card')).toBeVisible({ timeout: 5000 })
     await page.locator('#enroll-skip').click()
 
-    // navigates away — we don't care where; just inspect the prior origin's storage
-    // via a fresh navigation back to /login/ and read localStorage.
+    // navigates away — wait for the redirect to commit, then read the
+    // cooldown from the same origin (don't re-navigate to /login/, that would
+    // re-run the JS that could overwrite our value with a fresh dismiss).
     await page.waitForURL((url) => !url.pathname.startsWith('/login/'), { timeout: 5000 })
-    await page.goto('/login/')
     const dismissedUntil = await page.evaluate(() => localStorage.getItem('pyaserv.passkey.dismissedUntil'))
     expect(dismissedUntil).toBeTruthy()
     expect(Number(dismissedUntil)).toBeGreaterThan(Date.now())

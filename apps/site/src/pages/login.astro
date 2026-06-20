@@ -70,7 +70,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     // @ts-nocheck
     import { apiFetch, setToken } from '../lib/api.ts'
     import { getLocale, t } from '../lib/i18n.ts'
-    import { assertPasskey, enrollPasskey } from '../features/passkey/client.ts'
+    import { assertPasskey, enrollPasskey, startConditionalLogin } from '../features/passkey/client.ts'
     import {
       authenticatorLabel,
       conditionalUiAvailable,
@@ -204,18 +204,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       })
 
       // ----- conditional UI -----
-      // Fires async; if the browser supports it, the email autofill chip
-      // already shows a passkey suggestion. mediation:'conditional' resolves
-      // when the user picks it; we then post-verify and navigate.
+      // Fires in the background. The OS shows a passkey suggestion in the
+      // email field's autofill chip; mediation:'conditional' resolves only
+      // when the user actually picks it. We abort if the user submits the
+      // regular email form first (start handler races and wins).
       if (await conditionalUiAvailable()) {
-        try {
-          // Tiny challenge fetch to get rpId+server challenge before the user
-          // even submits. We call /start with the empty email a server allows
-          // unauthenticated; if it errors, just skip the conditional UI silently.
-          // (For now: leave the autocomplete hint; full conditional flow needs
-          // a server endpoint that returns options for *any* user. Tracked as
-          // S18.9 if we need full conditional UI later.)
-        } catch { /* benign */ }
+        const condCtl = new AbortController()
+        startForm.addEventListener('submit', () => condCtl.abort(), { once: true })
+        startConditionalLogin(apiFetch, condCtl.signal).then((r) => {
+          if (r.status === 'ok' && r.response?.sid) {
+            setToken(r.response.sid)
+            document.documentElement.dataset.auth = 'user'
+            location.href = next
+          }
+          // any other status: silently no-op; user finishes via normal form.
+        }).catch(() => { /* benign */ })
       }
     }
 

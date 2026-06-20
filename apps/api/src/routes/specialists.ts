@@ -13,12 +13,10 @@ interface SpecialistRow {
   readonly id: string
   readonly user_id: string
   readonly display_name: string
-  readonly headline: string
-  readonly bio: string
-  readonly headline_es: string | null
-  readonly headline_en: string | null
-  readonly bio_es: string | null
-  readonly bio_en: string | null
+  readonly headline_es: string
+  readonly headline_en: string
+  readonly bio_es: string
+  readonly bio_en: string
   readonly phone: string
   readonly whatsapp: string | null
   readonly barrio: string
@@ -31,18 +29,19 @@ interface SpecialistRow {
   readonly updated_at: number
 }
 
+// Post-S22: source-locale (ES) is the canonical text. `headline`/`bio` in the
+// DTO keep the old field names for backcompat with frontends that still read
+// them; they alias headline_es/bio_es.
 const toDto = (r: SpecialistRow) => ({
   id: r.id,
   userId: r.user_id,
   displayName: r.display_name,
-  headline: r.headline,
-  bio: r.bio,
-  // Locale pair — read-side falls back to the source value when the
-  // translation column is NULL (pre-backfill rows).
-  headlineEs: r.headline_es ?? r.headline,
-  headlineEn: r.headline_en ?? r.headline,
-  bioEs: r.bio_es ?? r.bio,
-  bioEn: r.bio_en ?? r.bio,
+  headline: r.headline_es,
+  bio: r.bio_es,
+  headlineEs: r.headline_es,
+  headlineEn: r.headline_en,
+  bioEs: r.bio_es,
+  bioEn: r.bio_en,
   phone: r.phone,
   whatsapp: r.whatsapp,
   barrio: r.barrio,
@@ -154,16 +153,14 @@ export const specialistsRoutes = new Hono<AppEnv>()
     const bioPair = await translatePair(c.env, sourceLoc, parsed.output.bio ?? '')
     await c.env.DB.prepare(
       `INSERT INTO specialist_profiles
-       (id, user_id, display_name, headline, bio, headline_es, headline_en, bio_es, bio_en,
+       (id, user_id, display_name, headline_es, headline_en, bio_es, bio_en,
         phone, whatsapp, barrio, lat, lng, photo, verified, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?)`,
     )
       .bind(
         id,
         userId,
         parsed.output.displayName,
-        parsed.output.headline,
-        parsed.output.bio ?? '',
         headlinePair.es,
         headlinePair.en,
         bioPair.es,
@@ -205,12 +202,10 @@ export const specialistsRoutes = new Hono<AppEnv>()
     const sourceLoc = ((c.req.header('Accept-Language') ?? '').toLowerCase().startsWith('en') ? 'en' : 'es') as 'es' | 'en'
     if (o.displayName !== undefined) set('display_name', o.displayName)
     if (o.headline !== undefined) {
-      set('headline', o.headline)
       const pair = await translatePair(c.env, sourceLoc, o.headline)
       set('headline_es', pair.es); set('headline_en', pair.en)
     }
     if (o.bio !== undefined) {
-      set('bio', o.bio)
       const pair = await translatePair(c.env, sourceLoc, o.bio)
       set('bio_es', pair.es); set('bio_en', pair.en)
     }
