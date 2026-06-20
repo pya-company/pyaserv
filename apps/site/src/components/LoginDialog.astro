@@ -1,0 +1,69 @@
+---
+/*
+ * Site-wide login dialog. Triggered from the nav "Sign in" button — never a
+ * page navigation, so URL + history don't pollute and an authed user can
+ * never accidentally land on a login form.
+ *
+ * On Sign in click: if a discoverable passkey is available we fire the OS
+ * picker immediately (S26). The email form is the fallback when the user
+ * cancels or has no passkey.
+ *
+ * After OTP success: if hasPasskey===false on the response, the enroll card
+ * appears inline INSIDE the dialog before closing.
+ *
+ * Uses the native <dialog> element so focus trap + Escape close + backdrop
+ * click come for free. Renders dual-lang span pairs everywhere visible.
+ */
+import T from './T.astro'
+---
+<dialog id="login-dlg" class="ps-dlg" aria-labelledby="login-dlg-title">
+  <form method="dialog" class="ps-dlg__head">
+    <button type="submit" class="ps-dlg__close" aria-label="Cerrar" data-i18n-aria="common.close">✕</button>
+  </form>
+  <div class="ps-dlg__body">
+    <h2 id="login-dlg-title"><T k="login.title" /></h2>
+    <T k="login.intro" as="p" />
+
+    <form id="dlg-start" class="ps-form">
+      <label>
+        <T k="login.email" as="span" />
+        <input type="email" name="email" required autocomplete="username webauthn" data-i18n-placeholder="login.email.placeholder" placeholder="tunombre@correo.com" />
+      </label>
+      <button type="submit" class="ps-btn"><T k="login.send_code" /></button>
+    </form>
+
+    <form id="dlg-verify" class="ps-form" hidden>
+      <label>
+        <T k="login.code" as="span" />
+        <input type="text" name="code" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" maxlength="6" />
+      </label>
+      <div class="ps-row">
+        <button type="submit" class="ps-btn"><T k="login.confirm" /></button>
+        <button type="button" id="dlg-back" class="ps-btn ps-btn--ghost"><T k="login.change_email" /></button>
+      </div>
+    </form>
+
+    <div id="dlg-enroll" class="ps-banner ps-stack" hidden>
+      <strong>
+        <span lang="es">Guardá este dispositivo para la próxima vez</span>
+        <span lang="en">Save this device for next time</span>
+      </strong>
+      <p class="ps-card__sub">
+        <span lang="es">Iniciá sesión sin código — solo <span id="dlg-enroll-method-es"></span>.</span>
+        <span lang="en">Sign in without a code — just <span id="dlg-enroll-method-en"></span>.</span>
+      </p>
+      <div class="ps-row">
+        <button type="button" id="dlg-enroll-accept" class="ps-btn">
+          <span lang="es">Guardar</span>
+          <span lang="en">Save</span>
+        </button>
+        <button type="button" id="dlg-enroll-skip" class="ps-btn ps-btn--ghost">
+          <span lang="es">Ahora no</span>
+          <span lang="en">Not now</span>
+        </button>
+      </div>
+    </div>
+
+    <p id="dlg-msg" class="ps-msg" role="alert"></p>
+  </div>
+</dialog>

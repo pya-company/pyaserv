@@ -98,10 +98,10 @@ test.describe('passkey flows', () => {
     await expect(page.locator('#passkey-list .js-pk-delete')).toHaveCount(1)
   })
 
-  test('post-OTP login: enroll prompt appears when hasPasskey=false', async ({ page }) => {
-    // Skip: this would require a real OTP roundtrip OR a route that returns
-    // {hasPasskey: false} after dev-login. We mock /api/auth/otp/verify
-    // instead so we can drive the form like a real user.
+  test('post-OTP login: enroll prompt appears in dialog when hasPasskey=false', async ({ page }) => {
+    await page.addInitScript(() => {
+      try { sessionStorage.removeItem('pyaserv.token') } catch {}
+    })
     const email = freshEmail()
     await page.route('**/api/auth/start', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { method: 'otp', sentTo: 'e2***@e2e.invalid' } }) }),
@@ -114,21 +114,24 @@ test.describe('passkey flows', () => {
       }),
     )
     await enableVirtualAuthenticator(page)
-    await page.goto('/login/')
+    await page.goto('/?login=1')
 
-    await page.locator('#start-form input[name="email"]').fill(email)
-    await page.locator('#start-form button[type="submit"]').click()
-    await expect(page.locator('#verify-form')).toBeVisible()
-    await page.locator('#verify-form input[name="code"]').fill('123456')
-    await page.locator('#verify-form button[type="submit"]').click()
+    await page.locator('#dlg-start input[name="email"]').fill(email)
+    await page.locator('#dlg-start input[name="email"]').press('Enter')
+    await expect(page.locator('#dlg-verify')).toBeVisible()
+    await page.locator('#dlg-verify input[name="code"]').fill('123456')
+    await page.locator('#dlg-verify input[name="code"]').press('Enter')
 
-    // Enroll card should appear before redirect — proves the post-OTP hook fires.
-    await expect(page.locator('#enroll-card')).toBeVisible({ timeout: 5000 })
-    await expect(page.locator('#enroll-accept')).toBeVisible()
-    await expect(page.locator('#enroll-skip')).toBeVisible()
+    // Enroll card appears in the dialog before close — proves the post-OTP hook fires.
+    await expect(page.locator('#dlg-enroll')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('#dlg-enroll-accept')).toBeVisible()
+    await expect(page.locator('#dlg-enroll-skip')).toBeVisible()
   })
 
   test('dismiss enroll prompt → cooldown set in localStorage', async ({ page }) => {
+    await page.addInitScript(() => {
+      try { sessionStorage.removeItem('pyaserv.token') } catch {}
+    })
     await page.route('**/api/auth/start', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { method: 'otp', sentTo: 'x@x' } }) }),
     )
@@ -136,18 +139,20 @@ test.describe('passkey flows', () => {
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { ok: true, sid: 'fake-sid', csrf: 'f', hasPasskey: false } }) }),
     )
     await enableVirtualAuthenticator(page)
-    await page.goto('/login/')
-    await page.locator('#start-form input[name="email"]').fill('x@y.invalid')
-    await page.locator('#start-form button[type="submit"]').click()
-    await page.locator('#verify-form input[name="code"]').fill('000000')
-    await page.locator('#verify-form button[type="submit"]').click()
-    await expect(page.locator('#enroll-card')).toBeVisible({ timeout: 5000 })
-    await page.locator('#enroll-skip').click()
+    await page.goto('/?login=1')
+    await page.locator('#dlg-start input[name="email"]').fill('x@y.invalid')
+    await page.locator('#dlg-start input[name="email"]').press('Enter')
+    await expect(page.locator('#dlg-verify')).toBeVisible()
+    await page.locator('#dlg-verify input[name="code"]').fill('000000')
+    await page.locator('#dlg-verify input[name="code"]').press('Enter')
+    await expect(page.locator('#dlg-enroll')).toBeVisible({ timeout: 5000 })
+    // Native <dialog> top-layer + Playwright's actionability heuristic
+    // occasionally reports <html> as the intercepted element. JS-dispatched
+    // click goes directly to the target and matches the production UX.
+    await page.locator('#dlg-enroll-skip').evaluate((el) => (el as HTMLButtonElement).click())
 
-    // navigates away — wait for the redirect to commit, then read the
-    // cooldown from the same origin (don't re-navigate to /login/, that would
-    // re-run the JS that could overwrite our value with a fresh dismiss).
-    await page.waitForURL((url) => !url.pathname.startsWith('/login/'), { timeout: 5000 })
+    // Dialog closes on dismiss; we stay on / and read the cooldown.
+    await expect(page.locator('#login-dlg')).not.toHaveAttribute('open', '', { timeout: 5000 })
     const dismissedUntil = await page.evaluate(() => localStorage.getItem('pyaserv.passkey.dismissedUntil'))
     expect(dismissedUntil).toBeTruthy()
     expect(Number(dismissedUntil)).toBeGreaterThan(Date.now())

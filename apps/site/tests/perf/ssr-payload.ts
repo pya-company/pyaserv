@@ -96,11 +96,14 @@ const STATIC_CHECKS: ReadonlyArray<RouteCheck> = [
       { label: 'card CTA EN (Apply)', re: /lang="en"[^>]*>[^<]*Apply/i },
     ],
   },
+  // /login/ is now a redirect to /?login=1 (S24); the canonical login UI is
+  // the LoginDialog component in Base.astro. SSR payload assertions on /
+  // already cover the dialog markup since it ships in every Base layout.
   {
-    path: '/login/',
+    path: '/',
     mustContain: [
-      { label: 'email field present', re: /name="email"[^>]*type="email"|type="email"[^>]*name="email"/i },
-      { label: 'submit button dual-lang', re: /lang="es"[^>]*>[^<]*[Ee]nviar/i },
+      { label: 'login dialog markup present in Base', re: /<dialog[^>]*id="login-dlg"/i },
+      { label: 'dialog email input', re: /id="dlg-start"[\s\S]{0,500}name="email"/i },
     ],
   },
 ]

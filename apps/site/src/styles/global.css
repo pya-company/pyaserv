@@ -106,7 +106,7 @@
   margin-bottom: var(--ps-space-4);
 }
 
-/* ---------- login card ---------- */
+/* ---------- login card + dialog ---------- */
 .ps-login-card {
   background: var(--ps-surface);
   border: 1px solid var(--ps-border);
@@ -115,6 +115,35 @@
   box-shadow: var(--ps-shadow-md);
   margin-top: var(--ps-space-5);
 }
+
+/* Native <dialog>. Browser handles focus trap + Esc + backdrop click. We
+   only ensure the visual matches the rest of the UI: pad, round, shadow,
+   theme-aware bg. ::backdrop dims the page behind the modal. */
+.ps-dlg {
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-lg);
+  background: var(--ps-surface);
+  color: var(--ps-text);
+  max-width: 28rem;
+  width: calc(100vw - 2 * var(--ps-space-3));
+  padding: 0;
+  box-shadow: var(--ps-shadow-lg);
+}
+.ps-dlg::backdrop { background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(2px); }
+.ps-dlg__head {
+  display: flex; justify-content: flex-end;
+  padding: var(--ps-space-2) var(--ps-space-3) 0;
+  margin: 0;
+}
+.ps-dlg__close {
+  appearance: none; background: transparent; border: 0; cursor: pointer;
+  width: 36px; height: 36px; border-radius: 50%;
+  font-size: 1.125rem; color: var(--ps-text-muted);
+  -webkit-tap-highlight-color: transparent;
+}
+.ps-dlg__close:hover { background: var(--ps-surface-2); color: var(--ps-text); }
+.ps-dlg__body { padding: 0 var(--ps-space-5) var(--ps-space-5); }
+.ps-dlg__body h2 { margin: 0 0 var(--ps-space-2); }
 @media (min-width: 560px) {
   .ps-login-card { padding: var(--ps-space-6); }
 }
@@ -543,9 +572,31 @@ button { font: inherit; cursor: pointer; }
    is set synchronously in the head inline script. Kills the visible nav shift
    when JS later hides Mi panel / Ingresar. */
 html[data-auth="guest"] [data-nav-me],
+html[data-auth="guest"] [data-nav-logout],
 html[data-auth="guest"] [data-auth-user] { display: none; }
 html[data-auth="user"] [data-nav-login],
 html[data-auth="user"] [data-auth-guest] { display: none; }
+/* Nav buttons styled like nav links so they don't break the topbar layout. */
+.ps-topbar__nav-btn {
+  appearance: none; background: transparent; border: 0; cursor: pointer;
+  color: var(--ps-text-muted); font-weight: 600;
+  padding: var(--ps-space-3) var(--ps-space-4);
+  border-radius: var(--ps-radius-md);
+  font-size: 0.9375rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.ps-topbar__nav-btn:hover { background: var(--ps-surface-2); color: var(--ps-text); }
+/* flying-menu equivalent — match the slotted-link look */
+.ps-fly__menuitem {
+  appearance: none; background: transparent; border: 0; cursor: pointer;
+  text-align: left; width: 100%;
+  color: var(--ps-text); font-weight: 600;
+  padding: var(--ps-space-3) var(--ps-space-4);
+  border-radius: var(--ps-radius-md);
+  font-size: 0.9375rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.ps-fly__menuitem:hover { background: var(--ps-surface-2); }
 /* Pre-paint locale highlight on lang buttons */
 html[data-loc="es"] .ps-lang-btn[data-lang="es"],
 html[data-loc="en"] .ps-lang-btn[data-lang="en"] { background: var(--ps-acc-soft); color: var(--ps-acc); }

@@ -1,23 +1,24 @@
 /*
- * E2E: full email→code→authed login flow. The real bug it caught:
+ * E2E: full email→code→authed login flow through the LoginDialog modal (S24).
  *
+ * The real bug this guards against:
  *   Backend /api/auth/otp/verify returns { ok, sid, csrf, hasPasskey, redirect }.
- *   Frontend was doing setToken(data.token) — `token` never existed in the
- *   response, so sessionStorage stayed empty. /me/ then bounced back to /login.
- *   THE most basic flow was broken end-to-end and nothing caught it.
+ *   An earlier build called setToken(data.token) — `token` never existed.
+ *   sessionStorage stayed empty. /me/ bounced back to /login.
  *
- * Strategy: mock both /auth/start and /auth/otp/verify with `page.route` so the
- * test runs offline without a real OTP roundtrip. Asserts:
- *   - sessionStorage gets the sid stored under the token key
- *   - the page navigates to the next URL (or backend-supplied redirect)
- *   - data-auth on <html> becomes "user"
+ * Now /login/ is a redirect to /?login=1 which auto-opens the dialog. We
+ * test the dialog flow against mocked /auth endpoints.
  */
 import { expect, test } from '@playwright/test'
 
 const FAKE_SID = '01abcdef-fake-sid-1234-aaaaaaaa'
 
-test.describe('login flow', () => {
-  test.beforeEach(async ({ page }) => {
+test.describe('login dialog flow', () => {
+  test.beforeEach(async ({ page, context }) => {
+    // Prior tests in the same worker may have set a session token; without
+    // clearing, my openLoginDialog short-circuits because data-auth=user.
+    await context.clearCookies()
+    await page.goto('about:blank')
     await page.route('**/api/auth/start', (route) =>
       route.fulfill({
         status: 200,
@@ -30,40 +31,57 @@ test.describe('login flow', () => {
         status: 200,
         contentType: 'application/json',
         // hasPasskey:true bypasses the post-OTP enroll prompt so this test
-        // continues to assert the bare redirect behavior. The enroll path
+        // continues to assert the bare close-dialog behavior. The enroll path
         // is covered by passkey-flow.common.spec.ts.
         body: JSON.stringify({
           data: { ok: true, sid: FAKE_SID, csrf: 'fake-csrf', hasPasskey: true },
         }),
       }),
     )
-    // Block /v1/me so navigation to /me/ doesn't fail the test before assertions.
-    await page.route('**/v1/me*', (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ data: { userId: 'fake-user', roles: [] } }),
-      }),
+    // Block the discoverable-credential endpoint so passkey-first doesn't fire.
+    await page.route('**/api/auth/passkey/discover/options', (route) =>
+      route.fulfill({ status: 404, body: '' }),
     )
   })
 
-  test('email → code → token in sessionStorage → redirect', async ({ page }) => {
-    await page.goto('/login/')
+  test('open dialog → email → code → sessionStorage has SID + dialog closed', async ({ page }) => {
+    // Force a guest state on initial load so openLoginDialog isn't a no-op.
+    await page.addInitScript(() => {
+      try { sessionStorage.removeItem('pyaserv.token') } catch {}
+    })
+    // Auto-open via ?login=1 — works for both mobile (where the topbar
+    // Sign in button is hidden behind the flying-menu) and desktop.
+    await page.goto('/?login=1')
 
-    // Step 1: enter email, submit
-    await page.locator('#start-form input[name="email"]').fill('test@example.com')
-    await page.locator('#start-form button[type="submit"]').click()
+    const dlg = page.locator('#login-dlg')
+    await expect(dlg).toHaveAttribute('open', '', { timeout: 5000 })
 
-    // Step 2: code form visible, enter code
-    await expect(page.locator('#verify-form')).toBeVisible()
-    await page.locator('#verify-form input[name="code"]').fill('123456')
-    await page.locator('#verify-form button[type="submit"]').click()
+    await page.locator('#dlg-start input[name="email"]').fill('test@example.com')
+    // Submit via Enter so we don't race the dialog's submit handler with
+    // Playwright's post-click actionability checks (the click on the next
+    // submit button is intermittently observed-but-not-fired).
+    await page.locator('#dlg-start input[name="email"]').press('Enter')
 
-    // Step 3: navigation must leave /login/ (proves token was usable for /me/)
-    // and sessionStorage must hold the SID. URL-first because submit triggers
-    // an immediate location.href and a mid-flight evaluate() races the swap.
-    await page.waitForURL((url) => !url.pathname.startsWith('/login/'), { timeout: 5000 })
+    await expect(page.locator('#dlg-verify')).toBeVisible()
+    await page.locator('#dlg-verify input[name="code"]').fill('123456')
+    await page.locator('#dlg-verify input[name="code"]').press('Enter')
+
+    // Dialog closes on success
+    await expect(dlg).not.toHaveAttribute('open', '', { timeout: 5000 })
     const stored = await page.evaluate(() => sessionStorage.getItem('pyaserv.token'))
     expect(stored).toBe(FAKE_SID)
+    // URL stayed at / — no /login/ page in history
+    expect(new URL(page.url()).pathname).toBe('/')
+  })
+
+  test('/login/ redirects to /?login=1 and auto-opens dialog', async ({ page }) => {
+    await page.addInitScript(() => {
+      try { sessionStorage.removeItem('pyaserv.token') } catch {}
+    })
+    await page.goto('/login/')
+    await page.waitForURL((url) => url.pathname === '/', { timeout: 5000 })
+    await expect(page.locator('#login-dlg')).toHaveAttribute('open', '', { timeout: 2000 })
+    // login param has been stripped from URL
+    expect(new URL(page.url()).searchParams.get('login')).toBeNull()
   })
 })

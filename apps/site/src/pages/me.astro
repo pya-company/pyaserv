@@ -98,12 +98,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <span lang="es">Iniciá sesión con Touch ID, Face ID, Windows Hello o el bloqueo de tu teléfono — sin código por email.</span>
           <span lang="en">Sign in with Touch ID, Face ID, Windows Hello or your phone's screen lock — no email code needed.</span>
         </p>
-        <div id="passkey-list" class="ps-stack" aria-live="polite"></div>
+        <!-- Skeleton reserves 3rem (single row height) so the form below
+             doesn't shift when GET /api/auth/passkeys returns. JS swaps the
+             content + removes the data-skeleton attr on first paint. -->
+        <div id="passkey-list" class="ps-stack" aria-live="polite" data-skeleton="1" style="min-height:3rem">
+          <p class="ps-card__sub" style="margin:0">
+            <span lang="es">Cargando passkeys…</span>
+            <span lang="en">Loading passkeys…</span>
+          </p>
+        </div>
         <button type="button" id="passkey-add" class="ps-btn ps-btn--sm">
           <span lang="es">+ Agregar passkey</span>
           <span lang="en">+ Add passkey</span>
         </button>
-        <p id="passkey-msg" class="ps-msg" role="alert"></p>
+        <p id="passkey-msg" class="ps-msg" role="alert" style="min-height:1.5rem"></p>
       </fieldset>
     </div>
 
@@ -322,6 +330,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const passkeyAdd = document.getElementById('passkey-add')
       const passkeyMsg = document.getElementById('passkey-msg')
       const renderPasskeys = (items) => {
+        // Drop the skeleton marker so post-FCP mutation observers don't
+        // flag this region as a content change (and so the layout is
+        // committed to the rendered list height).
+        passkeyList.removeAttribute('data-skeleton')
         if (!items.length) {
           passkeyList.innerHTML = `<p class="ps-card__sub">No hay passkeys guardadas. Agregá una para iniciar sesión sin código.</p>`
           return

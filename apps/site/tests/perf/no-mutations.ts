@@ -46,7 +46,10 @@ const pickFirstId = async (collection: 'specialists' | 'requests'): Promise<stri
 const buildRoutes = async (): Promise<ReadonlyArray<string>> => {
   const specId = await pickFirstId('specialists')
   const reqId = await pickFirstId('requests')
-  const r = ['/', '/specialists/', '/clients/', '/login/']
+  // /login/ is a meta-refresh redirect to /?login=1 (S24 made login a dialog,
+  // not a page). The redirect itself causes mutations + CLS by definition,
+  // so it's excluded from the post-FCP gate.
+  const r = ['/', '/specialists/', '/clients/']
   if (specId) r.push(`/specialists/${specId}/`)
   if (reqId) r.push(`/clients/${reqId}/`)
   return r

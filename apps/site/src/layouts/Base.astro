@@ -1,6 +1,7 @@
 ---
 import '~/styles/global.css'
 import T from '~/components/T.astro'
+import LoginDialog from '~/components/LoginDialog.astro'
 import { ClientRouter } from 'astro:transitions'
 
 interface Props {
@@ -55,7 +56,15 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}><T k="nav.specialists" /></a>
         <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}><T k="nav.clients" /></a>
         <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me><T k="nav.me" /></a>
-        <a href={href('/login/')} aria-current={active === 'login' ? 'page' : undefined} data-nav-login><T k="nav.login" /></a>
+        <!-- Sign in is a dialog trigger, not a page link. data-nav-login hides
+             it for authed users via the existing html[data-auth=user] CSS. -->
+        <button type="button" class="ps-topbar__nav-btn" data-open-login data-nav-login><T k="nav.login" /></button>
+        <!-- Sign out: visible only to authed users via html[data-auth=guest]
+             [data-nav-logout]{display:none}. Wired via document delegation. -->
+        <button type="button" class="ps-topbar__nav-btn" data-nav-logout id="nav-logout">
+          <span lang="es">Cerrar sesión</span>
+          <span lang="en">Sign out</span>
+        </button>
         <div class="ps-lang-switch" role="group" data-i18n-aria="nav.lang_label" aria-label="Idioma">
           <button type="button" class="ps-lang-btn" data-lang="es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
           <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
@@ -83,7 +92,11 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         <a href={href('/specialists/')} role="menuitem"><T k="nav.specialists" /></a>
         <a href={href('/clients/')} role="menuitem"><T k="nav.clients" /></a>
         <a href={href('/me/')} role="menuitem" data-nav-me><T k="nav.me" /></a>
-        <a href={href('/login/')} role="menuitem" data-nav-login><T k="nav.login" /></a>
+        <button type="button" role="menuitem" data-open-login data-nav-login class="ps-fly__menuitem"><T k="nav.login" /></button>
+        <button type="button" role="menuitem" data-nav-logout class="ps-fly__menuitem">
+          <span lang="es">Cerrar sesión</span>
+          <span lang="en">Sign out</span>
+        </button>
         <div class="ps-fly__row">
           <div class="ps-lang-switch" role="group" data-i18n-aria="nav.lang_label" aria-label="Idioma">
             <button type="button" class="ps-lang-btn" data-lang="es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
@@ -98,6 +111,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
     <main id="main-content" class="ps-shell">
       <slot />
     </main>
+    <LoginDialog />
     <footer class="ps-foot">
       © PyaServ · <a href={href('/')}><T k="foot.brother" /></a> · <T k="foot.built_on" />
     </footer>
@@ -107,6 +121,20 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       // side-effect import — defines the element on first execution.
       import '@igor-ganov/flying-menu'
       import { applyI18n, getLocale, setLocale, t } from '../lib/i18n.ts'
+      import { apiFetch, clearToken, setToken } from '../lib/api.ts'
+      import { assertPasskey, enrollPasskey, startConditionalLogin } from '../features/passkey/client.ts'
+      import {
+        authenticatorLabel,
+        conditionalUiAvailable,
+        guessPlatform,
+        passkeySupported,
+        platformAuthenticatorAvailable,
+      } from '../features/passkey/platform.ts'
+      import {
+        dismissPromptForCooldown,
+        isPromptOnCooldown,
+        muteForeverAfterEnroll,
+      } from '../features/passkey/prompt-cooldown.ts'
 
       // ClientRouter swaps the body but does NOT re-run inline scripts.
       // Everything that touches DOM-state per-page must run on every
@@ -160,6 +188,85 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         // 5. Defensively close any flying-menu that may be left open across nav
         const fly = document.querySelector('flying-menu')
         if (fly && typeof fly.closeMenu === 'function') fly.closeMenu()
+
+        // 6. ?login=1 → auto-open the dialog (entry point from the redirect
+        //    that the legacy /login/ page emits, and from anything that wants
+        //    to deep-link to "show me the sign-in").
+        try {
+          const url = new URL(location.href)
+          if (url.searchParams.get('login') === '1' &&
+              document.documentElement.dataset.auth !== 'user') {
+            const next = url.searchParams.get('next') ?? ''
+            url.searchParams.delete('login')
+            url.searchParams.delete('next')
+            history.replaceState({}, '', url.toString())
+            openLoginDialog(next)
+          }
+        } catch {}
+      }
+
+      // ====== Login dialog =========================================================
+
+      const dlgState = {
+        email: '',
+        next: '',
+      }
+      const dlg = () => document.getElementById('login-dlg')
+      const dlgEl = (id) => document.getElementById(id)
+      const dlgShow = (id) => { const el = dlgEl(id); if (el) el.hidden = false }
+      const dlgHide = (id) => { const el = dlgEl(id); if (el) el.hidden = true }
+      const dlgMsg = (html) => { const el = dlgEl('dlg-msg'); if (el) el.innerHTML = html }
+      const dlgReset = () => {
+        const start = dlgEl('dlg-start'); if (start) start.reset()
+        const verify = dlgEl('dlg-verify'); if (verify) verify.reset()
+        dlgHide('dlg-verify')
+        dlgHide('dlg-enroll')
+        dlgShow('dlg-start')
+        dlgMsg('')
+        dlgState.email = ''
+      }
+      const closeDialog = (next) => {
+        const d = dlg()
+        if (d && typeof d.close === 'function' && d.open) d.close()
+        if (next) location.href = next
+      }
+      const afterAuthed = (sid, next) => {
+        setToken(sid)
+        document.documentElement.dataset.auth = 'user'
+        closeDialog(next || dlgState.next || '')
+      }
+
+      // S26: try the discoverable passkey first. If the OS resolves quickly,
+      // we go signed-in without ever showing the email form. On cancel/error
+      // the email form is already visible — the user just types their email.
+      const tryPasskeyFirst = async () => {
+        if (!passkeySupported()) return
+        if (!(await platformAuthenticatorAvailable())) return
+        const ctl = new AbortController()
+        // Aborted by start-form submit, by closing the dialog, or by another
+        // tryPasskeyFirst run (we want at most one in flight).
+        const onCancel = () => ctl.abort()
+        const d = dlg()
+        d?.addEventListener('close', onCancel, { once: true })
+        const r = await startConditionalLogin(apiFetch, ctl.signal)
+        if (r.status === 'ok' && r.response?.sid) {
+          afterAuthed(r.response.sid)
+        }
+        // any other status: silently fall through to the email form
+      }
+
+      const openLoginDialog = (next) => {
+        const d = dlg()
+        if (!d) return
+        if (document.documentElement.dataset.auth === 'user') return // never show to authed users
+        if (d.open) return
+        dlgState.next = typeof next === 'string' ? next : ''
+        dlgReset()
+        if (typeof d.showModal === 'function') d.showModal()
+        else d.setAttribute('open', '')
+        // Auto-attempt passkey-first. Promise resolves silently when OS prompt
+        // is denied; user then sees the email form already visible behind it.
+        void tryPasskeyFirst()
       }
 
       // --- document-level delegation (attached ONCE) -------------------------
@@ -192,6 +299,43 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           if (isLoc(want) && want !== getLocale()) setLocale(want)
           return
         }
+        // Open login dialog (Sign in button)
+        const openLogin = tEl.closest('[data-open-login]')
+        if (openLogin) {
+          e.preventDefault()
+          const fly = document.querySelector('flying-menu')
+          if (fly && typeof fly.closeMenu === 'function') fly.closeMenu()
+          openLoginDialog()
+          return
+        }
+        // Sign out
+        const logoutBtn = tEl.closest('[data-nav-logout]')
+        if (logoutBtn) {
+          e.preventDefault()
+          clearToken()
+          document.documentElement.dataset.auth = 'guest'
+          location.href = '/'
+          return
+        }
+        // Enroll accept (inside dialog)
+        if (tEl.closest('#dlg-enroll-accept')) {
+          e.preventDefault()
+          void handleEnrollAccept()
+          return
+        }
+        if (tEl.closest('#dlg-enroll-skip')) {
+          e.preventDefault()
+          dismissPromptForCooldown(localStorage, { now: () => Date.now() })
+          closeDialog(dlgState.next || '')
+          return
+        }
+        if (tEl.closest('#dlg-back')) {
+          e.preventDefault()
+          dlgHide('dlg-verify')
+          dlgShow('dlg-start')
+          dlgMsg('')
+          return
+        }
         // Tapping a flying-menu nav link → close the menu (Astro then navigates)
         const flyLink = tEl.closest('.ps-fly__menu a')
         if (flyLink) {
@@ -199,6 +343,103 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           if (fly && typeof fly.closeMenu === 'function') fly.closeMenu()
         }
       })
+
+      // ====== Dialog form submits ===================================================
+      // Delegated to document so a single bind survives dialog re-creation.
+      document.addEventListener('submit', async (e) => {
+        const f = e.target instanceof HTMLFormElement ? e.target : null
+        if (!f) return
+
+        // Sign-in email step
+        if (f.id === 'dlg-start') {
+          e.preventDefault()
+          dlgMsg(t('common.sending'))
+          dlgState.email = new FormData(f).get('email')
+          let data
+          try {
+            data = await apiFetch('/api/auth/start', {
+              method: 'POST',
+              body: JSON.stringify({ email: dlgState.email, channel: 'otp', locale: getLocale() }),
+            })
+          } catch (err) {
+            dlgMsg(`<span class="ps-error">${err.message || t('error.network')}</span>`)
+            return
+          }
+          // Passkey-first: if the email has a registered key, fire the OS picker.
+          if (data?.method === 'passkey' && data.options) {
+            const r = await assertPasskey(apiFetch, dlgState.email, data.options)
+            if (r.status === 'ok' && r.response?.sid) {
+              afterAuthed(r.response.sid, r.response.redirect)
+              return
+            }
+            // User cancelled → re-call /start with force:'otp' to get a code.
+            try {
+              await apiFetch('/api/auth/start', {
+                method: 'POST',
+                body: JSON.stringify({ email: dlgState.email, channel: 'otp', locale: getLocale(), force: 'otp' }),
+              })
+            } catch (err) {
+              dlgMsg(`<span class="ps-error">${err.message || t('error.network')}</span>`)
+              return
+            }
+          }
+          dlgHide('dlg-start')
+          dlgShow('dlg-verify')
+          dlgMsg(`<span class="ps-msg--ok">${t('login.sent_ok')}</span>`)
+          return
+        }
+
+        // Sign-in OTP step
+        if (f.id === 'dlg-verify') {
+          e.preventDefault()
+          dlgMsg(t('common.verifying'))
+          const code = new FormData(f).get('code')
+          let data
+          try {
+            data = await apiFetch('/api/auth/otp/verify', {
+              method: 'POST',
+              body: JSON.stringify({ email: dlgState.email, code }),
+            })
+          } catch (err) {
+            dlgMsg(`<span class="ps-error">${err.message || t('error.network')}</span>`)
+            return
+          }
+          if (!data?.sid) {
+            dlgMsg(`<span class="ps-error">${t('error.network')}</span>`)
+            return
+          }
+          setToken(data.sid)
+          document.documentElement.dataset.auth = 'user'
+          // S27: if no passkey yet AND platform supports + no cooldown,
+          // surface the enroll card BEFORE closing the dialog.
+          const clk = { now: () => Date.now() }
+          if (data.hasPasskey === false &&
+              passkeySupported() &&
+              !isPromptOnCooldown(localStorage, clk) &&
+              await platformAuthenticatorAvailable()) {
+            const platform = guessPlatform(navigator.userAgent)
+            dlgEl('dlg-enroll-method-es').textContent = authenticatorLabel(platform, 'es')
+            dlgEl('dlg-enroll-method-en').textContent = authenticatorLabel(platform, 'en')
+            dlgHide('dlg-verify')
+            dlgShow('dlg-enroll')
+            dlgMsg('')
+            return
+          }
+          closeDialog(data.redirect || dlgState.next || '')
+        }
+      })
+
+      const handleEnrollAccept = async () => {
+        dlgMsg(t('common.saving'))
+        const clk = { now: () => Date.now() }
+        const result = await enrollPasskey(apiFetch)
+        if (result === 'ok') {
+          muteForeverAfterEnroll(localStorage, clk)
+        } else {
+          dismissPromptForCooldown(localStorage, clk)
+        }
+        closeDialog(dlgState.next || '')
+      }
 
       // --- run on first load AND every ClientRouter swap --------------------
       initPage()

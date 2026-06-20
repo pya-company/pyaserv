@@ -15,7 +15,10 @@
  */
 import { expect, test } from '@playwright/test'
 
-const ROUTES = ['/', '/specialists/', '/clients/', '/login/']
+// /login/ is now a redirect page (S24) — login lives in the LoginDialog
+// triggered from the nav. The dialog's interactives are covered by the
+// login-flow + passkey-flow tests; this list is the SSR public routes.
+const ROUTES = ['/', '/specialists/', '/clients/']
 const MAX_TABS = 60
 
 interface FocusResult {
