@@ -263,6 +263,15 @@ button { font: inherit; cursor: pointer; }
    library. We theme the slotted children. */
 .ps-fly { --fly-trigger-bg: var(--ps-surface); }
 @media (min-width: 720px) { .ps-fly { display: none; } }
+/* Pre-upgrade gate. The Lit element is registered from a deferred ES module,
+   so until it upgrades the browser treats <flying-menu> as an unknown element
+   and renders its slotted light-DOM children (trigger button + full menu)
+   inline at the TOP of <body>, pushing every page below it down and causing
+   a massive CLS spike on first paint + on every hard reload. Hiding via
+   :not(:defined) keeps zero space reserved; once Lit upgrades the element
+   the rule stops matching and the floating button assumes its fixed-position
+   layout normally. */
+flying-menu:not(:defined) { display: none; }
 .ps-fly::part(trigger) {
   border-radius: 999px;
   box-shadow: var(--ps-shadow-md);
