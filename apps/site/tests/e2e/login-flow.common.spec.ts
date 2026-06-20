@@ -84,4 +84,23 @@ test.describe('login dialog flow', () => {
     // login param has been stripped from URL
     expect(new URL(page.url()).searchParams.get('login')).toBeNull()
   })
+
+  test('magic link (/login#email=&code=) auto-signs-in without opening dialog', async ({ page }) => {
+    await page.addInitScript(() => {
+      try { sessionStorage.removeItem('pyaserv.token') } catch {}
+    })
+    // Navigate to /login with hash; the redirect must preserve it,
+    // initPage parses the hash, and /otp/verify gets called automatically.
+    // Wait for the verify request to fire so we know the auto-verify path ran.
+    const verifyRequest = page.waitForRequest('**/api/auth/otp/verify', { timeout: 8000 })
+    await page.goto('/login/#email=test%40example.com&code=123456')
+    await verifyRequest
+    // Poll until setToken commits (it runs in an async then() after the fetch).
+    await expect.poll(
+      async () => page.evaluate(() => sessionStorage.getItem('pyaserv.token')),
+      { timeout: 5000 },
+    ).toBe(FAKE_SID)
+    await expect(page.locator('#login-dlg')).not.toHaveAttribute('open', '')
+    expect(new URL(page.url()).hash).toBe('')
+  })
 })

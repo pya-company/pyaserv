@@ -24,7 +24,10 @@ import T from './T.astro'
     <h2 id="login-dlg-title"><T k="login.title" /></h2>
     <T k="login.intro" as="p" />
 
-    <form id="dlg-start" class="ps-form">
+    <!-- action="javascript:void(0)" + data-astro-reload jointly prevent Astro
+         ClientRouter from intercepting the submit as a page navigation. The
+         delegated submit handler in Base.astro takes over via capture phase. -->
+    <form id="dlg-start" class="ps-form" action="javascript:void(0)" data-astro-reload>
       <label>
         <T k="login.email" as="span" />
         <input type="email" name="email" required autocomplete="username webauthn" data-i18n-placeholder="login.email.placeholder" placeholder="tunombre@correo.com" />
@@ -32,7 +35,7 @@ import T from './T.astro'
       <button type="submit" class="ps-btn"><T k="login.send_code" /></button>
     </form>
 
-    <form id="dlg-verify" class="ps-form" hidden>
+    <form id="dlg-verify" class="ps-form" action="javascript:void(0)" data-astro-reload hidden>
       <label>
         <T k="login.code" as="span" />
         <input type="text" name="code" pattern="[0-9]{6}" inputmode="numeric" required autocomplete="one-time-code" maxlength="6" />

@@ -1,0 +1,6 @@
+# Login is no longer a page (S24) — it's a modal on every Base layout.
+# 302 from the legacy URLs to /?login=1. Browsers preserve URL fragments
+# across 302/301 by default, so /login/#email=…&code=… → /?login=1#email=…&code=…
+# and the magic-link auto-verify path in Base.astro picks it up.
+/login    /?login=1   302
+/login/   /?login=1   302

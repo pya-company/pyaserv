@@ -189,7 +189,30 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         const fly = document.querySelector('flying-menu')
         if (fly && typeof fly.closeMenu === 'function') fly.closeMenu()
 
-        // 6. ?login=1 → auto-open the dialog (entry point from the redirect
+        // 6a. #email=...&code=... — magic-link arrival. Pulls the email +
+        //     6-digit code out of the URL fragment, posts /otp/verify, signs
+        //     the user in, strips the fragment. Fragments aren't sent to the
+        //     server so the code can't be pre-fetched by mail scanners.
+        //     Skipped on /login/ which is itself a redirect — its hash gets
+        //     forwarded to / and handled there to avoid racing the fetch
+        //     against the redirect's navigation.
+        try {
+          if (location.hash &&
+              !location.pathname.endsWith('/login/') &&
+              document.documentElement.dataset.auth !== 'user') {
+            const params = new URLSearchParams(location.hash.replace(/^#/, ''))
+            const email = params.get('email') ?? ''
+            const code = params.get('code') ?? ''
+            if (email && /^\d{6}$/.test(code)) {
+              // Clear hash immediately so a reload doesn't re-attempt with a spent code
+              history.replaceState({}, '', location.pathname + location.search)
+              void handleMagicLink(email, code)
+              return
+            }
+          }
+        } catch {}
+
+        // 6b. ?login=1 → auto-open the dialog (entry point from the redirect
         //    that the legacy /login/ page emits, and from anything that wants
         //    to deep-link to "show me the sign-in").
         try {
@@ -203,6 +226,32 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
             openLoginDialog(next)
           }
         } catch {}
+      }
+
+      // Magic-link arrival: verify the code without showing the dialog.
+      // If it succeeds, we're signed in. If it fails, fall back to opening
+      // the dialog at the verify step with the email pre-filled so the user
+      // can re-enter / paste a fresh code.
+      const handleMagicLink = async (email, code) => {
+        let data
+        try {
+          data = await apiFetch('/api/auth/otp/verify', {
+            method: 'POST',
+            body: JSON.stringify({ email, code }),
+          })
+        } catch {
+          // Open dialog with email pre-filled so the user can retry manually
+          openLoginDialog()
+          const inp = document.querySelector('#dlg-start input[name="email"]')
+          if (inp) inp.value = email
+          return
+        }
+        if (data?.sid) {
+          setToken(data.sid)
+          document.documentElement.dataset.auth = 'user'
+          if (data.redirect) location.href = data.redirect
+          // Otherwise stay on the current page — user is now signed in.
+        }
       }
 
       // ====== Login dialog =========================================================
@@ -346,13 +395,17 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
 
       // ====== Dialog form submits ===================================================
       // Delegated to document so a single bind survives dialog re-creation.
+      // Capture phase so we beat Astro ClientRouter's form-navigation intercept
+      // (which otherwise navigates the page and closes the dialog mid-submit).
       document.addEventListener('submit', async (e) => {
         const f = e.target instanceof HTMLFormElement ? e.target : null
         if (!f) return
+        if (f.id !== 'dlg-start' && f.id !== 'dlg-verify') return
 
         // Sign-in email step
         if (f.id === 'dlg-start') {
           e.preventDefault()
+          e.stopImmediatePropagation()
           dlgMsg(t('common.sending'))
           dlgState.email = new FormData(f).get('email')
           let data
@@ -392,6 +445,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         // Sign-in OTP step
         if (f.id === 'dlg-verify') {
           e.preventDefault()
+          e.stopImmediatePropagation()
           dlgMsg(t('common.verifying'))
           const code = new FormData(f).get('code')
           let data
@@ -427,7 +481,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           }
           closeDialog(data.redirect || dlgState.next || '')
         }
-      })
+      }, true) // capture phase — runs before ClientRouter's bubble-phase intercept
 
       const handleEnrollAccept = async () => {
         dlgMsg(t('common.saving'))
