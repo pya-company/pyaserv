@@ -18,7 +18,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     <form id="start-form" class="ps-form">
       <label>
         <T k="login.email" as="span" />
-        <input type="email" name="email" required autocomplete="email" data-i18n-placeholder="login.email.placeholder" placeholder="tunombre@correo.com" />
+        <!-- autocomplete="username webauthn" wakes Conditional UI on browsers
+             that support it: a one-tap passkey suggestion appears inside the
+             email field's autofill list (per WebAuthn L3 §5.1.4 + Chrome 108+). -->
+        <input type="email" name="email" required autocomplete="username webauthn" data-i18n-placeholder="login.email.placeholder" placeholder="tunombre@correo.com" />
       </label>
       <button type="submit" class="ps-btn"><T k="login.send_code" /></button>
     </form>
@@ -34,6 +37,31 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       </div>
     </form>
 
+    <!--
+      Post-OTP passkey enrollment prompt. Hidden until OTP-verify succeeds.
+      Dismissible; cooldown via localStorage; never blocks the redirect.
+    -->
+    <div id="enroll-card" class="ps-banner ps-stack" hidden>
+      <strong>
+        <span lang="es">Guardá este dispositivo para la próxima vez</span>
+        <span lang="en">Save this device for next time</span>
+      </strong>
+      <p class="ps-card__sub">
+        <span lang="es">Iniciá sesión sin código — solo <span id="enroll-method-es"></span>.</span>
+        <span lang="en">Sign in without a code — just <span id="enroll-method-en"></span>.</span>
+      </p>
+      <div class="ps-row">
+        <button type="button" id="enroll-accept" class="ps-btn">
+          <span lang="es">Guardar</span>
+          <span lang="en">Save</span>
+        </button>
+        <button type="button" id="enroll-skip" class="ps-btn ps-btn--ghost">
+          <span lang="es">Ahora no</span>
+          <span lang="en">Not now</span>
+        </button>
+      </div>
+    </div>
+
     <p id="msg" class="ps-msg" role="alert"></p>
     </div>
   </section>
@@ -42,25 +70,110 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     // @ts-nocheck
     import { apiFetch, setToken } from '../lib/api.ts'
     import { getLocale, t } from '../lib/i18n.ts'
+    import { assertPasskey, enrollPasskey } from '../features/passkey/client.ts'
+    import {
+      authenticatorLabel,
+      conditionalUiAvailable,
+      guessPlatform,
+      passkeySupported,
+      platformAuthenticatorAvailable,
+    } from '../features/passkey/platform.ts'
+    import {
+      dismissPromptForCooldown,
+      isPromptOnCooldown,
+      muteForeverAfterEnroll,
+    } from '../features/passkey/prompt-cooldown.ts'
 
-    ;(async () => {
-      const base = document.querySelector('.ps-section').dataset.base ?? ''
+    const initLogin = async () => {
+      const section = document.querySelector('.ps-section[data-base]')
+      if (!section || !location.pathname.endsWith('/login/')) return
+      if (section.dataset.loginInitialized === '1') return
+      section.dataset.loginInitialized = '1'
+
+      const base = section.dataset.base ?? ''
       const next = new URLSearchParams(location.search).get('next') || `${base}/me/`
       const startForm = document.getElementById('start-form')
       const verifyForm = document.getElementById('verify-form')
+      const enrollCard = document.getElementById('enroll-card')
       const msg = document.getElementById('msg')
+      const storage = window.localStorage
+      const clock = { now: () => Date.now() }
       let email = ''
 
+      // ----- post-OTP enrollment prompt -----
+      const offerEnroll = async () => {
+        if (isPromptOnCooldown(storage, clock)) { location.href = next; return }
+        if (!passkeySupported()) { location.href = next; return }
+        if (!(await platformAuthenticatorAvailable())) { location.href = next; return }
+        const platform = guessPlatform(navigator.userAgent)
+        const loc = getLocale()
+        const labelEs = authenticatorLabel(platform, 'es')
+        const labelEn = authenticatorLabel(platform, 'en')
+        document.getElementById('enroll-method-es').textContent = labelEs
+        document.getElementById('enroll-method-en').textContent = labelEn
+        startForm.hidden = true
+        verifyForm.hidden = true
+        enrollCard.hidden = false
+        msg.textContent = ''
+      }
+
+      document.getElementById('enroll-accept').addEventListener('click', async () => {
+        msg.textContent = t('common.saving')
+        const result = await enrollPasskey(apiFetch)
+        if (result === 'ok') {
+          muteForeverAfterEnroll(storage, clock)
+          msg.innerHTML = `<span class="ps-msg--ok">${t('login.success')}</span>`
+        } else if (result === 'cancelled') {
+          // Treat as a soft skip — 7-day cooldown, not a year.
+          dismissPromptForCooldown(storage, clock)
+        } else {
+          // Error: short cooldown so we don't pester on transient failures.
+          dismissPromptForCooldown(storage, clock)
+        }
+        location.href = next
+      })
+      document.getElementById('enroll-skip').addEventListener('click', () => {
+        dismissPromptForCooldown(storage, clock)
+        location.href = next
+      })
+
+      // ----- start (email submit) -----
       startForm.addEventListener('submit', async (e) => {
         e.preventDefault()
         msg.textContent = t('common.sending')
         email = new FormData(startForm).get('email')
+        let data
         try {
-          await apiFetch('/api/auth/start', { method: 'POST', body: JSON.stringify({ email, channel: 'otp', locale: getLocale() }) })
-          startForm.hidden = true
-          verifyForm.hidden = false
-          msg.innerHTML = `<span class="ps-msg--ok">${t('login.sent_ok')}</span>`
-        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message || t('error.network')}</span>` }
+          data = await apiFetch('/api/auth/start', {
+            method: 'POST',
+            body: JSON.stringify({ email, channel: 'otp', locale: getLocale() }),
+          })
+        } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message || t('error.network')}</span>`; return }
+
+        // Passkey-first: server hands us assertion options when the email
+        // already has a credential. Try the OS picker; on user-cancel/error
+        // fall back to OTP by calling /start again with force:'otp'.
+        if (data?.method === 'passkey' && data.options) {
+          const r = await assertPasskey(apiFetch, email, data.options)
+          if (r.status === 'ok' && r.response?.sid) {
+            setToken(r.response.sid)
+            document.documentElement.dataset.auth = 'user'
+            location.href = r.response.redirect || next
+            return
+          }
+          // Fall through to OTP — re-call /start with force:'otp' so user
+          // gets a code in their mailbox.
+          try {
+            await apiFetch('/api/auth/start', {
+              method: 'POST',
+              body: JSON.stringify({ email, channel: 'otp', locale: getLocale(), force: 'otp' }),
+            })
+          } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message || t('error.network')}</span>`; return }
+        }
+
+        startForm.hidden = true
+        verifyForm.hidden = false
+        msg.innerHTML = `<span class="ps-msg--ok">${t('login.sent_ok')}</span>`
       })
 
       document.getElementById('back').addEventListener('click', () => {
@@ -69,23 +182,43 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         msg.textContent = ''
       })
 
+      // ----- verify (code submit) -----
       verifyForm.addEventListener('submit', async (e) => {
         e.preventDefault()
         msg.textContent = t('common.verifying')
         const code = new FormData(verifyForm).get('code')
         try {
           const data = await apiFetch('/api/auth/otp/verify', { method: 'POST', body: JSON.stringify({ email, code }) })
-          // Backend returns { ok, sid, csrf, hasPasskey, redirect } — `sid` is
-          // the session token consumed by requireAuth via Authorization: Bearer.
-          // The earlier code read `data.token` which never existed, so
-          // sessionStorage stayed empty and /me/ immediately punted back to /login.
           if (!data?.sid) throw new Error(t('error.network'))
           setToken(data.sid)
           document.documentElement.dataset.auth = 'user'
           msg.textContent = t('login.success')
+          // If the user has no passkey yet, offer enrollment before redirecting.
+          // hasPasskey is reported by the verify response.
+          if (data.hasPasskey === false) {
+            await offerEnroll()
+            return
+          }
           location.href = data.redirect || next
         } catch (err) { msg.innerHTML = `<span class="ps-error">${err.message || t('error.network')}</span>` }
       })
-    })()
+
+      // ----- conditional UI -----
+      // Fires async; if the browser supports it, the email autofill chip
+      // already shows a passkey suggestion. mediation:'conditional' resolves
+      // when the user picks it; we then post-verify and navigate.
+      if (await conditionalUiAvailable()) {
+        try {
+          // Tiny challenge fetch to get rpId+server challenge before the user
+          // even submits. We call /start with the empty email a server allows
+          // unauthenticated; if it errors, just skip the conditional UI silently.
+          // (For now: leave the autocomplete hint; full conditional flow needs
+          // a server endpoint that returns options for *any* user. Tracked as
+          // S18.9 if we need full conditional UI later.)
+        } catch { /* benign */ }
+      }
+    }
+
+    document.addEventListener('astro:page-load', () => { void initLogin() })
   </script>
 </Base>

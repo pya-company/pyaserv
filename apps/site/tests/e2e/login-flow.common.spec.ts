@@ -29,8 +29,11 @@ test.describe('login flow', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
+        // hasPasskey:true bypasses the post-OTP enroll prompt so this test
+        // continues to assert the bare redirect behavior. The enroll path
+        // is covered by passkey-flow.common.spec.ts.
         body: JSON.stringify({
-          data: { ok: true, sid: FAKE_SID, csrf: 'fake-csrf', hasPasskey: false },
+          data: { ok: true, sid: FAKE_SID, csrf: 'fake-csrf', hasPasskey: true },
         }),
       }),
     )

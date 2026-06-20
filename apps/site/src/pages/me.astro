@@ -88,6 +88,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         </label>
         <p id="notif-msg" class="ps-msg" aria-live="polite"></p>
       </fieldset>
+
+      <fieldset class="ps-banner ps-stack">
+        <legend><strong>
+          <span lang="es">Seguridad — Passkeys</span>
+          <span lang="en">Security — Passkeys</span>
+        </strong></legend>
+        <p class="ps-card__sub">
+          <span lang="es">Iniciá sesión con Touch ID, Face ID, Windows Hello o el bloqueo de tu teléfono — sin código por email.</span>
+          <span lang="en">Sign in with Touch ID, Face ID, Windows Hello or your phone's screen lock — no email code needed.</span>
+        </p>
+        <div id="passkey-list" class="ps-stack" aria-live="polite"></div>
+        <button type="button" id="passkey-add" class="ps-btn ps-btn--sm">
+          <span lang="es">+ Agregar passkey</span>
+          <span lang="en">+ Add passkey</span>
+        </button>
+        <p id="passkey-msg" class="ps-msg" role="alert"></p>
+      </fieldset>
     </div>
 
     <div class="ps-tabpanel" id="panel-listings" role="tabpanel" aria-labelledby="tab-listings" hidden>
@@ -126,6 +143,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     import { interp, t } from '../lib/i18n.ts'
     import { completenessPct, snapshotFromForm } from '../features/me/completeness.ts'
     import { escapeHtml } from '../features/me/sanitize.ts'
+    import { enrollPasskey } from '../features/passkey/client.ts'
+    import { passkeySupported } from '../features/passkey/platform.ts'
 
     // ClientRouter swaps body — module scripts re-execute, but we still
     // route through astro:page-load so we get consistent re-init on both
@@ -297,6 +316,64 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       photoInput.addEventListener('change', () => setTimeout(computeCompleteness, 50))
       photoRemove.addEventListener('click', () => setTimeout(computeCompleteness, 50))
       computeCompleteness()
+
+      // ---- Passkeys (security section) ----
+      const passkeyList = document.getElementById('passkey-list')
+      const passkeyAdd = document.getElementById('passkey-add')
+      const passkeyMsg = document.getElementById('passkey-msg')
+      const renderPasskeys = (items) => {
+        if (!items.length) {
+          passkeyList.innerHTML = `<p class="ps-card__sub">No hay passkeys guardadas. Agregá una para iniciar sesión sin código.</p>`
+          return
+        }
+        passkeyList.innerHTML = items.map((p) => `
+          <div class="ps-row" style="justify-content:space-between;align-items:center">
+            <div>
+              <strong>${escape(p.label || 'Passkey')}</strong>
+              <p class="ps-card__sub" style="margin:0">${formatRelativeTime(p.createdAt)}</p>
+            </div>
+            <button type="button" class="ps-btn ps-btn--ghost ps-btn--sm js-pk-delete" data-id="${escape(p.credentialId)}" aria-label="Eliminar passkey">×</button>
+          </div>
+        `).join('')
+        for (const btn of passkeyList.querySelectorAll('.js-pk-delete')) {
+          btn.addEventListener('click', async () => {
+            passkeyMsg.textContent = ''
+            try {
+              await apiFetch(`/api/auth/passkeys/${btn.dataset.id}`, { method: 'DELETE' })
+              await refreshPasskeys()
+            } catch (err) {
+              passkeyMsg.innerHTML = `<span class="ps-error">${escape(err.message || t('error.network'))}</span>`
+            }
+          })
+        }
+      }
+      const refreshPasskeys = async () => {
+        try {
+          // Backend returns { items: [{credentialId, label, createdAt, lastUsedAt}] }.
+          // apiFetch only unwraps `data` envelopes; this one keeps `items` at root.
+          const body = await apiFetch('/api/auth/passkeys')
+          renderPasskeys(body?.items || [])
+        } catch { passkeyList.innerHTML = '' }
+      }
+      passkeyAdd.addEventListener('click', async () => {
+        if (!passkeySupported()) {
+          passkeyMsg.innerHTML = `<span class="ps-error">Tu navegador no soporta passkeys.</span>`
+          return
+        }
+        passkeyMsg.textContent = t('common.saving')
+        const r = await enrollPasskey(apiFetch)
+        if (r === 'ok') {
+          passkeyMsg.innerHTML = `<span class="ps-msg--ok">Passkey guardada.</span>`
+          await refreshPasskeys()
+        } else if (r === 'cancelled') {
+          passkeyMsg.textContent = ''
+        } else {
+          passkeyMsg.innerHTML = `<span class="ps-error">No se pudo guardar la passkey.</span>`
+        }
+      })
+      // Hide the Add button if the browser can't do passkeys at all.
+      if (!passkeySupported()) passkeyAdd.disabled = true
+      refreshPasskeys()
 
       // ---- Notifications opt-out ----
       const notifEmail = document.getElementById('notif-email')
