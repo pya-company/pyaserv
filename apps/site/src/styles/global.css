@@ -845,6 +845,21 @@ html[data-theme="dark"] .ps-theme-icon::before { content: '🌙'; }
 }
 .ps-home-stats strong { color: var(--ps-acc); font-weight: 700; }
 
+/* /me/ tabs — CSS-driven panel visibility.
+   bootstrap.js reads ?tab=X pre-paint and sets html[data-me-tab=<name>].
+   The setTab() click handler updates the same attribute. This replaces the
+   per-panel `hidden` attribute pattern, which caused a ~900px footer jump on
+   deep-link reload because SSR always rendered panel-profile visible and JS
+   then swapped to the requested tab. Default (no attribute, e.g. /me/ no
+   query) shows profile via the :not([data-me-tab]) fallback. */
+.ps-tabpanel { display: none; }
+html[data-me-tab="profile"] #panel-profile,
+html[data-me-tab="listings"] #panel-listings,
+html[data-me-tab="requests"] #panel-requests,
+html[data-me-tab="inquiries"] #panel-inquiries,
+html[data-me-tab="stats"] #panel-stats,
+html:not([data-me-tab]) #panel-profile { display: block; }
+
 /* ---------- cards ---------- */
 .ps-cards {
   display: grid;
@@ -852,6 +867,20 @@ html[data-theme="dark"] .ps-theme-icon::before { content: '🌙'; }
   gap: var(--ps-space-3);
   margin: var(--ps-space-3) 0;
 }
+/* Reserve a stable min-height on async-populated lists on the dashboard so
+   they don't push the footer (entering the viewport from below) when content
+   resolves. We keep the reservation in BOTH directions:
+   - aria-busy=true: empty container would be 0px → reservation prevents the
+     initial pre-data shrink that lands the footer in viewport.
+   - aria-busy removed (data or empty-state): cards may be SMALLER than the
+     reservation (esp. the 0-items empty state) — if we dropped min-height
+     here the container would collapse and the footer would shift UP into
+     the viewport. So min-height stays. Real lists with many cards grow past
+     it naturally — no impact.
+   The numbers are tuned so the page-content + footer always remain ≥ 100vh
+   on a mobile viewport (~844px), keeping the footer just below the fold. */
+#my-listings, #my-requests, #my-inquiries { min-height: 520px; }
+#stats-grid { min-height: 320px; }
 @media (min-width: 560px) {
   .ps-cards {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));

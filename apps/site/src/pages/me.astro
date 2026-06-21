@@ -21,9 +21,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <button class="ps-tab" role="tab" id="tab-stats" aria-controls="panel-stats" data-tab="stats" data-i18n="me.tabs.stats">📊 Estadísticas</button>
     </div>
 
-    <!-- Default tab; rendered visible in SSR so its content height is reserved
-         on the first frame. Tabs strip + footer don't jump when JS later
-         populates form values (input dimensions don't depend on value). -->
+    <!-- Visibility is driven by html[data-me-tab=<name>] from bootstrap.js
+         (set pre-paint from ?tab=X). Each panel is rendered in SSR; CSS
+         hides the non-active ones on the first frame — no JS-driven swap,
+         no footer jump on deep-link reload. JS tab clicks update the
+         attribute too; no need for the per-panel `hidden` attribute. -->
     <div class="ps-tabpanel" id="panel-profile" role="tabpanel" aria-labelledby="tab-profile">
       <h2 data-i18n="me.profile.h">Perfil de profesional</h2>
       <p data-i18n="me.profile.intro">Si querés ofrecer servicios, completá tu perfil acá.</p>
@@ -117,7 +119,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       </fieldset>
     </div>
 
-    <div class="ps-tabpanel" id="panel-listings" role="tabpanel" aria-labelledby="tab-listings" hidden>
+    <div class="ps-tabpanel" id="panel-listings" role="tabpanel" aria-labelledby="tab-listings">
       <div class="ps-row" style="justify-content:space-between">
         <h2 data-i18n="me.listings.h">Mis servicios publicados</h2>
         <a id="new-listing" class="ps-btn ps-btn--sm" data-i18n="me.listings.new">+ Nuevo</a>
@@ -125,7 +127,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <div id="my-listings" class="ps-cards" aria-busy="true"></div>
     </div>
 
-    <div class="ps-tabpanel" id="panel-requests" role="tabpanel" aria-labelledby="tab-requests" hidden>
+    <div class="ps-tabpanel" id="panel-requests" role="tabpanel" aria-labelledby="tab-requests">
       <div class="ps-row" style="justify-content:space-between">
         <h2 data-i18n="me.requests.h">Mis pedidos como cliente</h2>
         <a id="new-request" class="ps-btn ps-btn--sm" data-i18n="me.requests.new">+ Nuevo</a>
@@ -133,15 +135,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <div id="my-requests" class="ps-cards" aria-busy="true"></div>
     </div>
 
-    <div class="ps-tabpanel" id="panel-inquiries" role="tabpanel" aria-labelledby="tab-inquiries" hidden>
+    <div class="ps-tabpanel" id="panel-inquiries" role="tabpanel" aria-labelledby="tab-inquiries">
       <h2 data-i18n="me.inquiries.h">Conversaciones</h2>
       <div id="my-inquiries" class="ps-cards" aria-busy="true"></div>
     </div>
 
-    <div class="ps-tabpanel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats" hidden>
+    <div class="ps-tabpanel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats">
       <h2 data-i18n="me.stats.h">Estadísticas</h2>
       <p id="stats-msg" class="ps-msg" data-i18n="me.stats.intro">Métricas de tu perfil — últimos 30 días.</p>
-      <div id="stats-grid" class="ps-stats-grid"></div>
+      <!-- aria-busy reserves a min-height via CSS so the footer doesn't jump
+           when /v1/analytics/me resolves and the 5 stat cards inject. -->
+      <div id="stats-grid" class="ps-stats-grid" aria-busy="true"></div>
     </div>
   </section>
 
@@ -204,7 +208,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           tab.setAttribute('tabindex', selected ? '0' : '-1')
           if (selected && focusTab) tab.focus()
         }
-        for (const [k, el] of Object.entries(panels)) el.hidden = k !== name
+        // Drive panel visibility via html[data-me-tab=…] (CSS handles display).
+        // The `hidden` attribute is gone from panel markup so CSS alone wins —
+        // same mechanism as the pre-paint bootstrap.js path.
+        document.documentElement.dataset.meTab = name
         const url = new URL(location.href)
         url.searchParams.set('tab', name)
         history.replaceState({}, '', url.toString())
@@ -444,7 +451,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
               refreshListings()
             })
           }
-        } catch (err) { lEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
+        } catch (err) { lEl.removeAttribute('aria-busy'); lEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
       }
       refreshListings()
 
@@ -477,7 +484,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
                 <a href="${base}/clients/${r.id}/">${publicView}</a>
               </div>
             </article>`).join('')
-        } catch (err) { rEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
+        } catch (err) { rEl.removeAttribute('aria-busy'); rEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
       }
       refreshRequests()
 
@@ -505,13 +512,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
               </a>`
           }).join('')
         }
-      } catch (err) { iEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
+      } catch (err) { iEl.removeAttribute('aria-busy'); iEl.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
 
       // ---- Stats ----
       const statsGrid = document.getElementById('stats-grid')
       const statsMsg = document.getElementById('stats-msg')
       try {
         const stats = await apiFetch('/v1/analytics/me')
+        statsGrid.removeAttribute('aria-busy')
         if (!stats) {
           statsMsg.textContent = t('me.stats.empty')
           statsGrid.innerHTML = ''
@@ -525,7 +533,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
             card(t('me.stats.completed'), stats.funnel.completed),
           ].join('')
         }
-      } catch (err) { statsGrid.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
+      } catch (err) { statsGrid.removeAttribute('aria-busy'); statsGrid.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
     }
 
     // astro:page-load fires on initial paint AND after every ClientRouter

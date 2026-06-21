@@ -48,4 +48,18 @@
   } catch (e) {
     document.documentElement.dataset.auth = 'guest'
   }
+
+  // 3. /me/ active-tab pre-paint. Without this the dashboard SSRs panel-profile
+  //    visible regardless of ?tab=X, then JS hides it and reveals the requested
+  //    panel — which causes a ~900px footer jump on every direct deep-link
+  //    load (Slow 4G: CLS 0.18). Reading ?tab=X here and exposing it as
+  //    html[data-me-tab=...] lets the CSS in global.css pick the right panel
+  //    on the FIRST FRAME — no swap, no shift.
+  try {
+    if (/\/me\/?$/.test(location.pathname)) {
+      var qpTab = new URLSearchParams(location.search).get('tab')
+      var TABS = ['profile', 'listings', 'requests', 'inquiries', 'stats']
+      document.documentElement.dataset.meTab = TABS.indexOf(qpTab) >= 0 ? qpTab : 'profile'
+    }
+  } catch (e) { /* */ }
 })()
