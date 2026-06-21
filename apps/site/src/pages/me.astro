@@ -1,24 +1,25 @@
 ---
 import Base from '~/layouts/Base.astro'
 import BarriosDatalist from '~/components/BarriosDatalist.astro'
+import T from '~/components/T.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base title="Mi panel" titleKey="me.title" active="me">
   <section class="ps-section" data-base={base}>
     <div class="ps-row" style="justify-content:space-between">
-      <h1 data-i18n="me.heading">Mi panel</h1>
-      <button id="logout" class="ps-btn ps-btn--ghost ps-btn--sm" data-i18n="me.logout">Cerrar sesión</button>
+      <T k="me.heading" as="h1" />
+      <button id="logout" class="ps-btn ps-btn--ghost ps-btn--sm"><T k="me.logout" /></button>
     </div>
     <!-- Reserve one-line height so the tabs strip + form below don't jump
          down when JS later writes "Sesión: <userId>…" into this paragraph. -->
     <p id="me-info" class="ps-card__sub" style="min-height:1.25rem"></p>
 
     <div class="ps-tabs" role="tablist" data-i18n-aria="me.tabs.aria" aria-label="Secciones">
-      <button class="ps-tab" role="tab" id="tab-profile" aria-controls="panel-profile" data-tab="profile" data-i18n="me.tabs.profile">👤 Mi perfil</button>
-      <button class="ps-tab" role="tab" id="tab-listings" aria-controls="panel-listings" data-tab="listings" data-i18n="me.tabs.listings">🛠️ Mis servicios</button>
-      <button class="ps-tab" role="tab" id="tab-requests" aria-controls="panel-requests" data-tab="requests" data-i18n="me.tabs.requests">📢 Mis pedidos</button>
-      <button class="ps-tab" role="tab" id="tab-inquiries" aria-controls="panel-inquiries" data-tab="inquiries" data-i18n="me.tabs.inquiries">💬 Conversaciones</button>
-      <button class="ps-tab" role="tab" id="tab-stats" aria-controls="panel-stats" data-tab="stats" data-i18n="me.tabs.stats">📊 Estadísticas</button>
+      <button class="ps-tab" role="tab" id="tab-profile" aria-controls="panel-profile" data-tab="profile"><T k="me.tabs.profile" /></button>
+      <button class="ps-tab" role="tab" id="tab-listings" aria-controls="panel-listings" data-tab="listings"><T k="me.tabs.listings" /></button>
+      <button class="ps-tab" role="tab" id="tab-requests" aria-controls="panel-requests" data-tab="requests"><T k="me.tabs.requests" /></button>
+      <button class="ps-tab" role="tab" id="tab-inquiries" aria-controls="panel-inquiries" data-tab="inquiries"><T k="me.tabs.inquiries" /></button>
+      <button class="ps-tab" role="tab" id="tab-stats" aria-controls="panel-stats" data-tab="stats"><T k="me.tabs.stats" /></button>
     </div>
 
     <!-- Visibility is driven by html[data-me-tab=<name>] from bootstrap.js
@@ -27,8 +28,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
          no footer jump on deep-link reload. JS tab clicks update the
          attribute too; no need for the per-panel `hidden` attribute. -->
     <div class="ps-tabpanel" id="panel-profile" role="tabpanel" aria-labelledby="tab-profile">
-      <h2 data-i18n="me.profile.h">Perfil de profesional</h2>
-      <p data-i18n="me.profile.intro">Si querés ofrecer servicios, completá tu perfil acá.</p>
+      <T k="me.profile.h" as="h2" />
+      <T k="me.profile.intro" as="p" />
       <!-- Always rendered at 0% so the bar's height + label line are reserved.
            JS just updates the % once /v1/me returns. -->
       <div id="completeness" class="ps-completeness" aria-live="polite">
@@ -121,28 +122,28 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
     <div class="ps-tabpanel" id="panel-listings" role="tabpanel" aria-labelledby="tab-listings">
       <div class="ps-row" style="justify-content:space-between">
-        <h2 data-i18n="me.listings.h">Mis servicios publicados</h2>
-        <a id="new-listing" class="ps-btn ps-btn--sm" data-i18n="me.listings.new">+ Nuevo</a>
+        <T k="me.listings.h" as="h2" />
+        <a id="new-listing" class="ps-btn ps-btn--sm"><T k="me.listings.new" /></a>
       </div>
       <div id="my-listings" class="ps-cards" aria-busy="true"></div>
     </div>
 
     <div class="ps-tabpanel" id="panel-requests" role="tabpanel" aria-labelledby="tab-requests">
       <div class="ps-row" style="justify-content:space-between">
-        <h2 data-i18n="me.requests.h">Mis pedidos como cliente</h2>
-        <a id="new-request" class="ps-btn ps-btn--sm" data-i18n="me.requests.new">+ Nuevo</a>
+        <T k="me.requests.h" as="h2" />
+        <a id="new-request" class="ps-btn ps-btn--sm"><T k="me.requests.new" /></a>
       </div>
       <div id="my-requests" class="ps-cards" aria-busy="true"></div>
     </div>
 
     <div class="ps-tabpanel" id="panel-inquiries" role="tabpanel" aria-labelledby="tab-inquiries">
-      <h2 data-i18n="me.inquiries.h">Conversaciones</h2>
+      <T k="me.inquiries.h" as="h2" />
       <div id="my-inquiries" class="ps-cards" aria-busy="true"></div>
     </div>
 
     <div class="ps-tabpanel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats">
-      <h2 data-i18n="me.stats.h">Estadísticas</h2>
-      <p id="stats-msg" class="ps-msg" data-i18n="me.stats.intro">Métricas de tu perfil — últimos 30 días.</p>
+      <T k="me.stats.h" as="h2" />
+      <p id="stats-msg" class="ps-msg"><T k="me.stats.intro" /></p>
       <!-- aria-busy reserves a min-height via CSS so the footer doesn't jump
            when /v1/analytics/me resolves and the 5 stat cards inject. -->
       <div id="stats-grid" class="ps-stats-grid" aria-busy="true"></div>

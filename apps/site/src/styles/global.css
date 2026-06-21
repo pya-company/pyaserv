@@ -987,7 +987,6 @@ a.ps-card:focus-visible {
   margin-bottom: -1px;
   white-space: nowrap;
   text-decoration: none;
-  transition: color 120ms, border-color 120ms;
   scroll-snap-align: start;
   min-height: 48px;
   font-size: 0.9375rem;
@@ -995,6 +994,21 @@ a.ps-card:focus-visible {
 }
 @media (min-width: 720px) { .ps-tab { padding: var(--ps-space-3) var(--ps-space-4); } }
 .ps-tab:hover { color: var(--ps-text); }
+/* Active-tab style. Triggered by html[data-me-tab=…] which bootstrap.js sets
+   PRE-PAINT — so the correct tab is highlighted on the very first frame,
+   without any JS-driven attribute swap. The aria-selected[true] selector is
+   kept for tabs outside /me/ (none today, but it's the canonical pattern)
+   and as the post-load idempotent state. transition: color/border-color
+   was removed from .ps-tab because the JS-set aria-selected used to fire
+   that 120ms animation ~1.7s after first paint — a clearly user-visible
+   "tab lights up" flicker the user reported as jank. CSS-driven active
+   state from frame 0 eliminates it entirely. */
+html[data-me-tab="profile"] #tab-profile,
+html[data-me-tab="listings"] #tab-listings,
+html[data-me-tab="requests"] #tab-requests,
+html[data-me-tab="inquiries"] #tab-inquiries,
+html[data-me-tab="stats"] #tab-stats,
+html:not([data-me-tab]) #tab-profile,
 .ps-tab[aria-selected="true"],
 .ps-tab[aria-current="page"] {
   color: var(--ps-acc);
