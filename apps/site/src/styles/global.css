@@ -851,14 +851,25 @@ html[data-theme="dark"] .ps-theme-icon::before { content: '🌙'; }
    per-panel `hidden` attribute pattern, which caused a ~900px footer jump on
    deep-link reload because SSR always rendered panel-profile visible and JS
    then swapped to the requested tab. Default (no attribute, e.g. /me/ no
-   query) shows profile via the :not([data-me-tab]) fallback. */
-.ps-tabpanel { display: none; }
+   query) shows profile via the :not([data-me-tab]) fallback.
+
+   Hiding strategy is content-visibility: hidden, NOT display: none. The
+   profile panel hosts a huge form (7 inputs + 3 fieldsets + photo widget +
+   passkey list); under display:none the browser discards layout cache and
+   re-lays out from scratch every time the panel reappears (~400ms on a
+   beefy desktop, multi-second on real mobile). content-visibility: hidden
+   preserves the rendered subtree across show/hide cycles, so switching tabs
+   is a single-digit-ms style flip after the first paint. contain-intrinsic-
+   size advertises the hidden panel's height to the layout engine so the
+   document doesn't reflow when a panel toggles. Tests in
+   tests/e2e/dashboard-tab-switch.common.spec.ts cap click→paint at 80ms. */
+.ps-tabpanel { content-visibility: hidden; }
 html[data-me-tab="profile"] #panel-profile,
 html[data-me-tab="listings"] #panel-listings,
 html[data-me-tab="requests"] #panel-requests,
 html[data-me-tab="inquiries"] #panel-inquiries,
 html[data-me-tab="stats"] #panel-stats,
-html:not([data-me-tab]) #panel-profile { display: block; }
+html:not([data-me-tab]) #panel-profile { content-visibility: visible; }
 
 /* ---------- cards ---------- */
 .ps-cards {
