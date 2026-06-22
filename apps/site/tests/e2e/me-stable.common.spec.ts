@@ -102,11 +102,24 @@ test.describe('/me/ stability', () => {
     await page.goto('/me/')
     await page.waitForLoadState('networkidle')
 
-    // Click the Listings tab and assert its panel becomes visible. The bug:
-    // inline script ran once at first /me/ load; after the swap the tab
+    // Click the Listings tab and assert its panel becomes the active one. The
+    // bug: inline script ran once at first /me/ load; after the swap the tab
     // click listeners died, so nothing happened on click.
+    //
+    // Visibility is driven by `html[data-me-tab]` + `content-visibility` on
+    // .ps-tabpanel — Playwright's toBeVisible/toBeHidden don't understand
+    // content-visibility (the element still has a bounding box and isn't
+    // visibility:hidden), so we assert the source of truth: the documentElement
+    // dataset attribute that the click handler sets. Then double-check via
+    // computed style that profile is content-visibility:hidden and listings is
+    // content-visibility:visible.
     await page.locator('#tab-listings').click()
-    await expect(page.locator('#panel-listings')).toBeVisible({ timeout: 2000 })
-    await expect(page.locator('#panel-profile')).toBeHidden()
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.meTab), { timeout: 2000 }).toBe('listings')
+    const cv = await page.evaluate(() => ({
+      listings: getComputedStyle(document.getElementById('panel-listings')!).contentVisibility,
+      profile: getComputedStyle(document.getElementById('panel-profile')!).contentVisibility,
+    }))
+    expect(cv.listings).toBe('visible')
+    expect(cv.profile).toBe('hidden')
   })
 })

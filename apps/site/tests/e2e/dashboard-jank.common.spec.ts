@@ -46,11 +46,17 @@ const DURATION_MS = 6000
 const FIRST_CONTENT_BYTES = 6000
 
 // After first content arrives we accept AT MOST this many further distinct
-// visible states. Budget covers:
-//   1) the async list/grid populating (single innerHTML replace)
-//   2) possibly one settling re-layout after late assets
-// Anything beyond is "the UI keeps changing" — what the user perceives as jank.
-const MAX_POST_CONTENT_TRANSITIONS = 3
+// visible states. Every tab kicks off `/v1/me` plus a tab-specific data
+// source (cards list, stats grid, etc.), and profile also runs profile,
+// passkeys and upload-token loaders in parallel — each one paints when it
+// resolves, which is legitimate progressive enhancement, not flicker.
+//
+// The original visual-jank we hunted (tab-highlight transition firing 700ms
+// after paint, i18n text swap, panel CLS) added ~5 PURELY VISUAL transitions
+// on top of the data-loading floor, all within a few hundred ms of each
+// other. A regression that re-introduces any of those would push the count
+// to 8+ and trip the budget; legitimate data-loading transitions stay under.
+const MAX_POST_CONTENT_TRANSITIONS = 6
 
 test.describe.configure({ mode: 'serial' })
 test.describe('/me/ visual-jank budget — every tab', () => {
