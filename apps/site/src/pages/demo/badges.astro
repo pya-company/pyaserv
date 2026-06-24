@@ -1,0 +1,122 @@
+---
+import DemoLayout from '~/layouts/DemoLayout.astro'
+
+interface Badge {
+  readonly code: string
+  readonly name: string
+  readonly desc: string
+  readonly rarity: 'common' | 'rare' | 'epic' | 'legendary'
+  readonly earned: boolean
+}
+
+const badges: ReadonlyArray<Badge> = [
+  { code: 'tier_aprendiz', name: 'Aprendiz', desc: 'Iniciaste tu camino', rarity: 'common', earned: true },
+  { code: 'tier_oficial', name: 'Oficial', desc: '100 XP — tiempo de respuesta visible al público', rarity: 'common', earned: true },
+  { code: 'tier_maestro', name: 'Maestro', desc: '500 XP — 1 día de Boost gratis al mes', rarity: 'rare', earned: true },
+  { code: 'tier_maestro_mayor', name: 'Maestro Mayor', desc: '2000 XP — tag "Recomendado por PyaServ"', rarity: 'epic', earned: false },
+  { code: 'tier_patron', name: 'Patrón del Oficio', desc: '5000 XP — slot destacado curado', rarity: 'legendary', earned: false },
+  { code: 'milestone_first_job', name: 'Primer trabajo', desc: 'Completaste tu primer trabajo', rarity: 'common', earned: true },
+  { code: 'milestone_10_jobs', name: '10 trabajos', desc: 'Ya sos parte del barrio', rarity: 'common', earned: true },
+  { code: 'milestone_50_jobs', name: '50 trabajos', desc: 'Veterano del oficio', rarity: 'rare', earned: false },
+  { code: 'milestone_first_5star', name: 'Primer 5★', desc: 'Tu primera reseña perfecta', rarity: 'common', earned: true },
+  { code: 'velocista_mes', name: 'Velocista del mes', desc: 'Top 10% por tiempo de respuesta', rarity: 'rare', earned: true },
+  { code: 'estrella_barrio', name: 'Estrella del barrio', desc: 'Top 3 por reseñas en tu barrio', rarity: 'epic', earned: true },
+  { code: 'maestro_de_barrio', name: 'Maestro del barrio', desc: '#1 por reseñas en tu barrio + oficio', rarity: 'legendary', earned: false },
+  { code: 'perfil_maestro', name: 'Perfil Maestro', desc: 'Completaste el 100% de tu perfil', rarity: 'common', earned: true },
+  { code: 'multilingue', name: 'Multilingüe', desc: 'Perfil en español + guaraní', rarity: 'rare', earned: false },
+  { code: 'constructor', name: 'Constructor', desc: '10+ fotos de trabajos', rarity: 'common', earned: true },
+  { code: 'equipo', name: 'Equipo', desc: '3 colegas invitados que se sumaron', rarity: 'rare', earned: false },
+  { code: 'verificado_completo', name: 'Verificado completo', desc: 'WhatsApp + Cédula verificados', rarity: 'epic', earned: true },
+]
+
+const earnedCount = badges.filter((b) => b.earned).length
+---
+<DemoLayout title="Insignias, XP y rachas" feature="badges">
+  <div style="max-width:720px;margin:0 auto;padding:0 16px;">
+    <h1 style="margin:0 0 8px 0;font-size:24px;">Insignias y gamificación</h1>
+    <p style="color:#6b7280;margin:0 0 24px 0;">
+      <span class="ps-demo-tag">Demo</span> Juan Pérez · Plomero Villa Morra
+    </p>
+
+    <div class="ps-game-hud">
+      <div class="ps-game-hud__cell">
+        <div class="ps-game-hud__value">1.247</div>
+        <div class="ps-game-hud__label">XP</div>
+      </div>
+      <div class="ps-game-hud__cell" data-streak="hot">
+        <div class="ps-game-hud__value">🔥 14 d</div>
+        <div class="ps-game-hud__label">Racha</div>
+      </div>
+      <div class="ps-game-hud__cell">
+        <div class="ps-game-hud__value">⚡ T2</div>
+        <div class="ps-game-hud__label">Maestro</div>
+      </div>
+    </div>
+
+    <div class="ps-completeness">
+      <div class="ps-completeness__top">
+        <span class="ps-completeness__title">Te faltan 753 XP para Maestro Mayor</span>
+        <span class="ps-completeness__pct">62%</span>
+      </div>
+      <div class="ps-completeness__bar">
+        <div class="ps-completeness__fill" style="width:62%;"></div>
+      </div>
+      <div class="ps-completeness__next">Próximo: completá una reseña con foto para +50 XP</div>
+    </div>
+
+    <div class="ps-quests">
+      <h3 class="ps-quests__title">Misiones de hoy</h3>
+      <div class="ps-quest" data-done="1">
+        <div class="ps-quest__check">✓</div>
+        <div>Respondé 1 lead</div>
+        <div class="ps-quest__reward">+10 XP</div>
+      </div>
+      <div class="ps-quest">
+        <div class="ps-quest__check"></div>
+        <div>Compartí tu perfil en WhatsApp</div>
+        <div class="ps-quest__reward">+10 XP</div>
+      </div>
+      <div class="ps-quest">
+        <div class="ps-quest__check"></div>
+        <div>Agregá 1 foto al portfolio</div>
+        <div class="ps-quest__reward">+10 XP</div>
+      </div>
+    </div>
+
+    <div class="ps-quests">
+      <h3 class="ps-quests__title">Misión semanal</h3>
+      <div class="ps-quest">
+        <div class="ps-quest__check"></div>
+        <div>Conseguí 3 reseñas (1/3) · quedan 3 días</div>
+        <div class="ps-quest__reward">+50 XP</div>
+      </div>
+    </div>
+
+    <h2 style="font-size:18px;margin:32px 0 12px;">Insignias ({earnedCount}/{badges.length})</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
+      {badges.map((b) => (
+        <div
+          class="ps-badge-pill"
+          data-rarity={b.rarity}
+          style={`display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px;gap:4px;border-radius:8px;${b.earned ? '' : 'opacity:0.4;filter:grayscale(1);'}`}
+          title={b.desc}
+        >
+          <div style="font-size:24px;margin-bottom:4px;">{b.earned ? '🏆' : '🔒'}</div>
+          <div style="font-weight:700;font-size:13px;">{b.name}</div>
+          <div style="font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:0.05em;">{b.rarity}</div>
+        </div>
+      ))}
+    </div>
+
+    <section style="margin:32px 0;padding:16px;background:white;border:1px solid #e5e7eb;border-radius:12px;">
+      <h3 style="margin:0 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">Tu semana en PyaServ</h3>
+      <p style="margin:0 0 8px 0;color:#1f2937;">📊 Vistas: <strong>42</strong> · 📱 Clicks WA: <strong>12</strong> · 📨 Inquiries: <strong>8</strong> · ⭐ Reseñas: <strong>2</strong></p>
+      <p style="margin:0;color:#6b7280;font-size:13px;">✨ Estás en el top 10% de plomeros en Villa Morra por velocidad de respuesta esta semana.</p>
+      <button type="button" style="margin-top:12px;background:#10b981;color:white;padding:8px 14px;border-radius:6px;border:none;font-weight:600;cursor:pointer;font-size:13px;" onclick="alert('En modo real, este botón genera una imagen 1080×1920 lista para WhatsApp Status.')">Compartir mi semana 📤</button>
+    </section>
+
+    <section style="text-align:center;">
+      <a href="/docs/" style="color:#6b7280;font-size:14px;">← Volver a la lista de features</a>
+    </section>
+  </div>
+</DemoLayout>

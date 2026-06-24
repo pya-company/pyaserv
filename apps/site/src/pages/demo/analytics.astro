@@ -1,0 +1,98 @@
+---
+import DemoLayout from '~/layouts/DemoLayout.astro'
+
+const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+const views = [12, 8, 18, 15, 22, 9, 6]
+const maxV = Math.max(...views)
+---
+<DemoLayout title="Analítica del perfil" feature="analytics">
+  <div style="max-width:720px;margin:0 auto;padding:0 16px;">
+    <h1 style="margin:0 0 8px 0;font-size:24px;">
+      <span class="ps-demo-tag">Demo</span> Analítica · últimos 30 días
+    </h1>
+    <p style="color:#6b7280;margin:0 0 24px 0;">Métricas de tu perfil. <strong>Comparación vs el promedio</strong> de plomeros en Villa Morra.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
+      <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">Vistas del perfil</div>
+        <div style="font-size:28px;font-weight:700;color:#111827;margin:4px 0;">142</div>
+        <div style="font-size:12px;color:#10b981;">↑ 18% vs mes anterior</div>
+      </div>
+      <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">Clicks a WhatsApp</div>
+        <div style="font-size:28px;font-weight:700;color:#111827;margin:4px 0;">38</div>
+        <div style="font-size:12px;color:#10b981;">↑ 26% vs mes anterior</div>
+      </div>
+      <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">Conversión vista→click</div>
+        <div style="font-size:28px;font-weight:700;color:#111827;margin:4px 0;">26.8%</div>
+        <div style="font-size:12px;color:#6b7280;">Promedio plomeros: 18%</div>
+      </div>
+      <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">Tiempo de respuesta</div>
+        <div style="font-size:28px;font-weight:700;color:#10b981;margin:4px 0;">&lt;10 min</div>
+        <div style="font-size:12px;color:#6b7280;">Top 10% del rubro</div>
+      </div>
+    </div>
+
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:20px;margin-bottom:24px;">
+      <h3 style="margin:0 0 12px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">Vistas por día (última semana)</h3>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:120px;padding:0 4px;">
+        {views.map((v, i) => (
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style={`width:100%;background:linear-gradient(180deg,#818cf8,#4f46e5);border-radius:6px 6px 0 0;height:${(v/maxV)*100}%;min-height:6px;position:relative;`}>
+              <span style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:#4f46e5;">{v}</span>
+            </div>
+            <div style="font-size:11px;color:#6b7280;">{days[i]}</div>
+          </div>
+        ))}
+      </div>
+      <p style="margin:12px 0 0 0;font-size:13px;color:#6b7280;">📌 Tu mejor día fue el <strong>viernes</strong> — 22 personas vieron tu perfil.</p>
+    </div>
+
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:20px;margin-bottom:24px;">
+      <h3 style="margin:0 0 12px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">¿De dónde vienen los visitantes?</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>Búsqueda Google</span><strong>42%</strong></div>
+          <div style="background:#e5e7eb;border-radius:4px;height:8px;overflow:hidden;"><div style="background:#4f46e5;width:42%;height:100%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>Compartido por WhatsApp</span><strong>28%</strong></div>
+          <div style="background:#e5e7eb;border-radius:4px;height:8px;overflow:hidden;"><div style="background:#25d366;width:28%;height:100%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>Listado PyaServ (barrio)</span><strong>20%</strong></div>
+          <div style="background:#e5e7eb;border-radius:4px;height:8px;overflow:hidden;"><div style="background:#f59e0b;width:20%;height:100%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span>Acceso directo (URL)</span><strong>10%</strong></div>
+          <div style="background:#e5e7eb;border-radius:4px;height:8px;overflow:hidden;"><div style="background:#6b7280;width:10%;height:100%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:20px;margin-bottom:24px;">
+      <h3 style="margin:0 0 12px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">¿Cuándo te ven? (heatmap por hora)</h3>
+      <div style="display:grid;grid-template-columns:30px repeat(12,1fr);gap:2px;font-size:9px;color:#6b7280;text-align:center;">
+        <div></div>
+        {Array.from({length:12},(_,i)=>(
+          <div>{i*2}</div>
+        ))}
+        {['L','M','M','J','V','S','D'].map((d,row)=>[
+          <div style="display:flex;align-items:center;justify-content:center;">{d}</div>,
+          ...Array.from({length:12},(_,i)=>{
+            const intensity = Math.max(0, Math.min(1, (Math.sin((i+row)*0.7)+1)/2 + (i>=4 && i<=8 ? 0.4 : -0.1)))
+            const bg = `rgba(79, 70, 229, ${intensity.toFixed(2)})`
+            return <div style={`background:${bg};border-radius:2px;aspect-ratio:1;`}></div>
+          })
+        ])}
+      </div>
+      <p style="margin:12px 0 0 0;font-size:13px;color:#6b7280;">📌 Más vistas entre 10:00 y 14:00. Asegurate de estar disponible para responder rápido.</p>
+    </div>
+
+    <section style="text-align:center;">
+      <a href="/docs/" style="color:#6b7280;font-size:14px;">← Volver a la lista de features</a>
+    </section>
+  </div>
+</DemoLayout>

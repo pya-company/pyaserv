@@ -1,0 +1,131 @@
+---
+import DemoLayout from '~/layouts/DemoLayout.astro'
+---
+<DemoLayout title="Cotizador rápido" feature="quote">
+  <div style="max-width:520px;margin:0 auto;padding:0 16px;">
+    <h1 style="margin:0 0 8px 0;font-size:24px;">
+      <span class="ps-demo-tag">Demo</span> Nueva cotización
+    </h1>
+    <p style="color:#6b7280;margin:0 0 24px 0;">Probá generar una cotización con plantilla. En modo real, esto crea un PDF y abre WhatsApp.</p>
+
+    <label style="display:block;margin-bottom:16px;">
+      <span style="display:block;font-weight:600;margin-bottom:4px;">Cliente (opcional)</span>
+      <input type="text" placeholder="Nombre o teléfono" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;" />
+    </label>
+
+    <label style="display:block;margin-bottom:16px;">
+      <span style="display:block;font-weight:600;margin-bottom:4px;">Plantilla</span>
+      <select id="template" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;">
+        <option value="custom">— Personalizado —</option>
+        <option value="calentador">Plomero: Cambio de calentador</option>
+        <option value="destape">Plomero: Destape de cañería</option>
+        <option value="griferia">Plomero: Instalación de grifería</option>
+      </select>
+    </label>
+
+    <h3 style="margin:0 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:0.05em;">Items</h3>
+    <div id="items-container" style="margin-bottom:12px;">
+      <div class="quote-item" style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:2fr 60px 100px 32px;gap:8px;align-items:center;">
+        <input type="text" placeholder="Descripción" value="Calentador eléctrico 50L" data-field="name" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;" />
+        <input type="number" value="1" min="1" data-field="qty" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:center;" />
+        <input type="number" value="250000" data-field="price" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:right;" />
+        <button type="button" data-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;width:32px;height:32px;cursor:pointer;font-weight:700;">×</button>
+      </div>
+      <div class="quote-item" style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:2fr 60px 100px 32px;gap:8px;align-items:center;">
+        <input type="text" placeholder="Descripción" value="Mano de obra (instalación)" data-field="name" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;" />
+        <input type="number" value="1" min="1" data-field="qty" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:center;" />
+        <input type="number" value="150000" data-field="price" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:right;" />
+        <button type="button" data-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;width:32px;height:32px;cursor:pointer;font-weight:700;">×</button>
+      </div>
+    </div>
+
+    <button type="button" id="add-item" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:8px 16px;font-weight:600;cursor:pointer;margin-bottom:16px;">+ Agregar item</button>
+
+    <div style="background:#f9fafb;border-radius:8px;padding:16px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span>Subtotal</span>
+        <span id="subtotal" style="font-weight:600;">400.000 Gs</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span>
+          IVA 10% <label style="margin-left:6px;font-weight:normal;"><input type="checkbox" id="iva-toggle" checked /> Incluir</label>
+        </span>
+        <span id="iva-amount" style="font-weight:600;">40.000 Gs</span>
+      </div>
+      <hr style="margin:8px 0;border:none;border-top:1px solid #e5e7eb;" />
+      <div style="display:flex;justify-content:space-between;font-size:18px;">
+        <strong>Total</strong>
+        <strong id="total" style="color:#4f46e5;">440.000 Gs</strong>
+      </div>
+    </div>
+
+    <button type="button" id="send-wa" style="background:#25d366;color:white;width:100%;padding:14px;border:none;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      📱 Enviar cotización por WhatsApp
+    </button>
+
+    <button type="button" id="save-template" style="background:transparent;color:#6b7280;border:1px solid #e5e7eb;width:100%;padding:10px;border-radius:6px;margin-top:8px;cursor:pointer;font-size:13px;">
+      Guardar como plantilla
+    </button>
+
+    <section style="margin-top:32px;text-align:center;">
+      <a href="/docs/" style="color:#6b7280;font-size:14px;">← Volver a la lista de features</a>
+    </section>
+  </div>
+
+  <script>
+    const fmt = (n) => new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(n) + ' Gs'
+
+    const recalc = () => {
+      const items = document.querySelectorAll('.quote-item')
+      let subtotal = 0
+      items.forEach((it) => {
+        const qty = Number(it.querySelector('[data-field="qty"]')?.value || 0)
+        const price = Number(it.querySelector('[data-field="price"]')?.value || 0)
+        subtotal += qty * price
+      })
+      const ivaOn = document.getElementById('iva-toggle')?.checked
+      const iva = ivaOn ? Math.round(subtotal * 0.1) : 0
+      document.getElementById('subtotal').textContent = fmt(subtotal)
+      document.getElementById('iva-amount').textContent = ivaOn ? fmt(iva) : '—'
+      document.getElementById('total').textContent = fmt(subtotal + iva)
+    }
+
+    document.addEventListener('input', recalc)
+    document.addEventListener('change', recalc)
+
+    document.getElementById('add-item')?.addEventListener('click', () => {
+      const container = document.getElementById('items-container')
+      const div = document.createElement('div')
+      div.className = 'quote-item'
+      div.style.cssText = 'background:white;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:2fr 60px 100px 32px;gap:8px;align-items:center;'
+      div.innerHTML = '<input type="text" placeholder="Descripción" data-field="name" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;" />' +
+        '<input type="number" value="1" min="1" data-field="qty" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:center;" />' +
+        '<input type="number" value="0" data-field="price" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:right;" />' +
+        '<button type="button" data-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;width:32px;height:32px;cursor:pointer;font-weight:700;">×</button>'
+      container.appendChild(div)
+    })
+
+    document.addEventListener('click', (e) => {
+      const t = e.target instanceof Element ? e.target : null
+      if (!t) return
+      if (t.closest('[data-remove]')) {
+        t.closest('.quote-item')?.remove()
+        recalc()
+      }
+      if (t.id === 'send-wa') {
+        alert('En modo real, este botón genera un PDF de la cotización y abre WhatsApp con un mensaje pre-llenado: "Cotización de PyaServ — Total: 440.000 Gs. Ver PDF: <link>". Acá es solo demostración.')
+      }
+      if (t.id === 'save-template') {
+        alert('En modo real, esto guarda la cotización como plantilla reutilizable para futuras consultas.')
+      }
+    })
+
+    document.getElementById('template')?.addEventListener('change', (e) => {
+      const v = e.target.value
+      if (v === 'destape') {
+        document.getElementById('items-container').innerHTML = '<div class="quote-item" style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:2fr 60px 100px 32px;gap:8px;align-items:center;"><input type="text" value="Destape de cañería principal" data-field="name" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;" /><input type="number" value="1" data-field="qty" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:center;" /><input type="number" value="80000" data-field="price" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:right;" /><button type="button" data-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;width:32px;height:32px;cursor:pointer;font-weight:700;">×</button></div>'
+        recalc()
+      }
+    })
+  </script>
+</DemoLayout>

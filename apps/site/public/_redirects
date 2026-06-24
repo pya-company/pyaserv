@@ -4,3 +4,8 @@
 # and the magic-link auto-verify path in Base.astro picks it up.
 /login    /?login=1   302
 /login/   /?login=1   302
+
+# Pretty URL for public profile: /p/<slug> internally rewrites to /p/?slug=<slug>.
+# CF Pages status 200 = internal rewrite — the URL stays visible to the user.
+/p/:slug    /p/?slug=:slug   200
+/p/:slug/   /p/?slug=:slug   200

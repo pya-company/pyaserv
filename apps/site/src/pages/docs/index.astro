@@ -1,0 +1,145 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/demo-and-docs.css'
+
+interface Feature {
+  readonly code: string
+  readonly title: string
+  readonly desc: string
+  readonly status: 'live' | 'demo' | 'soon'
+  readonly demo?: string
+  readonly real?: string
+}
+
+const features: ReadonlyArray<Feature> = [
+  {
+    code: 'A',
+    title: 'Tu perfil público',
+    desc: 'Página propia con URL pyaserv.com/p/<tu-slug>. Foto, portada, bio, servicios con precio, galería, reseñas, badges, horario, botón directo a WhatsApp.',
+    status: 'live',
+    demo: '/demo/profile',
+    real: '/specialists/',
+  },
+  {
+    code: 'K',
+    title: 'Onboarding Tour',
+    desc: 'Te lleva paso a paso por tu primer perfil. 7 pasos guiados con anclajes visuales. Saltá cuando quieras, re-lanzable cuando quieras.',
+    status: 'demo',
+    demo: '/demo/tour',
+  },
+  {
+    code: 'G',
+    title: 'Insignias y niveles',
+    desc: '18 insignias en 4 categorías (tier, hito, superlativo, colección). Aprendiz → Patrón. Compartibles en WhatsApp Status.',
+    status: 'demo',
+    demo: '/demo/badges',
+  },
+  {
+    code: 'J',
+    title: 'XP, rachas y misiones',
+    desc: 'Sistema de XP por acción. Racha diaria con freezes contra el "punitive feeling". Misiones diarias y semanales con recompensas.',
+    status: 'demo',
+    demo: '/demo/badges',
+  },
+  {
+    code: 'E',
+    title: 'Cotizador rápido',
+    desc: 'Plantillas por oficio. Llenás items, agregás IVA si tenés RUC, generás PDF, lo enviás por WhatsApp con un click.',
+    status: 'demo',
+    demo: '/demo/quote',
+  },
+  {
+    code: 'B',
+    title: 'Analítica del perfil',
+    desc: 'Cuántos vieron tu perfil, cuántos hicieron click a WhatsApp, de dónde vienen, comparación con el promedio de tu rubro en tu barrio.',
+    status: 'demo',
+    demo: '/demo/analytics',
+  },
+  {
+    code: 'C',
+    title: 'Tarjetas para WhatsApp Status',
+    desc: 'Recap semanal automático en formato 1080×1920 listo para compartir. Cada insignia desbloqueada también genera una tarjeta.',
+    status: 'soon',
+  },
+  {
+    code: 'F',
+    title: 'Filtros de leads',
+    desc: 'Mostrar sólo leads con presupuesto >X, sólo mi barrio + N km, esconder cuentas creadas hace <7 días. Anti-spam.',
+    status: 'soon',
+  },
+  {
+    code: 'I',
+    title: 'Lite-CRM "Mis clientes"',
+    desc: 'WhatsApp olvida tus contactos. PyaServ recuerda quién fue cliente, qué hizo, cuándo. Recordatorio "6 meses sin verlo".',
+    status: 'soon',
+  },
+  {
+    code: 'H',
+    title: 'Idioma — guaraní',
+    desc: 'Sumá una versión en guaraní/jopará a tu perfil sin perder el SEO en español. Hreflang automático.',
+    status: 'live',
+    real: '/specialists/',
+  },
+  {
+    code: 'L',
+    title: 'Modo Demo (esta función)',
+    desc: 'Probá cualquier feature sin tocar tu perfil real. Banner naranja non-dismissible, fondo amarillo, marca de agua DEMO, datos falsos con prefijo "Demo:".',
+    status: 'live',
+  },
+  {
+    code: 'M',
+    title: 'Documentación (esta página)',
+    desc: 'Lista de features con demos clickeables. Próximamente: animaciones tipo VS Code marketplace, notas de release con suscripción mensual.',
+    status: 'live',
+  },
+  {
+    code: 'D',
+    title: 'SIFEN — factura electrónica',
+    desc: 'Generación de factura electrónica integrada con DGII. En espera de consultoría tributaria con contador parguayo.',
+    status: 'soon',
+  },
+]
+---
+<Base title="Documentación" active="home" description="Lista de features de PyaServ. Probalas en modo demo antes de comprometerte.">
+  <section class="ps-docs-hero">
+    <h1>Documentación</h1>
+    <p>Estas son todas las features que estamos construyendo. Probá cada una en modo demo sin riesgo a tus datos reales.</p>
+  </section>
+
+  <div class="ps-docs-grid">
+    {features.map((f) => (
+      <article class="ps-feature-card">
+        <header class="ps-feature-card__header">
+          <h2 class="ps-feature-card__title">{f.code} · {f.title}</h2>
+          <span class="ps-feature-card__status" data-status={f.status}>
+            {f.status === 'live' ? 'En vivo' : f.status === 'demo' ? 'Demo' : 'Próximo'}
+          </span>
+        </header>
+        <p class="ps-feature-card__desc">{f.desc}</p>
+        <div class="ps-feature-card__actions">
+          {f.demo && (
+            <a href={f.demo} class="ps-feature-card__btn ps-feature-card__btn--primary">
+              Probar demo →
+            </a>
+          )}
+          {f.real && (
+            <a href={f.real} class="ps-feature-card__btn ps-feature-card__btn--ghost">
+              Ver real →
+            </a>
+          )}
+          {!f.demo && !f.real && (
+            <span class="ps-feature-card__btn ps-feature-card__btn--disabled">
+              Próximamente
+            </span>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <section class="ps-docs-hero" style="margin-top: 48px;">
+    <p style="font-size: 13px; color: #9ca3af;">
+      PyaServ — Spec v1. Esta página se va actualizando con cada release.
+    </p>
+  </section>
+</Base>

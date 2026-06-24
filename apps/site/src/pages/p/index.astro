@@ -1,0 +1,211 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/demo-and-docs.css'
+---
+<Base title="Perfil profesional" active="specialists" description="Perfil público de profesional en PyaServ">
+  <div id="profile-root">
+    <div class="ps-profile-wrap">
+      <div class="ps-profile-cover" id="profile-cover"></div>
+      <div class="ps-profile-header">
+        <div class="ps-profile-avatar" id="profile-avatar">⬤</div>
+        <h1 class="ps-profile-name">
+          <span id="profile-name">Cargando…</span>
+          <span class="ps-profile-tier" data-tier="aprendiz" id="profile-tier" hidden></span>
+        </h1>
+        <p class="ps-profile-meta" id="profile-meta"></p>
+        <div class="ps-profile-stats" id="profile-stats"></div>
+      </div>
+      <div class="ps-profile-cta" id="profile-cta" hidden>
+        <a href="#" id="profile-wa-link">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2a9.86 9.86 0 0 0-8.49 14.78L2 22l5.36-1.5a9.83 9.83 0 0 0 4.68 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01Z"/>
+          </svg>
+          Contactar por WhatsApp
+        </a>
+      </div>
+
+      <section class="ps-profile-section" id="bio-section" hidden>
+        <h3>Sobre mí</h3>
+        <p id="profile-bio"></p>
+      </section>
+
+      <section class="ps-profile-section" id="services-section" hidden>
+        <h3>Servicios</h3>
+        <ul class="ps-profile-services" id="services-list"></ul>
+      </section>
+
+      <section class="ps-profile-section" id="areas-section" hidden>
+        <h3>Zonas de trabajo</h3>
+        <div class="ps-profile-areas" id="areas-list"></div>
+      </section>
+
+      <section class="ps-profile-section" id="portfolio-section" hidden>
+        <h3>Trabajos</h3>
+        <div class="ps-profile-portfolio" id="portfolio-grid"></div>
+      </section>
+
+      <section class="ps-profile-section" id="badges-section" hidden>
+        <h3>Insignias</h3>
+        <div class="ps-profile-badges" id="badges-list"></div>
+      </section>
+    </div>
+
+    <div id="profile-error" hidden style="text-align:center;padding:80px 16px;color:#6b7280;">
+      <h2 style="font-size: 20px; margin: 0 0 8px 0;">Perfil no encontrado</h2>
+      <p style="margin: 0;">Este profesional no existe o aún no completó su registro.</p>
+      <p style="margin-top: 16px;"><a href="/specialists/" style="color:#4f46e5;">Ver todos los profesionales →</a></p>
+    </div>
+
+    <div id="profile-no-slug" hidden style="text-align:center;padding:80px 16px;color:#6b7280;">
+      <h2 style="font-size: 20px; margin: 0 0 8px 0;">Falta el identificador del profesional</h2>
+      <p style="margin: 0;">Esta URL espera <code>?slug=&lt;identificador&gt;</code>.</p>
+      <p style="margin-top: 16px;"><a href="/specialists/" style="color:#4f46e5;">Ver todos los profesionales →</a></p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search)
+    const slug = params.get('slug') || ''
+    const API = 'https://api.pyaserv.com'
+
+    if (!slug) {
+      const noSlug = document.getElementById('profile-no-slug')
+      const wrap = document.querySelector('.ps-profile-wrap')
+      if (noSlug) noSlug.hidden = false
+      if (wrap) wrap.hidden = true
+    } else {
+      ;(async () => {
+        try {
+          const res = await fetch(`${API}/v1/p/${slug}`)
+          if (res.status === 404) {
+            const err = document.getElementById('profile-error')
+            if (err) err.hidden = false
+            const wrap = document.querySelector('.ps-profile-wrap')
+            if (wrap) wrap.hidden = true
+            return
+          }
+          if (!res.ok) throw new Error('HTTP ' + res.status)
+          const body = await res.json()
+          const p = body.data
+          const nameEl = document.getElementById('profile-name')
+          if (nameEl) nameEl.textContent = p.displayName
+          const tierEl = document.getElementById('profile-tier')
+          if (tierEl) {
+            tierEl.dataset.tier = p.tier
+            tierEl.textContent = p.tier.replace('_', ' ')
+            tierEl.hidden = false
+          }
+          const metaEl = document.getElementById('profile-meta')
+          if (metaEl && p.headline) {
+            metaEl.textContent = `${p.headline} · ${p.barrio || ''}`.replace(/ · $/, '')
+          }
+          const statsEl = document.getElementById('profile-stats')
+          if (statsEl) {
+            const stats = []
+            if (p.ratingCount > 0) {
+              stats.push(`<span>★ ${p.ratingAvg.toFixed(1)} (${p.ratingCount})</span>`)
+            }
+            if (p.verified) stats.push('<span>✓ WhatsApp verificado</span>')
+            if (p.cedulaVerified) stats.push('<span>✓ Cédula verificada</span>')
+            statsEl.innerHTML = stats.join('')
+          }
+          if (p.photo) {
+            const avEl = document.getElementById('profile-avatar')
+            if (avEl) {
+              avEl.style.backgroundImage = `url(${p.photo})`
+              avEl.textContent = ''
+            }
+          }
+          if (p.coverUrl) {
+            const cv = document.getElementById('profile-cover')
+            if (cv) cv.style.backgroundImage = `url(${p.coverUrl})`
+          }
+          if (p.whatsapp) {
+            const cta = document.getElementById('profile-cta')
+            const link = document.getElementById('profile-wa-link')
+            if (cta && link) {
+              const num = p.whatsapp.replace(/\D/g, '')
+              const msg = encodeURIComponent(`Hola ${p.displayName}, te contacto desde PyaServ.`)
+              link.setAttribute('href', `https://wa.me/${num}?text=${msg}`)
+              cta.hidden = false
+            }
+          }
+          if (p.bio && p.bio.trim()) {
+            const sec = document.getElementById('bio-section')
+            const bio = document.getElementById('profile-bio')
+            if (sec && bio) {
+              bio.textContent = p.bio
+              sec.hidden = false
+            }
+          }
+          if (p.services && p.services.length > 0) {
+            const sec = document.getElementById('services-section')
+            const list = document.getElementById('services-list')
+            if (sec && list) {
+              list.innerHTML = p.services.map((s) => `
+                <li>
+                  <span class="name">${escapeHtml(s.name || '')}</span>
+                  <span class="price">${formatPriceRange(s)}</span>
+                </li>
+              `).join('')
+              sec.hidden = false
+            }
+          }
+          if (p.areas && p.areas.length > 0) {
+            const sec = document.getElementById('areas-section')
+            const list = document.getElementById('areas-list')
+            if (sec && list) {
+              list.innerHTML = p.areas.map((a) => `<span>${escapeHtml(a.name)}</span>`).join('')
+              sec.hidden = false
+            }
+          }
+          if (p.portfolio && p.portfolio.length > 0) {
+            const sec = document.getElementById('portfolio-section')
+            const grid = document.getElementById('portfolio-grid')
+            if (sec && grid) {
+              grid.innerHTML = p.portfolio.slice(0, 9).map((ph) =>
+                `<div style="background-image:url(${ph.url})"></div>`
+              ).join('')
+              sec.hidden = false
+            }
+          }
+          if (p.badges && p.badges.length > 0) {
+            const sec = document.getElementById('badges-section')
+            const list = document.getElementById('badges-list')
+            if (sec && list) {
+              list.innerHTML = p.badges.map((b) => `
+                <span class="ps-badge-pill" data-rarity="${b.rarity}" title="${escapeHtml(b.description)}">
+                  ${escapeHtml(b.name)}
+                </span>
+              `).join('')
+              sec.hidden = false
+            }
+          }
+          document.title = `${p.displayName} · ${p.headline || 'PyaServ'}`
+          try {
+            const blob = new Blob([JSON.stringify({ event: 'profile_view', subject_id: slug })], { type: 'application/json' })
+            navigator.sendBeacon?.(`${API}/v1/analytics`, blob)
+          } catch {}
+        } catch (e) {
+          console.error('profile load failed', e)
+          const err = document.getElementById('profile-error')
+          if (err) err.hidden = false
+        }
+      })()
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[c])
+    }
+    function formatPriceRange(s) {
+      const fmt = (n) => new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(n) + ' Gs'
+      if (s.priceMin && s.priceMax && s.priceMin !== s.priceMax) {
+        return `${fmt(s.priceMin)} – ${fmt(s.priceMax)}`
+      }
+      if (s.priceMin) return `Desde ${fmt(s.priceMin)}`
+      return 'A coordinar'
+    }
+  </script>
+</Base>

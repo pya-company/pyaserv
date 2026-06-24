@@ -8,6 +8,7 @@ import { inquiriesRoutes } from './routes/inquiries.ts'
 import { listingsRoutes } from './routes/listings.ts'
 import { mediaRoutes } from './routes/media.ts'
 import { meRoutes } from './routes/me.ts'
+import { publicProfileRoutes } from './routes/public-profile.ts'
 import { requestsRoutes } from './routes/requests.ts'
 import { reviewsRoutes } from './routes/reviews.ts'
 import { specialistsRoutes } from './routes/specialists.ts'
@@ -79,6 +80,7 @@ const app = new Hono<AppEnv>()
     return c.json({ data: { userId: session.userId, roles: session.roles } })
   })
   .route('/v1/specialists', specialistsRoutes)
+  .route('/v1', publicProfileRoutes)
   .route('/v1/listings', listingsRoutes)
   .route('/v1/requests', requestsRoutes)
   .route('/v1/inquiries', inquiriesRoutes)
