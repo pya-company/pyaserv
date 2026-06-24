@@ -1,18 +1,20 @@
 // PyaServ i18n — static dictionary, locale persisted in localStorage.
 // Pages reload on locale change (Astro is static; reactivity would be overkill).
 
-export type Locale = 'es' | 'en'
+export type Locale = 'es' | 'en' | 'gn'
 
-export const LOCALES: ReadonlyArray<Locale> = ['es', 'en']
+export const LOCALES: ReadonlyArray<Locale> = ['es', 'en', 'gn']
 
 const STORAGE_KEY = 'pyaserv.locale'
 
-const isLocale = (v: unknown): v is Locale => v === 'es' || v === 'en'
+const isLocale = (v: unknown): v is Locale => v === 'es' || v === 'en' || v === 'gn'
 
 const detectFromNavigator = (): Locale => {
   if (typeof navigator === 'undefined') return 'es'
   const lang = (navigator.language || '').toLowerCase()
-  return lang.startsWith('en') ? 'en' : 'es'
+  if (lang.startsWith('gn')) return 'gn'
+  if (lang.startsWith('en')) return 'en'
+  return 'es'
 }
 
 export const getLocale = (): Locale => {
@@ -80,8 +82,10 @@ export const ES: Dict = {
   'nav.lang_label': 'Idioma',
   'nav.lang_es': 'ES',
   'nav.lang_en': 'EN',
+  'nav.lang_gn': 'GN',
   'nav.lang_es_aria': 'Cambiar a español',
   'nav.lang_en_aria': 'Cambiar a inglés',
+  'nav.lang_gn_aria': 'Cambiar a guaraní',
   'nav.theme_label': 'Cambiar tema (claro/oscuro/auto)',
   'nav.skip': 'Saltar al contenido',
 
@@ -387,8 +391,10 @@ export const EN: Dict = {
   'nav.lang_label': 'Language',
   'nav.lang_es': 'ES',
   'nav.lang_en': 'EN',
+  'nav.lang_gn': 'GN',
   'nav.lang_es_aria': 'Switch to Spanish',
   'nav.lang_en_aria': 'Switch to English',
+  'nav.lang_gn_aria': 'Switch to Guarani',
   'nav.theme_label': 'Toggle theme (light/dark/auto)',
   'nav.skip': 'Skip to content',
 
@@ -661,18 +667,45 @@ export const EN: Dict = {
   'error.network': 'Network error. Please try again.',
 }
 
-const DICT: Readonly<Record<Locale, Dict>> = { es: ES, en: EN }
+// GN (Guaraní) — sparse dictionary per spec decision 2.2:
+// only emotional CTAs and high-impact phrases are translated; everything
+// else falls back to Spanish via tFor()'s `?? DICT.es[key]` chain. Pure
+// Spanish is kept for SEO-bearing strings (categories, page titles).
+//
+// Source: short well-known Guaraní/jopará phrases verified by native PY
+// reference. Expanded as the product grows and we hire a translator.
+export const GN: Dict = {
+  // nav
+  'nav.lang_label': 'Ñeʼeʼ',                                // "language"
+  'nav.lang_es': 'ES',
+  'nav.lang_en': 'EN',
+  'nav.lang_gn': 'GN',
 
-export const t = (key: string): string => DICT[getLocale()][key] ?? key
+  // home — hero (high-impact CTA strings)
+  'home.specialists.cta': 'Mbaʼe reheka? →',                // "What are you looking for?"
+  'home.clients.cta': 'Remeʼe mbaʼe? →',               // "Do you offer something?"
 
-export const tFor = (loc: Locale, key: string): string => DICT[loc][key] ?? key
+  // me — positive feedback after save
+  'me.profile.saved': 'I porã ✓ Mbohasapyre',               // "All good ✓ Saved"
+  'login.success': 'I porã ✓ Roho hína…',              // "All good ✓ Going…"
+}
+
+const DICT: Readonly<Record<Locale, Dict>> = { es: ES, en: EN, gn: GN }
+
+// Fallback chain: requested locale → Spanish (canonical source) → raw key.
+// This makes GN safe to use even with a sparse dictionary: any missing key
+// renders as the Spanish version rather than the raw `'nav.skip'` key.
+export const t = (key: string): string => tFor(getLocale(), key)
+
+export const tFor = (loc: Locale, key: string): string =>
+  DICT[loc][key] ?? DICT.es[key] ?? key
 
 export const interp = (template: string, vars: Readonly<Record<string, string | number>>): string =>
   template.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? `{${k}}`))
 
 // ---------- formatting helpers (locale-aware) ----------
 
-const CURRENCY_LOCALE: Readonly<Record<Locale, string>> = { es: 'es-PY', en: 'en-US' }
+const CURRENCY_LOCALE: Readonly<Record<Locale, string>> = { es: 'es-PY', en: 'en-US', gn: 'es-PY' }
 
 export const formatGs = (gs: number | null | undefined): string => {
   if (gs === undefined || gs === null) return t('common.price_tbd')
