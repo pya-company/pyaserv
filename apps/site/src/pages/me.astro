@@ -2,6 +2,7 @@
 import Base from '~/layouts/Base.astro'
 import BarriosDatalist from '~/components/BarriosDatalist.astro'
 import T from '~/components/T.astro'
+import '~/styles/demo-and-docs.css'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base title="Mi panel" titleKey="me.title" active="me">
@@ -14,9 +15,28 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
          down when JS later writes "Sesión: <userId>…" into this paragraph. -->
     <p id="me-info" class="ps-card__sub" style="min-height:1.25rem"></p>
 
+    <!-- Gamification HUD: XP / streak / tier. Hidden until specialist profile exists. -->
+    <div id="game-hud" class="ps-game-hud" hidden>
+      <div class="ps-game-hud__cell">
+        <div class="ps-game-hud__value" id="hud-xp">—</div>
+        <div class="ps-game-hud__label">XP</div>
+      </div>
+      <div class="ps-game-hud__cell" id="hud-streak-cell">
+        <div class="ps-game-hud__value" id="hud-streak">🔥 0 d</div>
+        <div class="ps-game-hud__label">Racha</div>
+      </div>
+      <div class="ps-game-hud__cell">
+        <div class="ps-game-hud__value" id="hud-tier">⚡ T0</div>
+        <div class="ps-game-hud__label" id="hud-tier-name">Aprendiz</div>
+      </div>
+    </div>
+
     <div class="ps-tabs" role="tablist" data-i18n-aria="me.tabs.aria" aria-label="Secciones">
       <button class="ps-tab" role="tab" id="tab-profile" aria-controls="panel-profile" data-tab="profile"><T k="me.tabs.profile" /></button>
       <button class="ps-tab" role="tab" id="tab-listings" aria-controls="panel-listings" data-tab="listings"><T k="me.tabs.listings" /></button>
+      <button class="ps-tab" role="tab" id="tab-quotes" aria-controls="panel-quotes" data-tab="quotes">📄 Cotizaciones</button>
+      <button class="ps-tab" role="tab" id="tab-clients" aria-controls="panel-clients" data-tab="clients">👥 Mis clientes</button>
+      <button class="ps-tab" role="tab" id="tab-game" aria-controls="panel-game" data-tab="game">🏆 Logros</button>
       <button class="ps-tab" role="tab" id="tab-requests" aria-controls="panel-requests" data-tab="requests"><T k="me.tabs.requests" /></button>
       <button class="ps-tab" role="tab" id="tab-inquiries" aria-controls="panel-inquiries" data-tab="inquiries"><T k="me.tabs.inquiries" /></button>
       <button class="ps-tab" role="tab" id="tab-stats" aria-controls="panel-stats" data-tab="stats"><T k="me.tabs.stats" /></button>
@@ -85,6 +105,57 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <p id="profile-msg" class="ps-msg" role="alert"></p>
       </form>
 
+      <details style="margin-top:24px;background:#f9fafb;border-radius:10px;padding:16px;">
+        <summary style="font-weight:700;cursor:pointer;">Perfil avanzado (portada · servicios · zonas · portfolio · horario · filtros · guaraní)</summary>
+        <div id="ext-msg" class="ps-msg" style="margin-top:8px;color:#10b981;"></div>
+
+        <label style="display:block;margin-top:16px;">
+          <span style="display:block;font-weight:600;margin-bottom:4px;">Imagen de portada (URL)</span>
+          <input id="ext-cover-url" type="url" placeholder="https://…/cover.jpg" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+        </label>
+
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Servicios con precio</h3>
+        <div id="ext-services"></div>
+        <button type="button" id="ext-add-service" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;">+ Agregar servicio</button>
+
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Zonas (hasta 8)</h3>
+        <div id="ext-areas" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Portfolio (URLs de fotos)</h3>
+        <div id="ext-portfolio"></div>
+        <button type="button" id="ext-add-photo" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;">+ Agregar foto</button>
+
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Horario</h3>
+        <div id="ext-schedule" style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;align-items:center;font-size:13px;"></div>
+
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Filtros de leads</h3>
+        <label style="display:block;margin-bottom:8px;">
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">Presupuesto mínimo (Gs)</span>
+          <input id="ext-lf-min" type="number" min="0" placeholder="0 = sin filtro" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+        </label>
+        <label style="display:block;margin-bottom:8px;">
+          <input id="ext-lf-hide-new" type="checkbox" /> Esconder cuentas creadas hace &lt; 7 días (anti-spam)
+        </label>
+
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Guaraní (opcional)</h3>
+        <label style="display:block;margin-bottom:8px;">
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">Frase corta en guaraní</span>
+          <input id="ext-headline-gn" type="text" maxlength="120" placeholder="Mba'e oñembo'epáva…" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+        </label>
+        <label style="display:block;margin-bottom:8px;">
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">Bio en guaraní</span>
+          <textarea id="ext-bio-gn" rows="3" maxlength="2000" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;"></textarea>
+        </label>
+
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Verificación</h3>
+        <label style="display:block;margin-bottom:8px;">
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">RUC (opcional)</span>
+          <input id="ext-ruc" type="text" maxlength="20" placeholder="Ej: 80012345-1" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+        </label>
+
+        <button type="button" id="ext-save" class="ps-btn" style="margin-top:16px;width:100%;">Guardar perfil avanzado</button>
+      </details>
+
       <fieldset class="ps-banner ps-stack ps-notif-fieldset">
         <legend><strong data-i18n="me.notifs.h">Notificaciones</strong></legend>
         <label class="ps-row ps-checkbox-row">
@@ -147,6 +218,33 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <!-- aria-busy reserves a min-height via CSS so the footer doesn't jump
            when /v1/analytics/me resolves and the 5 stat cards inject. -->
       <div id="stats-grid" class="ps-stats-grid" aria-busy="true"></div>
+      <div id="stats-extended" style="margin-top:24px;"></div>
+    </div>
+
+    <div class="ps-tabpanel" id="panel-game" role="tabpanel" aria-labelledby="tab-game">
+      <h2>Logros e insignias</h2>
+      <div id="completeness-extended" style="margin-bottom:16px;"></div>
+      <h3 style="margin-top:24px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Misiones de hoy</h3>
+      <div id="quests-daily" class="ps-quests" aria-busy="true"><p class="ps-card__sub">Cargando misiones…</p></div>
+      <h3 style="margin-top:16px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Misión semanal</h3>
+      <div id="quests-weekly" class="ps-quests" aria-busy="true"><p class="ps-card__sub">Cargando misión semanal…</p></div>
+      <h3 style="margin-top:24px;font-size:16px;">Insignias</h3>
+      <div id="badges-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;" aria-busy="true"></div>
+    </div>
+
+    <div class="ps-tabpanel" id="panel-quotes" role="tabpanel" aria-labelledby="tab-quotes">
+      <div class="ps-row" style="justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h2 style="margin:0;">Cotizaciones</h2>
+        <a class="ps-btn ps-btn--sm" href="/me/quotes/new/">+ Nueva cotización</a>
+      </div>
+      <p class="ps-card__sub">Generá cotizaciones por WhatsApp con un click. Plantillas por oficio, IVA opcional, PDF descargable.</p>
+      <div id="quotes-list" aria-busy="true" style="margin-top:16px;"><p class="ps-card__sub">Cargando…</p></div>
+    </div>
+
+    <div class="ps-tabpanel" id="panel-clients" role="tabpanel" aria-labelledby="tab-clients">
+      <h2>Mis clientes</h2>
+      <p class="ps-card__sub">Tus clientes recurrentes. Se agregan automáticamente cuando se completa un trabajo.</p>
+      <div id="clients-list" aria-busy="true" style="margin-top:16px;"><p class="ps-card__sub">Cargando…</p></div>
     </div>
   </section>
 
@@ -197,6 +295,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const panels = {
         profile: document.getElementById('panel-profile'),
         listings: document.getElementById('panel-listings'),
+        quotes: document.getElementById('panel-quotes'),
+        clients: document.getElementById('panel-clients'),
+        game: document.getElementById('panel-game'),
         requests: document.getElementById('panel-requests'),
         inquiries: document.getElementById('panel-inquiries'),
         stats: document.getElementById('panel-stats'),
@@ -535,6 +636,376 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           ].join('')
         }
       } catch (err) { statsGrid.removeAttribute('aria-busy'); statsGrid.innerHTML = `<p class="ps-error">${escape(err.message || t('error.network'))}</p>` }
+
+      // ============ HUD + Game State + Badges + Quests + Quotes + Clients ============
+      void loadGamification()
+      void loadQuotes()
+      void loadClients()
+      void loadExtendedEditor()
+      void maybeLaunchT1()
+    }
+
+    // ---- Extended profile editor ----
+    const DAY_LABELS = { mon: 'Lun', tue: 'Mar', wed: 'Mié', thu: 'Jue', fri: 'Vie', sat: 'Sáb', sun: 'Dom' }
+    const DAY_ORDER = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    const loadExtendedEditor = async () => {
+      // areas dropdown
+      let areas = []
+      try { const r = await apiFetch('/v1/me/service-areas'); areas = r.data ?? [] } catch {}
+      const areasEl = document.getElementById('ext-areas')
+      if (areasEl) {
+        areasEl.innerHTML = areas.map((a) => `
+          <label style="display:flex;align-items:center;gap:4px;background:white;border:1px solid #e5e7eb;border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" data-area="${escape(a.slug)}" style="margin:0;" /> ${escape(a.name)}
+          </label>
+        `).join('')
+      }
+      // schedule grid
+      const schedEl = document.getElementById('ext-schedule')
+      if (schedEl) {
+        schedEl.innerHTML = DAY_ORDER.map((d) => `
+          <div>${DAY_LABELS[d]}</div>
+          <input type="time" data-day-from="${d}" />
+          <input type="time" data-day-to="${d}" />
+        `).join('')
+      }
+      // Load existing
+      try {
+        const r = await apiFetch('/v1/me/profile-extended')
+        const p = r.data
+        if (p) {
+          const $ = (id) => document.getElementById(id)
+          if ($('ext-cover-url') && p.coverUrl) $('ext-cover-url').value = p.coverUrl
+          if ($('ext-headline-gn') && p.headlineGn) $('ext-headline-gn').value = p.headlineGn
+          if ($('ext-bio-gn') && p.bioGn) $('ext-bio-gn').value = p.bioGn
+          if ($('ext-ruc') && p.rucNumber) $('ext-ruc').value = p.rucNumber
+          if ($('ext-lf-min') && p.leadFilters?.minBudget) $('ext-lf-min').value = String(p.leadFilters.minBudget)
+          if ($('ext-lf-hide-new')) $('ext-lf-hide-new').checked = Boolean(p.leadFilters?.hideNewAccounts)
+          // areas
+          const set = new Set((p.areas || []).map((a) => a.slug))
+          document.querySelectorAll('[data-area]').forEach((cb) => { cb.checked = set.has(cb.dataset.area) })
+          // services
+          rebuildServices(p.services || [])
+          // portfolio
+          rebuildPortfolio(p.portfolio || [])
+          // schedule
+          for (const d of DAY_ORDER) {
+            const slot = (p.schedule?.weekly?.[d] || [])[0]
+            const from = document.querySelector(`[data-day-from="${d}"]`)
+            const to = document.querySelector(`[data-day-to="${d}"]`)
+            if (slot && from && to) {
+              const [hf, ht] = String(slot).split('-')
+              from.value = hf || ''
+              to.value = ht || ''
+            }
+          }
+        }
+      } catch (e) { console.debug('ext load:', e.message) }
+
+      const $ = (id) => document.getElementById(id)
+      $('ext-add-service')?.addEventListener('click', () => addService())
+      $('ext-add-photo')?.addEventListener('click', () => addPhoto())
+      $('ext-save')?.addEventListener('click', () => void saveExt())
+    }
+
+    const rebuildServices = (list) => {
+      const c = document.getElementById('ext-services')
+      if (!c) return
+      c.innerHTML = ''
+      list.forEach((s) => addService(s))
+    }
+    const addService = (s = {}) => {
+      const c = document.getElementById('ext-services')
+      if (!c) return
+      const row = document.createElement('div')
+      row.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 32px;gap:6px;margin-bottom:6px;'
+      row.innerHTML = `
+        <input type="text" placeholder="Servicio" value="${escape(s.name || '')}" data-svc="name" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
+        <input type="number" placeholder="Desde Gs" value="${s.priceMin ?? ''}" data-svc="priceMin" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
+        <input type="number" placeholder="Hasta Gs" value="${s.priceMax ?? ''}" data-svc="priceMax" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
+        <button type="button" data-svc-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;cursor:pointer;">×</button>`
+      row.addEventListener('click', (e) => { if (e.target.closest('[data-svc-remove]')) row.remove() })
+      c.appendChild(row)
+    }
+    const rebuildPortfolio = (list) => {
+      const c = document.getElementById('ext-portfolio')
+      if (!c) return
+      c.innerHTML = ''
+      list.forEach((p) => addPhoto(p))
+    }
+    const addPhoto = (p = {}) => {
+      const c = document.getElementById('ext-portfolio')
+      if (!c) return
+      const row = document.createElement('div')
+      row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 32px;gap:6px;margin-bottom:6px;'
+      row.innerHTML = `
+        <input type="url" placeholder="URL de la foto" value="${escape(p.url || '')}" data-ph="url" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
+        <input type="text" placeholder="Descripción (opc)" value="${escape(p.caption || '')}" data-ph="caption" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
+        <button type="button" data-ph-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;cursor:pointer;">×</button>`
+      row.addEventListener('click', (e) => { if (e.target.closest('[data-ph-remove]')) row.remove() })
+      c.appendChild(row)
+    }
+
+    const saveExt = async () => {
+      const $ = (id) => document.getElementById(id)
+      const services = Array.from(document.querySelectorAll('#ext-services > div')).map((row) => ({
+        name: row.querySelector('[data-svc="name"]').value,
+        priceMin: Number(row.querySelector('[data-svc="priceMin"]').value || 0) || null,
+        priceMax: Number(row.querySelector('[data-svc="priceMax"]').value || 0) || null,
+        currency: 'PYG',
+      })).filter((s) => s.name)
+      const portfolio = Array.from(document.querySelectorAll('#ext-portfolio > div')).map((row, i) => ({
+        url: row.querySelector('[data-ph="url"]').value,
+        caption: row.querySelector('[data-ph="caption"]').value,
+        order: i,
+      })).filter((p) => p.url)
+      const areasArr = Array.from(document.querySelectorAll('[data-area]:checked')).slice(0, 8).map((cb, i) => ({ slug: cb.dataset.area, isPrimary: i === 0 }))
+      const weekly = {}
+      for (const d of DAY_ORDER) {
+        const from = document.querySelector(`[data-day-from="${d}"]`)?.value
+        const to = document.querySelector(`[data-day-to="${d}"]`)?.value
+        if (from && to) weekly[d] = [`${from}-${to}`]
+      }
+      const body = {
+        coverUrl: $('ext-cover-url')?.value || null,
+        services,
+        portfolio,
+        areas: areasArr,
+        schedule: { weekly },
+        leadFilters: {
+          minBudget: Number($('ext-lf-min')?.value || 0) || 0,
+          hideNewAccounts: $('ext-lf-hide-new')?.checked || false,
+        },
+        headlineGn: $('ext-headline-gn')?.value || null,
+        bioGn: $('ext-bio-gn')?.value || null,
+        rucNumber: $('ext-ruc')?.value || null,
+      }
+      try {
+        await apiFetch('/v1/me/profile-extended', { method: 'PATCH', body: JSON.stringify(body) })
+        document.getElementById('ext-msg').textContent = '✓ Perfil avanzado guardado'
+        // Refresh HUD / completeness
+        void loadGamification()
+      } catch (e) {
+        document.getElementById('ext-msg').textContent = 'Error: ' + (e.message || 'Network')
+        document.getElementById('ext-msg').style.color = '#991b1b'
+      }
+    }
+
+    // ---- Extended completeness (10 fields, endowed-progress 20%) ----
+    const completeness10Steps = (p) => {
+      const steps = [
+        { key: 'whatsapp_verified', label: 'WhatsApp verificado', done: Boolean(p?.verified) },
+        { key: 'oficio_chosen', label: 'Oficio elegido', done: true },
+        { key: 'photo', label: 'Foto de perfil', done: Boolean(p?.photo) },
+        { key: 'cover', label: 'Imagen de portada', done: Boolean(p?.coverUrl) },
+        { key: 'bio', label: 'Bio (≥ 80 caracteres)', done: (p?.bio ?? '').trim().length >= 80 },
+        { key: 'services', label: '2 servicios con precio', done: Array.isArray(p?.services) && p.services.length >= 2 },
+        { key: 'areas', label: 'Zona de trabajo', done: Array.isArray(p?.areas) && p.areas.length >= 1 },
+        { key: 'portfolio', label: '3 fotos de trabajos', done: Array.isArray(p?.portfolio) && p.portfolio.length >= 3 },
+        { key: 'schedule', label: 'Horario', done: p?.schedule && Object.keys(p.schedule).length > 0 },
+        { key: 'cedula', label: 'Cédula o RUC', done: Boolean(p?.cedulaVerified) || Boolean(p?.rucNumber) },
+      ]
+      const done = steps.filter((s) => s.done).length
+      return { steps, pct: Math.round((done / steps.length) * 100), done, total: steps.length }
+    }
+
+    const renderCompletenessExtended = (p) => {
+      const target = document.getElementById('completeness-extended')
+      if (!target) return
+      const c = completeness10Steps(p)
+      const remaining = c.steps.filter((s) => !s.done).slice(0, 3).map((s) => s.label).join(', ')
+      target.innerHTML = `
+        <div class="ps-completeness">
+          <div class="ps-completeness__top">
+            <span class="ps-completeness__title">Perfil ${c.pct}% completo</span>
+            <span class="ps-completeness__pct">${c.done}/${c.total}</span>
+          </div>
+          <div class="ps-completeness__bar">
+            <div class="ps-completeness__fill" style="width:${c.pct}%;"></div>
+          </div>
+          ${remaining ? `<div class="ps-completeness__next">Falta: ${escape(remaining)}</div>` : `<div class="ps-completeness__next">✓ Completo. Insignia "Perfil Maestro" desbloqueada.</div>`}
+        </div>`
+    }
+
+    const loadGamification = async () => {
+      try {
+        const state = await apiFetch('/v1/me/game-state')
+        const s = state.data ?? state
+        const hud = document.getElementById('game-hud')
+        if (hud) {
+          hud.hidden = false
+          document.getElementById('hud-xp').textContent = String(s.xp)
+          const streak = s.streak?.current ?? 0
+          const streakEl = document.getElementById('hud-streak')
+          if (streakEl) streakEl.textContent = `🔥 ${streak} d`
+          const cell = document.getElementById('hud-streak-cell')
+          if (cell) cell.dataset.streak = streak >= 100 ? 'gold' : streak >= 30 ? 'red' : streak >= 7 ? 'hot' : ''
+          const tierName = {aprendiz:'Aprendiz',oficial:'Oficial',maestro:'Maestro',maestro_mayor:'Maestro Mayor',patron:'Patrón'}[s.tier] || s.tier
+          document.getElementById('hud-tier').textContent = `⚡ ${tierName.split(' ')[0]}`
+          document.getElementById('hud-tier-name').textContent = tierName
+        }
+
+        // Extended completeness uses real profile data (we already have it via /v1/specialists/:id by user_id)
+        // For now, fall back to existing me-fetch shape (no portfolio etc); profile-extended will fill more.
+        try {
+          const ex = await apiFetch('/v1/me/profile-extended')
+          if (ex.data) renderCompletenessExtended(ex.data)
+        } catch {}
+      } catch (e) {
+        // gracefully fail; not all users are specialists yet
+        console.debug('game-state load:', e.message)
+      }
+
+      // Badges grid
+      try {
+        const b = await apiFetch('/v1/me/badges')
+        const grid = document.getElementById('badges-grid')
+        if (grid) {
+          grid.removeAttribute('aria-busy')
+          grid.innerHTML = (b.data ?? []).map((badge) => `
+            <div class="ps-badge-pill" data-rarity="${badge.rarity}" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px;gap:4px;border-radius:8px;${badge.earned ? '' : 'opacity:0.4;filter:grayscale(1);'}" title="${escape(badge.description?.es ?? '')}">
+              <div style="font-size:24px;">${badge.earned ? '🏆' : '🔒'}</div>
+              <div style="font-weight:700;font-size:13px;">${escape(badge.name?.es ?? badge.code)}</div>
+              <div style="font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:.05em;">${badge.rarity}</div>
+            </div>
+          `).join('')
+        }
+      } catch (e) { console.debug('badges load:', e.message) }
+
+      // Quests
+      try {
+        const q = await apiFetch('/v1/me/quests')
+        const daily = (q.data ?? []).filter((qq) => qq.type === 'daily')
+        const weekly = (q.data ?? []).filter((qq) => qq.type === 'weekly')
+        const renderQuestList = (target, list) => {
+          target.removeAttribute('aria-busy')
+          if (list.length === 0) { target.innerHTML = '<p class="ps-card__sub">Sin misiones activas.</p>'; return }
+          target.innerHTML = list.map((qq) => {
+            const done = qq.status === 'done'
+            const cur = qq.progress?.current ?? 0
+            const goal = qq.goal?.count ?? 1
+            return `<div class="ps-quest" data-done="${done ? '1' : ''}">
+              <div class="ps-quest__check">${done ? '✓' : ''}</div>
+              <div>${escape(qq.title)} <span style="color:#9ca3af;font-size:12px;">(${cur}/${goal})</span></div>
+              <div class="ps-quest__reward">+${qq.rewardXp} XP</div>
+            </div>`
+          }).join('')
+        }
+        const d = document.getElementById('quests-daily')
+        const w = document.getElementById('quests-weekly')
+        if (d) renderQuestList(d, daily)
+        if (w) renderQuestList(w, weekly)
+      } catch (e) { console.debug('quests load:', e.message) }
+    }
+
+    const loadQuotes = async () => {
+      const list = document.getElementById('quotes-list')
+      if (!list) return
+      try {
+        const r = await apiFetch('/v1/me/quotes')
+        list.removeAttribute('aria-busy')
+        const items = r.data ?? []
+        if (items.length === 0) {
+          list.innerHTML = `<p class="ps-card__sub" style="text-align:center;padding:32px 16px;background:#f9fafb;border-radius:8px;">No hay cotizaciones aún. <a href="/me/quotes/new/" style="color:#4f46e5;">Crear la primera →</a></p>`
+          return
+        }
+        list.innerHTML = items.map((q) => `
+          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-weight:600;">${escape(q.clientName ?? 'Sin cliente')}</div>
+                <div style="color:#6b7280;font-size:13px;">${q.items.length} ítems · ${formatRelativeTime(q.createdAt)}</div>
+              </div>
+              <div style="font-weight:700;color:#4f46e5;">${new Intl.NumberFormat('es-PY',{maximumFractionDigits:0}).format(q.total)} Gs</div>
+            </div>
+            ${q.sentAt ? `<div style="margin-top:6px;font-size:12px;color:#10b981;">✓ Enviado por WhatsApp</div>` : ''}
+          </div>
+        `).join('')
+      } catch (e) {
+        list.removeAttribute('aria-busy')
+        list.innerHTML = `<p class="ps-error">${escape(e.message || 'Error')}</p>`
+      }
+    }
+
+    const loadClients = async () => {
+      const list = document.getElementById('clients-list')
+      if (!list) return
+      try {
+        const r = await apiFetch('/v1/me/clients')
+        list.removeAttribute('aria-busy')
+        const items = r.data ?? []
+        if (items.length === 0) {
+          list.innerHTML = `<p class="ps-card__sub" style="text-align:center;padding:32px 16px;background:#f9fafb;border-radius:8px;">Sin clientes aún. Se agregan automáticamente cuando completés un trabajo en PyaServ.</p>`
+          return
+        }
+        list.innerHTML = items.map((cl) => `
+          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;" data-client-id="${escape(cl.id)}">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;">
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:600;">${escape(cl.displayName || 'Cliente')}</div>
+                <div style="color:#6b7280;font-size:13px;">${cl.jobCount} trabajo${cl.jobCount !== 1 ? 's' : ''} · ${cl.barrio || '—'}${cl.lastJobAt ? ` · último: ${formatRelativeTime(cl.lastJobAt)}` : ''}</div>
+                ${cl.notes ? `<div style="margin-top:6px;color:#1f2937;font-size:13px;background:#f9fafb;padding:6px 8px;border-radius:6px;">${escape(cl.notes)}</div>` : ''}
+              </div>
+              <button type="button" class="ps-btn ps-btn--sm ps-btn--ghost" data-client-notes>Notas</button>
+            </div>
+          </div>
+        `).join('')
+        list.addEventListener('click', async (ev) => {
+          const btn = ev.target instanceof Element ? ev.target.closest('[data-client-notes]') : null
+          if (!btn) return
+          const card = btn.closest('[data-client-id]')
+          const id = card?.dataset.clientId
+          if (!id) return
+          const cur = (items.find((x) => x.id === id)?.notes) || ''
+          const next = prompt('Notas sobre este cliente:', cur)
+          if (next === null) return
+          try {
+            await apiFetch(`/v1/me/clients/${id}`, { method: 'PATCH', body: JSON.stringify({ notes: next }) })
+            void loadClients()
+          } catch (e) { alert('Error: ' + (e.message || 'Network')) }
+        })
+      } catch (e) {
+        list.removeAttribute('aria-busy')
+        list.innerHTML = `<p class="ps-error">${escape(e.message || 'Error')}</p>`
+      }
+    }
+
+    // ---- Onboarding Tour T1 auto-launch ----
+    const maybeLaunchT1 = async () => {
+      try {
+        const r = await apiFetch('/v1/me/tours')
+        const completed = (r.data ?? []).find((tt) => tt.code === 'T1')
+        if (completed) return
+        // Check completeness — if already 100%, skip
+        const ex = await apiFetch('/v1/me/profile-extended').catch(() => ({ data: null }))
+        if (!ex.data) return // no specialist profile yet — don't launch T1 either; user must first hit /v1/specialists POST
+        const c = completeness10Steps(ex.data)
+        if (c.pct >= 100) return
+        const mod = await import('driver.js')
+        await import('driver.js/dist/driver.css')
+        const driver = mod.driver({
+          showProgress: true,
+          progressText: 'Paso {{current}} de {{total}}',
+          nextBtnText: 'Siguiente', prevBtnText: 'Atrás', doneBtnText: '¡Listo!',
+          onCloseClick: async () => {
+            try { await apiFetch('/v1/me/tours', { method: 'POST', body: JSON.stringify({ code: 'T1', status: 'skipped' }) }) } catch {}
+            driver.destroy()
+          },
+          onDestroyed: async () => {
+            try { await apiFetch('/v1/me/tours', { method: 'POST', body: JSON.stringify({ code: 'T1', status: 'completed' }) }) } catch {}
+          },
+          steps: [
+            { element: '#photo-preview', popover: { title: 'Empezamos por tu cara', description: 'Una buena foto duplica las consultas. Sacate una con luz natural.' } },
+            { element: 'input[name="headline"]', popover: { title: 'Tu frase de presentación', description: 'Una línea corta: oficio + zona + ventaja. Ej: "Plomero 24h en Villa Morra".' } },
+            { element: 'textarea[name="bio"]', popover: { title: 'Contales quién sos', description: '2-3 frases. Tu experiencia, herramientas, zonas que cubrís.' } },
+            { element: 'input[name="phone"]', popover: { title: 'Tu teléfono', description: 'Cómo te contactan. Usá el mismo que tu WhatsApp si es posible.' } },
+            { element: 'input[name="whatsapp"]', popover: { title: 'WhatsApp', description: 'El botón principal de tu perfil llevará acá. Asegurate de que esté actualizado.' } },
+            { element: 'input[name="barrio"]', popover: { title: 'Tu barrio principal', description: 'Donde tenés más trabajo. Después podés agregar más zonas en la edición avanzada.' } },
+            { element: '#completeness-extended, #completeness', popover: { title: '¡Listo!', description: 'Cada paso adicional sube tu visibilidad. ¡A 100% desbloqueás 7 días de Boost gratis y la insignia "Perfil Maestro"!' } },
+          ],
+        })
+        driver.drive()
+      } catch (e) { console.debug('T1 launch:', e.message) }
     }
 
     // astro:page-load fires on initial paint AND after every ClientRouter

@@ -1,0 +1,217 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/demo-and-docs.css'
+---
+<Base title="Nueva cotización" active="me" description="Crear una nueva cotización en PyaServ">
+  <section class="ps-section" style="max-width:560px;margin:0 auto;">
+    <div class="ps-row" style="justify-content:space-between;align-items:center;">
+      <a href="/me/?tab=quotes" style="color:#6b7280;font-size:14px;">← Cotizaciones</a>
+    </div>
+    <h1>Nueva cotización</h1>
+
+    <label style="display:block;margin-bottom:12px;">
+      <span style="display:block;font-weight:600;margin-bottom:4px;">Cliente (opcional)</span>
+      <input id="qb-client-name" type="text" placeholder="Nombre del cliente" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;" />
+    </label>
+    <label style="display:block;margin-bottom:12px;">
+      <span style="display:block;font-weight:600;margin-bottom:4px;">Teléfono (WhatsApp)</span>
+      <input id="qb-client-phone" type="tel" placeholder="+595 981 234567" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;" />
+    </label>
+
+    <label style="display:block;margin-bottom:16px;">
+      <span style="display:block;font-weight:600;margin-bottom:4px;">Plantilla</span>
+      <select id="qb-template" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;">
+        <option value="">— Empezar de cero —</option>
+      </select>
+    </label>
+
+    <h3 style="margin:0 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Ítems</h3>
+    <div id="qb-items"></div>
+    <button type="button" id="qb-add-item" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:8px 16px;font-weight:600;cursor:pointer;margin-bottom:16px;">+ Agregar ítem</button>
+
+    <div style="background:#f9fafb;border-radius:8px;padding:16px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span>Subtotal</span>
+        <span id="qb-subtotal">0 Gs</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <label style="font-weight:normal;"><input type="checkbox" id="qb-iva" checked /> IVA 10%</label>
+        <span id="qb-iva-amount">0 Gs</span>
+      </div>
+      <hr style="margin:8px 0;border:none;border-top:1px solid #e5e7eb;" />
+      <div style="display:flex;justify-content:space-between;font-size:18px;">
+        <strong>Total</strong>
+        <strong id="qb-total" style="color:#4f46e5;">0 Gs</strong>
+      </div>
+    </div>
+
+    <button type="button" id="qb-save-template" style="background:transparent;color:#6b7280;border:1px solid #e5e7eb;width:100%;padding:10px;border-radius:6px;margin-bottom:8px;cursor:pointer;font-size:13px;">
+      Guardar como plantilla
+    </button>
+    <button type="button" id="qb-save-and-pdf" style="background:#4f46e5;color:white;width:100%;padding:12px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:8px;">
+      Guardar y descargar PDF
+    </button>
+    <button type="button" id="qb-send-wa" style="background:#25d366;color:white;width:100%;padding:14px;border:none;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      📱 Enviar cotización por WhatsApp
+    </button>
+
+    <p id="qb-msg" style="margin-top:12px;text-align:center;color:#6b7280;font-size:14px;"></p>
+  </section>
+
+  <script>
+    import { apiFetch, getToken } from '~/lib/api.ts'
+
+    const init = async () => {
+      if (!location.pathname.endsWith('/me/quotes/new/')) return
+      const token = getToken()
+      if (!token) { location.href = '/login/?next=' + encodeURIComponent(location.pathname); return }
+
+      // Load templates dropdown
+      try {
+        const r = await apiFetch('/v1/me/quote-templates')
+        const sel = document.getElementById('qb-template')
+        if (sel) {
+          for (const t of r.data ?? []) {
+            const opt = document.createElement('option')
+            opt.value = t.id
+            opt.textContent = `${t.oficio}: ${t.title}`
+            opt.dataset.items = JSON.stringify(t.items)
+            sel.appendChild(opt)
+          }
+        }
+      } catch {}
+
+      // Initial empty row
+      addItem('', 1, 0)
+
+      document.getElementById('qb-add-item').addEventListener('click', () => addItem('', 1, 0))
+      document.getElementById('qb-iva').addEventListener('change', recalc)
+      document.getElementById('qb-items').addEventListener('input', recalc)
+      document.getElementById('qb-items').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-remove]')
+        if (btn) { btn.closest('[data-item-row]').remove(); recalc() }
+      })
+
+      document.getElementById('qb-template').addEventListener('change', (e) => {
+        const opt = e.target.selectedOptions[0]
+        const items = opt?.dataset.items
+        if (!items) return
+        document.getElementById('qb-items').innerHTML = ''
+        for (const it of JSON.parse(items)) addItem(it.name, it.qty, it.unitPrice)
+      })
+
+      document.getElementById('qb-save-and-pdf').addEventListener('click', async () => {
+        const saved = await save()
+        if (saved) { await downloadPdf(saved) }
+      })
+
+      document.getElementById('qb-send-wa').addEventListener('click', async () => {
+        const saved = await save()
+        if (!saved) return
+        const phone = (document.getElementById('qb-client-phone').value || '').replace(/\D/g, '')
+        const total = new Intl.NumberFormat('es-PY',{maximumFractionDigits:0}).format(saved.total) + ' Gs'
+        const text = `Hola! Te paso la cotización por PyaServ:\n\n` +
+          saved.items.map((i) => `• ${i.name} × ${i.qty} — ${new Intl.NumberFormat('es-PY',{maximumFractionDigits:0}).format(i.unitPrice * i.qty)} Gs`).join('\n') +
+          `\n\nTotal: ${total}` +
+          (saved.ivaIncluded ? ' (IVA incluido)' : '')
+        try { await apiFetch(`/v1/me/quotes/${saved.id}/sent`, { method: 'POST' }) } catch {}
+        const url = phone
+          ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+          : `https://wa.me/?text=${encodeURIComponent(text)}`
+        location.href = url
+      })
+
+      document.getElementById('qb-save-template').addEventListener('click', async () => {
+        const oficio = prompt('Oficio para esta plantilla (ej: plomero):')
+        const title = prompt('Nombre de la plantilla:')
+        if (!oficio || !title) return
+        try {
+          await apiFetch('/v1/me/quote-templates', {
+            method: 'POST',
+            body: JSON.stringify({ oficio, title, items: readItems() }),
+          })
+          msg('✓ Plantilla guardada')
+        } catch (e) { msg('Error: ' + (e.message || 'Network')) }
+      })
+    }
+
+    function addItem(name, qty, price) {
+      const row = document.createElement('div')
+      row.setAttribute('data-item-row', '')
+      row.style.cssText = 'background:white;border:1px solid #e5e7eb;border-radius:8px;padding:10px;margin-bottom:8px;display:grid;grid-template-columns:1fr 60px 110px 32px;gap:6px;align-items:center;'
+      row.innerHTML = `
+        <input type="text" placeholder="Descripción" value="${escapeAttr(name)}" data-field="name" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;" />
+        <input type="number" value="${qty}" min="1" data-field="qty" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:center;" />
+        <input type="number" value="${price}" min="0" data-field="price" style="padding:6px;border:1px solid #f3f4f6;border-radius:4px;text-align:right;" />
+        <button type="button" data-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;width:32px;height:32px;cursor:pointer;font-weight:700;">×</button>`
+      document.getElementById('qb-items').appendChild(row)
+      recalc()
+    }
+
+    function readItems() {
+      const rows = document.querySelectorAll('[data-item-row]')
+      return Array.from(rows).map((r) => ({
+        name: r.querySelector('[data-field="name"]').value,
+        qty: Number(r.querySelector('[data-field="qty"]').value || 1),
+        unitPrice: Number(r.querySelector('[data-field="price"]').value || 0),
+      })).filter((i) => i.name)
+    }
+
+    function recalc() {
+      const items = readItems()
+      const subtotal = items.reduce((s, i) => s + i.qty * i.unitPrice, 0)
+      const ivaOn = document.getElementById('qb-iva').checked
+      const iva = ivaOn ? Math.round(subtotal * 0.1) : 0
+      const fmt = (n) => new Intl.NumberFormat('es-PY',{maximumFractionDigits:0}).format(n) + ' Gs'
+      document.getElementById('qb-subtotal').textContent = fmt(subtotal)
+      document.getElementById('qb-iva-amount').textContent = ivaOn ? fmt(iva) : '—'
+      document.getElementById('qb-total').textContent = fmt(subtotal + iva)
+    }
+
+    async function save() {
+      const items = readItems()
+      if (items.length === 0) { msg('Agregá al menos un ítem'); return null }
+      const body = {
+        clientName: document.getElementById('qb-client-name').value || null,
+        clientPhone: document.getElementById('qb-client-phone').value || null,
+        items, ivaIncluded: document.getElementById('qb-iva').checked,
+      }
+      try {
+        const r = await apiFetch('/v1/me/quotes', { method: 'POST', body: JSON.stringify(body) })
+        msg('✓ Cotización guardada')
+        return r.data
+      } catch (e) { msg('Error: ' + (e.message || 'Network')); return null }
+    }
+
+    async function downloadPdf(quote) {
+      const { jsPDF } = await import('jspdf')
+      const doc = new jsPDF()
+      doc.setFontSize(20); doc.text('Cotización', 14, 20)
+      doc.setFontSize(10); doc.text(`Fecha: ${new Date().toLocaleDateString('es-PY')}`, 14, 28)
+      if (quote.clientName) doc.text(`Cliente: ${quote.clientName}`, 14, 34)
+      let y = 46
+      doc.setFontSize(11)
+      doc.text('Descripción', 14, y); doc.text('Cant', 130, y); doc.text('Precio', 150, y); doc.text('Total', 180, y, { align: 'right' })
+      doc.line(14, y + 2, 196, y + 2)
+      y += 10
+      const fmt = (n) => new Intl.NumberFormat('es-PY',{maximumFractionDigits:0}).format(n)
+      for (const item of quote.items) {
+        doc.text(String(item.name).slice(0, 50), 14, y)
+        doc.text(String(item.qty), 130, y)
+        doc.text(fmt(item.unitPrice), 150, y)
+        doc.text(fmt(item.qty * item.unitPrice), 196, y, { align: 'right' })
+        y += 8
+      }
+      y += 4; doc.line(14, y, 196, y); y += 8
+      doc.text('Subtotal:', 150, y); doc.text(fmt(quote.subtotal) + ' Gs', 196, y, { align: 'right' }); y += 6
+      if (quote.ivaIncluded) { doc.text('IVA 10%:', 150, y); doc.text(fmt(quote.iva) + ' Gs', 196, y, { align: 'right' }); y += 6 }
+      doc.setFontSize(13); doc.text('TOTAL:', 150, y); doc.text(fmt(quote.total) + ' Gs', 196, y, { align: 'right' })
+      doc.save(`cotizacion-${quote.id.slice(0,8)}.pdf`)
+    }
+
+    function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/&/g, '&amp;') }
+    function msg(t) { const m = document.getElementById('qb-msg'); if (m) m.textContent = t }
+
+    document.addEventListener('astro:page-load', () => { void init() })
+  </script>
+</Base>

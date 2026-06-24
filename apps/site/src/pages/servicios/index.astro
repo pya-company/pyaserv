@@ -1,0 +1,37 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/demo-and-docs.css'
+import { OFICIOS, SERVICE_AREAS } from '~/data/service-areas.ts'
+
+const title = 'Servicios en Asunción y Departamento Central'
+const description = 'Encontrá plomeros, electricistas, técnicos y más profesionales por barrio en Asunción y Central. Contacto directo por WhatsApp, sin comisiones.'
+---
+<Base title={title} active="specialists" description={description}>
+  <section class="ps-docs-hero">
+    <h1>{title}</h1>
+    <p>{description}</p>
+  </section>
+  <div style="max-width:1100px;margin:0 auto;padding:0 16px;">
+    <h2 style="margin:24px 0 12px 0;font-size:18px;color:#111827;">Oficios</h2>
+    <div class="ps-docs-grid" style="margin-bottom:32px;">
+      {OFICIOS.map((o) => (
+        <a href={`/servicios/${o.slug}/`} class="ps-feature-card" style="text-decoration:none;color:inherit;">
+          <h3 class="ps-feature-card__title">{o.name}</h3>
+          <p class="ps-feature-card__desc">Profesionales en Asunción y Central →</p>
+        </a>
+      ))}
+    </div>
+    <h2 style="margin:24px 0 12px 0;font-size:18px;color:#111827;">Zonas — Asunción</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+      {SERVICE_AREAS.filter((a) => a.region === 'asuncion').map((a) => (
+        <a href={`/servicios/plomero/${a.slug}/`} style="background:#eef2ff;color:#4338ca;padding:6px 12px;border-radius:999px;text-decoration:none;font-size:13px;">{a.name}</a>
+      ))}
+    </div>
+    <h2 style="margin:24px 0 12px 0;font-size:18px;color:#111827;">Zonas — Departamento Central</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:48px;">
+      {SERVICE_AREAS.filter((a) => a.region === 'central').map((a) => (
+        <a href={`/servicios/plomero/${a.slug}/`} style="background:#fef3c7;color:#92400e;padding:6px 12px;border-radius:999px;text-decoration:none;font-size:13px;">{a.name}</a>
+      ))}
+    </div>
+  </div>
+</Base>

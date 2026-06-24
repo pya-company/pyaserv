@@ -7,8 +7,11 @@ import { devLoginRoutes } from './routes/dev-login.ts'
 import { inquiriesRoutes } from './routes/inquiries.ts'
 import { listingsRoutes } from './routes/listings.ts'
 import { mediaRoutes } from './routes/media.ts'
+import { gamificationRoutes } from './routes/gamification.ts'
 import { meRoutes } from './routes/me.ts'
+import { meExtendedRoutes } from './routes/me-extended.ts'
 import { publicProfileRoutes } from './routes/public-profile.ts'
+import { quotesClientsRoutes } from './routes/quotes-clients.ts'
 import { requestsRoutes } from './routes/requests.ts'
 import { reviewsRoutes } from './routes/reviews.ts'
 import { specialistsRoutes } from './routes/specialists.ts'
@@ -85,6 +88,9 @@ const app = new Hono<AppEnv>()
   .route('/v1/requests', requestsRoutes)
   .route('/v1/inquiries', inquiriesRoutes)
   .route('/v1/me', meRoutes)
+  .route('/v1/me', meExtendedRoutes)
+  .route('/v1/me', gamificationRoutes)
+  .route('/v1/me', quotesClientsRoutes)
   .route('/v1', reviewsRoutes)
   .route('/v1/media', mediaRoutes)
   .route('/v1/analytics', analyticsRoutes)

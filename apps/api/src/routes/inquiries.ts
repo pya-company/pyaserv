@@ -4,6 +4,7 @@ import { ForbiddenError, NotFoundError, ValidationError, uuidV7 } from '@pya-com
 import { Hono } from 'hono'
 import * as v from 'valibot'
 import { checkRateLimit } from '../rate-limit.ts'
+import { onJobCompleted, onMessageSentBySpecialist, onReviewCreated } from '../lib/xp-hooks.ts'
 import {
   InquiryCreateSchema,
   MessageCreateSchema,
@@ -149,6 +150,9 @@ const applyWorkAction = async (
     )
       .bind(newStatus, clientFlag, specFlag, closedAt, inquiry.id)
       .run()
+    if (newStatus === 'done') {
+      await onJobCompleted(env.DB, inquiry.specialist_user_id, inquiry.client_user_id, inquiry.id)
+    }
   } else if (action === 'cancel') {
     if (inquiry.work_status === 'done' || inquiry.work_status === 'cancelled')
       throw new ValidationError({ issues: [{ path: 'action', message: 'inquiry already closed' }] })
@@ -290,6 +294,9 @@ export const inquiriesRoutes = new Hono<AppEnv>()
       .bind(msgId, id, me, parsed.output.body, now)
       .run()
     await c.env.DB.prepare('UPDATE inquiries SET last_message_at = ? WHERE id = ?').bind(now, id).run()
+    if (me === inquiry.specialist_user_id) {
+      c.executionCtx.waitUntil(onMessageSentBySpecialist(c.env.DB, me, inquiry.created_at))
+    }
     const recipient = me === inquiry.client_user_id ? inquiry.specialist_user_id : inquiry.client_user_id
     c.executionCtx.waitUntil(
       tryNotify(
@@ -344,5 +351,8 @@ export const inquiriesRoutes = new Hono<AppEnv>()
     )
       .bind(reviewId, id, me, rateeUserId, role, parsed.output.stars, parsed.output.body ?? '', now)
       .run()
+    c.executionCtx.waitUntil(
+      onReviewCreated(c.env.DB, rateeUserId, me, parsed.output.stars, false),
+    )
     return c.json({ data: { id: reviewId, stars: parsed.output.stars, body: parsed.output.body ?? '' } }, 201)
   })
