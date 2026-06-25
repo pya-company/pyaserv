@@ -13,23 +13,22 @@
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
+/* Demo Mode is URL-only — `?demo=1` query param.
+ * Никакого sessionStorage-persistence: пользователь выходит из demo
+ * простой навигацией на URL без `?demo=1`. Это решает баг "banner stuck".
+ * Stripe test-mode-style sticky NOT нужен — пользователю проще понять
+ * "demo живёт пока URL содержит ?demo".
+ */
 export const isDemoMode = (): boolean => {
   if (typeof location === 'undefined') return false
   try {
-    if (new URLSearchParams(location.search).has('demo')) return true
-    if (sessionStorage.getItem('pyaserv.demo.active') === '1') return true
-  } catch { /* ignore */ }
-  return false
-}
-
-export const enterDemoMode = (): void => {
-  try { sessionStorage.setItem('pyaserv.demo.active', '1') } catch {}
-  document.documentElement.dataset.demoMode = '1'
+    return new URLSearchParams(location.search).has('demo')
+  } catch { return false }
 }
 
 export const exitDemoMode = (): void => {
+  // Clear any leftover sessionStorage from older versions
   try {
-    sessionStorage.removeItem('pyaserv.demo.active')
     const keys: string[] = []
     for (let i = 0; i < sessionStorage.length; i++) {
       const k = sessionStorage.key(i)

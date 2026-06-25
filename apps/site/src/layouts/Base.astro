@@ -531,7 +531,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       // Demo Mode v2 bootstrap: при наличии ?demo=1 / sessionStorage.demo.active=1
       // показываем баннер, ставим html[data-demo-mode], hide login chrome,
       // и опционально запускаем tour из ?tour=<code>.
-      import { isDemoMode, enterDemoMode, exitDemoMode } from '../lib/demo-stubs'
+      import { isDemoMode, exitDemoMode } from '../lib/demo-stubs'
       import { startTour } from '../lib/guided-tour'
       import '~/styles/demo-and-docs.css'
 
@@ -563,22 +563,41 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       }
 
       const initDemo = () => {
-        const params = new URLSearchParams(location.search)
-        if (params.has('demo')) enterDemoMode()
         if (isDemoMode()) {
           applyDemoChrome()
+          const params = new URLSearchParams(location.search)
           const tourCode = params.get('tour')
           if (tourCode && demoTours[tourCode]) {
-            // Wait a moment for the page to render its anchors
+            // Wait for the page to render its anchors
             setTimeout(() => startTour({
               ...demoTours[tourCode],
               onFinish: () => {},
               onSkip: () => {},
             }), 500)
           }
+          // Sticky-in-page-navigation: propagate ?demo=1 to in-page links so
+          // ClientRouter navigation stays in demo. User exits by clicking
+          // "Salir del demo" or by going to an external URL.
+          stickifyLinks()
         } else {
           removeDemoChrome()
         }
+      }
+
+      const stickifyLinks = () => {
+        // Add ?demo=1 to internal <a> hrefs that don't already have it.
+        // We do NOT touch links to external sites or to special routes
+        // like /docs/ /releases/ /components/ — going there should mean exit.
+        const STAY_IN_DEMO_ROOTS = ['/me/', '/p/', '/specialists/', '/clients/']
+        document.querySelectorAll('a[href]').forEach((a) => {
+          const href = a.getAttribute('href') || ''
+          if (!href.startsWith('/')) return
+          if (href.includes('demo=')) return
+          if (!STAY_IN_DEMO_ROOTS.some((root) => href.startsWith(root))) return
+          const [path, query = ''] = href.split('?')
+          const merged = query ? `${path}?${query}&demo=1` : `${path}?demo=1`
+          a.setAttribute('href', merged)
+        })
       }
 
       document.addEventListener('click', (e) => {
@@ -587,13 +606,14 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         const exit = t.closest('[data-demo-exit]')
         if (exit) {
           e.preventDefault()
-          if (confirm('¿Salir del modo demo? Nada de lo que probaste se guarda.')) {
-            exitDemoMode()
-            const url = new URL(location.href)
-            url.searchParams.delete('demo')
-            url.searchParams.delete('tour')
-            location.href = url.pathname + (url.search || '')
-          }
+          exitDemoMode()
+          // Navigate to current pathname WITHOUT demo/tour params.
+          // No confirm — exit is reversible (open the demo link again).
+          const url = new URL(location.href)
+          url.searchParams.delete('demo')
+          url.searchParams.delete('tour')
+          const dest = url.pathname + (url.search || '')
+          location.href = dest
         }
       })
 

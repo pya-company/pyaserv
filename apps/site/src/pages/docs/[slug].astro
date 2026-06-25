@@ -1,6 +1,7 @@
 ---
 import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
+import '~/styles/demo-and-docs.css'
 import { DOC_PAGES } from '~/data/docs-content.ts'
 
 export function getStaticPaths() {
@@ -9,73 +10,64 @@ export function getStaticPaths() {
 
 const { doc } = Astro.props
 
-// Простейший markdown → HTML (поддерживаем только: paragraphs, list bullets начинающиеся с "·",
-// `inline code` через backticks, **bold** через **). Безопасно для нашего контролируемого контента.
+// Small markdown subset: paragraphs, lists with "·", `inline code`, **bold**.
+const inlineMd = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+
 const renderBody = (md: string): string => {
   const lines = md.split('\n')
   const out: string[] = []
   let inList = false
   for (const raw of lines) {
     const line = raw.trim()
-    if (!line) {
-      if (inList) { out.push('</ul>'); inList = false }
-      continue
-    }
+    if (!line) { if (inList) { out.push('</ul>'); inList = false } continue }
     if (line.startsWith('·')) {
-      if (!inList) { out.push('<ul style="padding-left:18px;margin:8px 0;">'); inList = true }
-      out.push(`<li style="margin-bottom:4px;">${inlineMd(line.slice(1).trim())}</li>`)
+      if (!inList) { out.push('<ul>'); inList = true }
+      out.push(`<li>${inlineMd(line.slice(1).trim())}</li>`)
     } else {
       if (inList) { out.push('</ul>'); inList = false }
-      out.push(`<p style="margin:8px 0;line-height:1.6;color:#1f2937;">${inlineMd(line)}</p>`)
+      out.push(`<p>${inlineMd(line)}</p>`)
     }
   }
   if (inList) out.push('</ul>')
   return out.join('\n')
 }
-const inlineMd = (s: string): string => {
-  return s
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code style="background:#f3f4f6;padding:1px 6px;border-radius:4px;font-size:90%;">$1</code>')
-}
 
 const statusLabel = doc.status === 'live' ? 'En vivo' : doc.status === 'demo' ? 'Demo' : 'Próximo'
-const statusColor = doc.status === 'live' ? '#10b981' : doc.status === 'demo' ? '#f59e0b' : '#9ca3af'
 ---
 <Base title={`${doc.title} — Docs`} active="home" description={doc.tldr}>
-  <article style="max-width:760px;margin:24px auto 64px;padding:0 16px;">
-    <nav style="font-size:13px;color:#6b7280;margin-bottom:16px;">
-      <a href="/docs/" style="color:#4f46e5;text-decoration:none;">Docs</a> · <span>{doc.title}</span>
+  <article class="docpage">
+    <nav class="docpage__crumbs">
+      <a href="/docs/">Docs</a> · <span>{doc.title}</span>
     </nav>
 
-    <header style="margin-bottom:24px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="background:#eef2ff;color:#4338ca;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.05em;">{doc.code}</span>
-        <span style={`background:${statusColor};color:white;padding:2px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;`}>{statusLabel}</span>
+    <header>
+      <div class="docpage__meta">
+        <span class="docpage__code">{doc.code}</span>
+        <span class="docpage__status" data-status={doc.status}>{statusLabel}</span>
       </div>
-      <h1 style="font-size:28px;margin:0 0 8px 0;color:#111827;">{doc.title}</h1>
-      <p style="color:#4b5563;margin:0;font-size:16px;line-height:1.5;">{doc.tldr}</p>
+      <h1>{doc.title}</h1>
+      <p class="docpage__tldr">{doc.tldr}</p>
 
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
-        {doc.demoUrl && (
-          <a href={doc.demoUrl} class="cl-btn cl-btn--primary">Probar demo →</a>
-        )}
-        {doc.realUrl && (
-          <a href={doc.realUrl} class="cl-btn cl-btn--ghost">Ver real →</a>
-        )}
-      </div>
+      {(doc.demoUrl || doc.realUrl) && (
+        <div class="docpage__actions">
+          {doc.demoUrl && <a href={doc.demoUrl} class="cl-btn cl-btn--primary">Probar demo →</a>}
+          {doc.realUrl && <a href={doc.realUrl} class="cl-btn cl-btn--ghost">Ver real →</a>}
+        </div>
+      )}
     </header>
 
     {doc.sections.map((section) => (
-      <section style="margin-bottom:32px;">
-        <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 8px 0;">{section.heading}</h2>
+      <section>
+        <h2>{section.heading}</h2>
         <Fragment set:html={renderBody(section.bodyMd)} />
       </section>
     ))}
 
-    <hr style="margin:48px 0;border:none;border-top:1px solid #e5e7eb;" />
-    <p style="text-align:center;color:#9ca3af;font-size:13px;">
-      <a href="/docs/" style="color:#4f46e5;">← Todas las features</a>
-    </p>
+    <div class="docpage__back">
+      <a href="/docs/">← Todas las features</a>
+    </div>
   </article>
 </Base>

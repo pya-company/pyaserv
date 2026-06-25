@@ -1,6 +1,7 @@
 ---
 import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
+import '~/styles/demo-and-docs.css'
 import { FeatureCard } from '~/components-lib/molecules.ts'
 
 interface Feature {
@@ -37,7 +38,7 @@ const features: ReadonlyArray<Feature> = [
     desc: 'Lite-CRM: clientes recurrentes se agregan al completar un trabajo. Notas editables, recordatorio "6 meses sin verlo".',
     docUrl: '/docs/mis-clientes/', realUrl: '/me/?tab=clients', statusLabel: 'En vivo' },
   { code: 'F', title: 'Filtros de leads',      status: 'live',
-    desc: 'Configurá presupuesto mínimo + esconder cuentas nuevas (anti-spam). Hoy se persisten; el filter en el query se aplica en sprint próximo.',
+    desc: 'Configurá presupuesto mínimo + esconder cuentas nuevas (anti-spam).',
     docUrl: '/docs/filtros-leads/', realUrl: '/me/?tab=profile', statusLabel: 'En vivo' },
   { code: 'H', title: 'Multilingüe per-perfil',status: 'live',
     desc: 'Versión en guaraní de tu bio/headline sin perder el SEO en español. Hreflang automático en el perfil público.',
@@ -51,7 +52,7 @@ const features: ReadonlyArray<Feature> = [
   { code: 'P', title: 'Components (Storybook)',status: 'live',
     desc: 'Catálogo de componentes pure-stateless con panel de props + locale switcher. Mismo cuerpo de código que producción.',
     docUrl: '/components/', realUrl: '/components/', statusLabel: 'En vivo' },
-  { code: 'C', title: 'Recap-card PNG (WhatsApp Status)', status: 'soon',
+  { code: 'C', title: 'Recap-card PNG', status: 'soon',
     desc: 'Generador 1080×1920 PNG semanal listo para compartir. Cada insignia desbloqueada también genera una tarjeta.',
     docUrl: '/docs/recap-card/', statusLabel: 'Próximo' },
   { code: 'D', title: 'SIFEN — factura electrónica', status: 'soon',
@@ -65,24 +66,23 @@ const features: ReadonlyArray<Feature> = [
     docUrl: '/docs/mobile/', statusLabel: 'Planeado' },
 ]
 ---
-<Base title="Documentación" active="home" description="Lista de features de PyaServ. Probalas en modo demo antes de comprometerte.">
-  <section style="max-width:900px;margin:0 auto;padding:24px 16px 8px;text-align:center;">
-    <h1 style="font-size:clamp(28px,5vw,40px);margin:0 0 8px 0;color:#111827;">Documentación de PyaServ</h1>
-    <p style="color:#6b7280;margin:0;font-size:16px;">
-      Catálogo completo de features. Cada una tiene página propia con detalles, link a demo y a producción.
-    </p>
-    <div style="margin-top:16px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
-      <a href="#features" style="color:#4f46e5;text-decoration:none;font-weight:600;">Features ↓</a>
-      <span style="color:#9ca3af;">·</span>
-      <a href="#releases" style="color:#4f46e5;text-decoration:none;font-weight:600;">Novedades ↓</a>
-      <span style="color:#9ca3af;">·</span>
-      <a href="/components/" style="color:#4f46e5;text-decoration:none;font-weight:600;">Componentes ↗</a>
-    </div>
+<Base title="Documentación" active="home" description="Catálogo completo de features de PyaServ. Probalas en modo demo antes de comprometerte.">
+  <section class="docs-hero">
+    <h1>Documentación</h1>
+    <p>Cada feature tiene página propia con detalles, link a demo y a producción. Si algo está marcado «Próximo», está en el roadmap.</p>
+    <nav class="docs-toc" aria-label="Secciones">
+      <a href="#features">Features ↓</a>
+      <a href="#releases">Novedades ↓</a>
+      <a href="/components/">Componentes ↗</a>
+    </nav>
   </section>
 
-  <section id="features" style="max-width:1100px;margin:32px auto;padding:0 16px;">
-    <h2 style="font-size:22px;margin:0 0 16px 0;">Features</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+  <section id="features" class="docs-section">
+    <div class="docs-section__head">
+      <h2>Features</h2>
+      <p>{features.length} en total · {features.filter((f) => f.status === 'live').length} en vivo</p>
+    </div>
+    <div class="docs-grid">
       {features.map((f) => (
         <Fragment set:html={FeatureCard({
           code: f.code,
@@ -102,20 +102,32 @@ const features: ReadonlyArray<Feature> = [
     </div>
   </section>
 
-  <section id="releases" style="max-width:1100px;margin:48px auto;padding:0 16px;">
-    <h2 style="font-size:22px;margin:0 0 16px 0;">Novedades</h2>
-    <p style="color:#6b7280;margin:0 0 16px 0;">
-      Notas de cada release con tags, links a demo y descripciones detalladas.
-    </p>
-    <a href="/releases/" style="display:inline-block;background:#4f46e5;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;">
-      Ver todas las novedades →
-    </a>
-    <p style="color:#9ca3af;font-size:13px;margin-top:12px;">
-      <a href="/releases/rss.xml" style="color:#4f46e5;">RSS feed</a>
-    </p>
-  </section>
-
-  <section style="max-width:900px;margin:48px auto;padding:0 16px 64px;text-align:center;color:#9ca3af;font-size:13px;">
-    PyaServ — Spec v1 · Esta página se actualiza con cada release.
+  <section id="releases" class="docs-section">
+    <div class="docs-section__head">
+      <h2>Novedades</h2>
+      <p><a href="/releases/rss.xml" style="color:var(--ps-acc);">RSS</a></p>
+    </div>
+    <div class="docs-grid" style="grid-template-columns: 1fr;">
+      <article class="cl-feature-card">
+        <header class="cl-feature-card__header">
+          <h3 class="cl-feature-card__title">v1.1.0 · 2026-06-25 · Sprint 1-6 features live</h3>
+          <span class="cl-feature-card__status" data-status="live">En vivo</span>
+        </header>
+        <p class="cl-feature-card__desc">Las 13 features de spec v1 están en producción + components-lib + Demo Mode v2 + docs restructure.</p>
+        <div class="cl-feature-card__actions">
+          <a href="/releases/" class="cl-btn cl-btn--primary cl-btn--sm">Ver detalles →</a>
+        </div>
+      </article>
+      <article class="cl-feature-card">
+        <header class="cl-feature-card__header">
+          <h3 class="cl-feature-card__title">v1.0.0 · 2026-06-24 · Spec v1 Foundation</h3>
+          <span class="cl-feature-card__status" data-status="live">En vivo</span>
+        </header>
+        <p class="cl-feature-card__desc">Base de datos lista — schema, service areas, gamification core, GN i18n.</p>
+        <div class="cl-feature-card__actions">
+          <a href="/releases/" class="cl-btn cl-btn--primary cl-btn--sm">Ver detalles →</a>
+        </div>
+      </article>
+    </div>
   </section>
 </Base>
