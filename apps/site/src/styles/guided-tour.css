@@ -1,0 +1,74 @@
+/* guided-tour.css — стили overlay-style туры (IntelliJ-like).
+ * Подключаются глобально через Base.astro чтобы tour мог фигурировать на любой странице.
+ */
+
+.gt-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  pointer-events: none;
+  animation: gt-fade-in .18s ease-out;
+}
+@keyframes gt-fade-in { from { opacity: 0 } to { opacity: 1 } }
+
+.gt-tooltip {
+  z-index: 9001;
+  max-width: 320px; min-width: 240px;
+  background: white;
+  border-radius: 10px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transition: opacity .22s, top .22s cubic-bezier(.22,1,.36,1), left .22s cubic-bezier(.22,1,.36,1);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.gt-close {
+  position: absolute; top: 6px; right: 8px;
+  background: transparent; border: 0; cursor: pointer;
+  font-size: 18px; line-height: 1; color: #9ca3af;
+  padding: 4px 8px; border-radius: 4px;
+}
+.gt-close:hover { background: #f3f4f6; color: #1f2937; }
+
+.gt-title {
+  margin: 0 24px 6px 0;
+  font-size: 16px; font-weight: 700; color: #111827;
+}
+.gt-body {
+  margin: 0 0 12px 0;
+  font-size: 13px; line-height: 1.5; color: #4b5563;
+}
+
+.gt-progress {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.gt-progress__bar {
+  flex: 1; height: 4px; background: #e5e7eb; border-radius: 999px; overflow: hidden;
+}
+.gt-progress__fill {
+  height: 100%; background: linear-gradient(90deg, #4f46e5, #818cf8);
+  transition: width .25s;
+}
+.gt-progress__counter {
+  font-size: 11px; color: #9ca3af; font-variant-numeric: tabular-nums; min-width: 32px; text-align: right;
+}
+
+.gt-controls {
+  display: grid; grid-template-columns: auto auto 1fr; gap: 6px; align-items: center;
+}
+.gt-controls > .gt-btn--primary { justify-self: end; }
+
+.gt-btn {
+  padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 13px;
+  cursor: pointer; border: 0; font-family: inherit; transition: background .12s;
+}
+.gt-btn--primary { background: #4f46e5; color: white; }
+.gt-btn--primary:hover { background: #4338ca; }
+.gt-btn--ghost { background: transparent; color: #6b7280; }
+.gt-btn--ghost:hover { background: #f3f4f6; color: #1f2937; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-overlay { animation: none; }
+  .gt-tooltip { transition: none; }
+  .gt-progress__fill { transition: none; }
+  #gt-spotlight { transition: none !important; }
+}

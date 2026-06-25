@@ -1,5 +1,6 @@
 ---
 import '~/styles/global.css'
+import '~/styles/guided-tour.css'
 import T from '~/components/T.astro'
 import LoginDialog from '~/components/LoginDialog.astro'
 import EnrollToast from '~/components/EnrollToast.astro'
@@ -49,6 +50,13 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
   </head>
   <body>
     <a href="#main-content" class="ps-skip"><T k="nav.skip" /></a>
+    <div id="demo-banner" class="ps-demo-banner" hidden role="banner" aria-live="polite">
+      <div class="ps-demo-banner__msg">
+        <span class="ps-demo-banner__icon" aria-hidden="true">⚠</span>
+        <span class="ps-demo-banner__text">MODO DEMO — los cambios no se guardan. <strong>Estás viendo la app real con datos ficticios.</strong></span>
+      </div>
+      <button type="button" class="ps-demo-banner__exit" data-demo-exit>Salir del demo</button>
+    </div>
     <header class="ps-topbar" id="topbar">
       <a href={href('/')} class="ps-topbar__brand">
         <span class="ps-topbar__brand-em">Pya</span>Serv
@@ -56,6 +64,9 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       <nav class="ps-topbar__nav" id="topnav" data-i18n-aria="nav.primary_aria" aria-label="Principal">
         <a href={href('/specialists/')} aria-current={active === 'specialists' ? 'page' : undefined}><T k="nav.specialists" /></a>
         <a href={href('/clients/')} aria-current={active === 'clients' ? 'page' : undefined}><T k="nav.clients" /></a>
+        <a href={href('/docs/')}><T k="nav.docs" /></a>
+        <a href={href('/releases/')}><T k="nav.releases" /></a>
+        <a href={href('/components/')} class="ps-dev-only"><T k="nav.components" /></a>
         <a href={href('/me/')} aria-current={active === 'me' ? 'page' : undefined} data-nav-me><T k="nav.me" /></a>
         <!-- Sign in is a dialog trigger, not a page link. data-nav-login hides
              it for authed users via the existing html[data-auth=user] CSS. -->
@@ -92,6 +103,8 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       <div slot="menu" class="ps-fly__menu" role="menu">
         <a href={href('/specialists/')} role="menuitem"><T k="nav.specialists" /></a>
         <a href={href('/clients/')} role="menuitem"><T k="nav.clients" /></a>
+        <a href={href('/docs/')} role="menuitem"><T k="nav.docs" /></a>
+        <a href={href('/releases/')} role="menuitem"><T k="nav.releases" /></a>
         <a href={href('/me/')} role="menuitem" data-nav-me><T k="nav.me" /></a>
         <button type="button" role="menuitem" data-open-login data-nav-login class="ps-fly__menuitem"><T k="nav.login" /></button>
         <button type="button" role="menuitem" data-nav-logout class="ps-fly__menuitem">
@@ -511,6 +524,81 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       // --- run on first load AND every ClientRouter swap --------------------
       initPage()
       document.addEventListener('astro:after-swap', initPage)
+    </script>
+
+    <script>
+      // @ts-nocheck
+      // Demo Mode v2 bootstrap: при наличии ?demo=1 / sessionStorage.demo.active=1
+      // показываем баннер, ставим html[data-demo-mode], hide login chrome,
+      // и опционально запускаем tour из ?tour=<code>.
+      import { isDemoMode, enterDemoMode, exitDemoMode } from '../lib/demo-stubs'
+      import { startTour } from '../lib/guided-tour'
+      import '~/styles/demo-and-docs.css'
+
+      const demoTours = {
+        T1: {
+          code: 'T1',
+          steps: [
+            { selector: '#photo-preview, [data-photo-anchor], img', title: 'Tu cara', body: 'Una buena foto duplica las consultas. Sacate una con luz natural.' },
+            { selector: 'input[name="headline"]', title: 'Tu headline', body: 'Una línea corta: oficio + zona + ventaja. Ej: "Plomero 24h en Villa Morra".' },
+            { selector: 'textarea[name="bio"]', title: 'Contales quién sos', body: '2-3 frases. Tu experiencia, herramientas, qué zonas cubrís.' },
+            { selector: 'input[name="phone"]', title: 'Tu teléfono', body: 'Cómo te contactan. Usá el mismo que tu WhatsApp si es posible.' },
+            { selector: 'input[name="whatsapp"]', title: 'WhatsApp', body: 'El botón principal de tu perfil llevará acá. Asegurate de que esté actualizado.' },
+            { selector: 'input[name="barrio"]', title: 'Tu barrio principal', body: 'Donde tenés más trabajo. Después podés agregar más zonas en la edición avanzada.' },
+            { selector: '#completeness, #completeness-extended', title: '¡Listo!', body: 'Cada paso adicional sube tu visibilidad. ¡A 100% desbloqueás 7 días de Boost gratis y la insignia "Perfil Maestro"!' },
+          ],
+        },
+      }
+
+      const applyDemoChrome = () => {
+        const banner = document.getElementById('demo-banner')
+        if (banner) banner.hidden = false
+        // Hide login/logout chrome — demo runs as logged-out visually
+        document.documentElement.dataset.demoMode = '1'
+      }
+      const removeDemoChrome = () => {
+        const banner = document.getElementById('demo-banner')
+        if (banner) banner.hidden = true
+        delete document.documentElement.dataset.demoMode
+      }
+
+      const initDemo = () => {
+        const params = new URLSearchParams(location.search)
+        if (params.has('demo')) enterDemoMode()
+        if (isDemoMode()) {
+          applyDemoChrome()
+          const tourCode = params.get('tour')
+          if (tourCode && demoTours[tourCode]) {
+            // Wait a moment for the page to render its anchors
+            setTimeout(() => startTour({
+              ...demoTours[tourCode],
+              onFinish: () => {},
+              onSkip: () => {},
+            }), 500)
+          }
+        } else {
+          removeDemoChrome()
+        }
+      }
+
+      document.addEventListener('click', (e) => {
+        const t = e.target instanceof Element ? e.target : null
+        if (!t) return
+        const exit = t.closest('[data-demo-exit]')
+        if (exit) {
+          e.preventDefault()
+          if (confirm('¿Salir del modo demo? Nada de lo que probaste se guarda.')) {
+            exitDemoMode()
+            const url = new URL(location.href)
+            url.searchParams.delete('demo')
+            url.searchParams.delete('tour')
+            location.href = url.pathname + (url.search || '')
+          }
+        }
+      })
+
+      initDemo()
+      document.addEventListener('astro:page-load', initDemo)
     </script>
     <script>
       // @ts-nocheck

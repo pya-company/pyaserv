@@ -1,4 +1,5 @@
 import { t } from './i18n'
+import { demoStub, isDemoMode } from './demo-stubs'
 
 const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
   'https://api.pyaserv.com'
@@ -20,6 +21,13 @@ export const apiFetch = async <T = unknown>(
   path: string,
   init: RequestInit = {},
 ): Promise<T> => {
+  // Demo Mode v2: перехватываем известные routes до реального fetch.
+  // Если stub возвращает null — пропускаем в реальный fetch (нужно для
+  // не-описанных endpoints; они read-only в demo контексте).
+  if (isDemoMode()) {
+    const stub = await demoStub<T>(path, init)
+    if (stub !== null) return stub
+  }
   const token = getToken()
   const headers = new Headers(init.headers)
   if (token) headers.set('Authorization', `Bearer ${token}`)
