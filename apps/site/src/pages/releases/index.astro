@@ -5,18 +5,17 @@ import '~/styles/demo-and-docs.css'
 import { RELEASES } from '~/data/releases.ts'
 import { getReleaseContent } from '~/lib/content.ts'
 import { renderReleaseBody } from '~/lib/markdown-mini.ts'
-import { tFor, type Locale } from '~/lib/i18n.ts'
+import { tFor, LOCALES, type Locale } from '~/lib/i18n.ts'
+import { getAllLocales } from '~/lib/l10n-emit.ts'
 
-// Default-locale SSR render — clientside JS swaps to user locale via data-i18n.
-// Per-release content text doesn't have a data-i18n equivalent, so SSR picks
-// the default (es); JS-rendered locale switching causes a full page reload
-// (setLocale → location.reload) so the new SSR pass picks the right copy.
+// SSR default = ES. Client `applyContent()` re-renders on locale change.
 const loc: Locale = 'es'
+const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
+
 const title = tFor(loc, 'releases.page_title')
 const intro = tFor(loc, 'releases.page_intro')
 const rss = tFor(loc, 'releases.rss_link')
 const readMore = tFor(loc, 'releases.read_more')
-const sectionLabel = (kind: string) => tFor(loc, `releases.section_${kind}`)
 
 const enriched = RELEASES.map((r) => ({
   schema: r,
@@ -25,6 +24,33 @@ const enriched = RELEASES.map((r) => ({
   schema: typeof RELEASES[number]
   content: NonNullable<ReturnType<typeof getReleaseContent>>
 }>
+
+const sectionLabelMap = (kind: string) => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, `releases.section_${kind}`)
+  return out
+}
+const readMoreMap = (): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, 'releases.read_more')
+  return out
+}
+
+// Per-section rendered HTML across all locales for a given release slug + section index.
+const sectionBodyMap = (slug: string, idx: number): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) {
+    const c = getReleaseContent(l, slug)
+    const s = c?.sections?.[idx]
+    if (s) out[l] = renderReleaseBody(s.body)
+  }
+  return out
+}
+
+const escapeAttr = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const l10nText = (m: Record<string, string>): string => `data-l10n-text='${escapeAttr(JSON.stringify(m))}'`
+const l10nHtml = (m: Record<string, string>): string => `data-l10n-html='${escapeAttr(JSON.stringify(m))}'`
 ---
 <Base title={title} active="home" description={intro}>
   <section class="docs-hero">
@@ -44,9 +70,9 @@ const enriched = RELEASES.map((r) => ({
             <span class="release-card__date">{schema.date}</span>
           </div>
           <h2 class="release-card__title">
-            <a href={`/releases/${schema.slug}/`}>{content.title}</a>
+            <a href={`/releases/${schema.slug}/`}><Fragment set:html={`<span ${l10nText(getAllLocales('releases', schema.slug, ['title']))}>${content.title}</span>`} /></a>
           </h2>
-          <p class="release-card__tldr">{content.tldr}</p>
+          <Fragment set:html={`<p class="release-card__tldr" ${l10nText(getAllLocales('releases', schema.slug, ['tldr']))}>${content.tldr}</p>`} />
           {schema.tags.length > 0 && (
             <div class="release-card__tags">
               {schema.tags.map((tag) => <span class="cl-tag cl-tag--gray">{tag}</span>)}
@@ -55,19 +81,19 @@ const enriched = RELEASES.map((r) => ({
         </header>
 
         <div class="release-card__body">
-          {content.sections.map((sec) => (
+          {content.sections.map((sec, i) => (
             <section class="release-section" data-kind={sec.kind}>
               <h3 class="release-section__heading">
-                <span class="release-section__badge" data-kind={sec.kind}>{sectionLabel(sec.kind)}</span>
-                {sec.heading && <span class="release-section__title">{sec.heading}</span>}
+                <Fragment set:html={`<span class="release-section__badge" data-kind="${sec.kind}" ${l10nText(sectionLabelMap(sec.kind))}>${tFor(loc, `releases.section_${sec.kind}`)}</span>`} />
+                <Fragment set:html={`<span class="release-section__title" ${l10nText(getAllLocales('releases', schema.slug, ['sections', i, 'heading']))}>${sec.heading}</span>`} />
               </h3>
-              <div class="release-section__body" set:html={renderReleaseBody(sec.body)} />
+              <Fragment set:html={`<div class="release-section__body" ${l10nHtml(sectionBodyMap(schema.slug, i))}>${renderReleaseBody(sec.body)}</div>`} />
             </section>
           ))}
         </div>
 
         <footer class="release-card__foot">
-          <a href={`/releases/${schema.slug}/`} class="cl-btn cl-btn--ghost cl-btn--sm">{readMore}</a>
+          <Fragment set:html={`<a href="/releases/${schema.slug}/" class="cl-btn cl-btn--ghost cl-btn--sm" ${l10nText(readMoreMap())}>${readMore}</a>`} />
         </footer>
       </article>
     ))}

@@ -44,7 +44,14 @@ export const getLocale = (): Locale => {
 
 export const setLocale = (l: Locale): void => {
   try { globalThis.localStorage?.setItem(STORAGE_KEY, l) } catch {}
-  globalThis.location?.reload()
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = l
+    document.documentElement.dataset.loc = l
+  }
+  // Dispatch a custom event so app code can re-render content without a
+  // full reload. Listeners: Base.astro init script (applyContent + applyI18n
+  // + aria-pressed update on the lang switcher).
+  try { globalThis.dispatchEvent(new CustomEvent('pyaserv:locale', { detail: { locale: l } })) } catch {}
 }
 
 type Dict = Readonly<Record<string, string>>
