@@ -1,0 +1,21 @@
+specialist:
+  detail:
+    title: Perfil
+    locked:
+      cta: iniciá sesión
+    verified: ✓ Verificado
+    contact_btn: Enviar mensaje
+    services_h: Servicios que ofrece
+    no_services:
+      title: Aún no publicó servicios
+    compose_h: Escribirle
+    compose:
+      label: Mensaje
+      placeholder: Hola, me interesa…
+    no_listings_err: Este profesional aún no publicó servicios; no se puede iniciar la conversación todavía.
+    price_from: desde
+    per_hour: hora
+    per_job: trabajo
+    price_tbd: Precio a coordinar
+    ask_about: Consultar sobre este servicio
+    description: Perfil del profesional en PyaServ. Contactá directo sin comisiones.

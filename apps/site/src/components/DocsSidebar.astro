@@ -1,0 +1,32 @@
+---
+import { TOC } from '~/data/docs-toc.ts'
+import { tFor, type Locale } from '~/lib/i18n.ts'
+
+interface Props { currentSlug?: string }
+const { currentSlug } = Astro.props
+const loc: Locale = 'es'
+---
+<aside class="docs-sidebar" aria-label={tFor(loc, 'docs.sidebar_aria')}>
+  {TOC.map((entry) => (
+    <div class="docs-sidebar__group">
+      <h3 class="docs-sidebar__group-title">{tFor(loc, entry.group.i18nKey)}</h3>
+      <ul class="docs-sidebar__list">
+        {entry.pages.map((page) => {
+          const isActive = currentSlug === page.slug
+          const statusLabel = page.status === 'live' ? tFor(loc, 'docs.status_live')
+            : page.status === 'demo' ? tFor(loc, 'docs.status_demo')
+            : tFor(loc, 'docs.status_soon')
+          return (
+            <li class="docs-sidebar__item">
+              <a href={`/docs/${page.slug}/`} aria-current={isActive ? 'page' : undefined}>
+                <span class="docs-sidebar__code">{page.code}</span>
+                <span>{page.title}</span>
+                <span class="docs-sidebar__status" data-status={page.status}>{statusLabel}</span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  ))}
+</aside>

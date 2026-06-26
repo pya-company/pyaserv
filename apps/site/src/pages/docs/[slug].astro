@@ -2,72 +2,55 @@
 import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
+import DocsSidebar from '~/components/DocsSidebar.astro'
 import { DOC_PAGES } from '~/data/docs-content.ts'
+import { renderReleaseBody } from '~/lib/markdown-mini.ts'
+import { tFor, type Locale } from '~/lib/i18n.ts'
 
 export function getStaticPaths() {
   return DOC_PAGES.map((p) => ({ params: { slug: p.slug }, props: { doc: p } }))
 }
-
 const { doc } = Astro.props
-
-// Small markdown subset: paragraphs, lists with "·", `inline code`, **bold**.
-const inlineMd = (s: string): string =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-
-const renderBody = (md: string): string => {
-  const lines = md.split('\n')
-  const out: string[] = []
-  let inList = false
-  for (const raw of lines) {
-    const line = raw.trim()
-    if (!line) { if (inList) { out.push('</ul>'); inList = false } continue }
-    if (line.startsWith('·')) {
-      if (!inList) { out.push('<ul>'); inList = true }
-      out.push(`<li>${inlineMd(line.slice(1).trim())}</li>`)
-    } else {
-      if (inList) { out.push('</ul>'); inList = false }
-      out.push(`<p>${inlineMd(line)}</p>`)
-    }
-  }
-  if (inList) out.push('</ul>')
-  return out.join('\n')
-}
-
-const statusLabel = doc.status === 'live' ? 'En vivo' : doc.status === 'demo' ? 'Demo' : 'Próximo'
+const loc: Locale = 'es'
+const statusLabel = doc.status === 'live' ? tFor(loc, 'docs.status_live')
+  : doc.status === 'demo' ? tFor(loc, 'docs.status_demo')
+  : tFor(loc, 'docs.status_soon')
 ---
-<Base title={`${doc.title} — Docs`} active="home" description={doc.tldr}>
-  <article class="docpage">
-    <nav class="docpage__crumbs">
-      <a href="/docs/">Docs</a> · <span>{doc.title}</span>
-    </nav>
+<Base title={`${doc.title} — ${tFor(loc, 'docs.page_title')}`} active="home" description={doc.tldr}>
+  <div class="docs-wiki">
+    <DocsSidebar currentSlug={doc.slug} />
 
-    <header>
-      <div class="docpage__meta">
-        <span class="docpage__code">{doc.code}</span>
-        <span class="docpage__status" data-status={doc.status}>{statusLabel}</span>
-      </div>
-      <h1>{doc.title}</h1>
-      <p class="docpage__tldr">{doc.tldr}</p>
+    <article class="docs-content docpage">
+      <nav class="docpage__crumbs">
+        <a href="/docs/">{tFor(loc, 'docs.breadcrumb_root')}</a> · <span>{doc.title}</span>
+      </nav>
 
-      {(doc.demoUrl || doc.realUrl) && (
-        <div class="docpage__actions">
-          {doc.demoUrl && <a href={doc.demoUrl} class="cl-btn cl-btn--primary">Probar demo →</a>}
-          {doc.realUrl && <a href={doc.realUrl} class="cl-btn cl-btn--ghost">Ver real →</a>}
+      <header>
+        <div class="docpage__meta">
+          <span class="docpage__code">{doc.code}</span>
+          <span class="docpage__status" data-status={doc.status}>{statusLabel}</span>
         </div>
-      )}
-    </header>
+        <h1>{doc.title}</h1>
+        <p class="docpage__tldr">{doc.tldr}</p>
 
-    {doc.sections.map((section) => (
-      <section>
-        <h2>{section.heading}</h2>
-        <Fragment set:html={renderBody(section.bodyMd)} />
-      </section>
-    ))}
+        {(doc.demoUrl || doc.realUrl) && (
+          <div class="docpage__actions">
+            {doc.demoUrl && <a href={doc.demoUrl} class="cl-btn cl-btn--primary">{tFor(loc, 'docs.btn_try_demo')}</a>}
+            {doc.realUrl && <a href={doc.realUrl} class="cl-btn cl-btn--ghost">{tFor(loc, 'docs.btn_view_real')}</a>}
+          </div>
+        )}
+      </header>
 
-    <div class="docpage__back">
-      <a href="/docs/">← Todas las features</a>
-    </div>
-  </article>
+      {doc.sections.map((section) => (
+        <section>
+          <h2>{section.heading}</h2>
+          <Fragment set:html={renderReleaseBody(section.bodyMd)} />
+        </section>
+      ))}
+
+      <div class="docpage__back">
+        <a href="/docs/">{tFor(loc, 'docs.back_to_index')}</a>
+      </div>
+    </article>
+  </div>
 </Base>

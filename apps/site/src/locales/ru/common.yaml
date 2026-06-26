@@ -1,0 +1,25 @@
+common:
+  loading: Загрузка…
+  sending: Отправка…
+  saving: Сохранение…
+  publishing: Публикация…
+  verifying: Проверка…
+  save: Сохранить
+  cancel: Отмена
+  send: Отправить
+  delete: Удалить
+  edit: Изменить
+  back: Назад
+  next: Далее
+  skip: Пропустить
+  finish: Готово!
+  close: Закрыть
+  missing_id: Не указан ID
+  price_tbd: По согласованию
+  budget_tbd: По согласованию
+  now: сейчас
+  no_description: (без описания)
+  brand_suffix: PyaServ
+  foot_brother: побратим PyaEats
+  foot_built_on: построен на pya-platform
+  error_network: Ошибка сети. Попробуйте ещё раз.

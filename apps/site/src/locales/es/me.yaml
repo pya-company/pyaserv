@@ -1,0 +1,76 @@
+me:
+  title: Mi panel
+  heading: Mi panel
+  logout: Cerrar sesión
+  tabs:
+    aria: Secciones
+    profile: 👤 Mi perfil
+    listings: 🛠️ Mis servicios
+    requests: 📢 Mis pedidos
+    inquiries: 💬 Conversaciones
+    stats: 📊 Estadísticas
+  stats:
+    h: Estadísticas
+    intro: Métricas de tu perfil — últimos 30 días.
+    empty: Aún no tenés perfil de profesional. Creá tu perfil para empezar a ver métricas.
+    profile_view: Vistas de perfil
+    phone_click: Clics en teléfono
+    whatsapp_click: Clics en WhatsApp
+    inquiries: Consultas recibidas
+    completed: Trabajos completados
+  session_prefix: Sesión iniciada · userId
+  profile:
+    h: Perfil de profesional
+    intro: Si querés ofrecer servicios, completá tu perfil acá.
+    display_name: Nombre que mostramos
+    headline:
+      placeholder: Plomero 24h en Asunción
+    phone:
+      placeholder: +595 981 234567
+    whatsapp:
+      placeholder: +595 981 234567
+    barrio:
+      placeholder: Villa Morra
+    bio:
+      placeholder: Contales tu experiencia, herramientas, zonas que cubrís…
+    saved: ✓ Perfil guardado
+    geoloc:
+      locating: Buscando ubicación…
+      denied: Acceso a ubicación denegado
+      unavailable: Geolocalización no disponible
+    completeness:
+      empty: 'Perfil completo: 0%'
+  listings:
+    h: Mis servicios publicados
+    new: + Nuevo
+    empty_profile:
+      title: Primero creá tu perfil
+      hint: Completá la pestaña «Mi perfil» antes de publicar.
+    empty:
+      title: No publicaste servicios todavía
+      hint: Tocá «+ Nuevo» arriba para empezar.
+    price_from: desde
+    confirm_delete: ¿Eliminar este servicio?
+  requests:
+    h: Mis pedidos como cliente
+    new: + Nuevo
+    empty:
+      title: No publicaste pedidos abiertos
+      hint: Si necesitás algo concreto, tocá «+ Nuevo».
+    status:
+      open: Abierto
+      closed: Cerrado
+    public_view: Vista pública →
+  inquiries:
+    h: Conversaciones
+    empty:
+      title: Sin conversaciones todavía
+      hint: Cuando contactes a alguien o te contacten, aparecerán acá.
+    as_client: Como cliente
+    as_specialist: Como profesional
+    about_listing: Sobre un servicio
+    about_request: Sobre un pedido
+  notifs:
+    h: Notificaciones
+    email: Recibir avisos por email
+    saved: ✓ Preferencia guardada

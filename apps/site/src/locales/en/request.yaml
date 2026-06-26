@@ -1,0 +1,34 @@
+request:
+  detail:
+    title: Request
+    status:
+      open: Open
+      closed: Closed
+    locked:
+      cta: sign in
+    reply_btn: Apply
+    compose_h: Apply
+    compose:
+      label: Message to the client
+      placeholder: Hi, I can take this on…
+    description: Request posted by a client. Apply directly, no commission.
+  new:
+    title: New request
+    back: ← My requests
+    intro: Describe the work you need. Relevant specialists will be able to apply — contact happens by private message.
+    submit: Publish request
+  field:
+    category: Category
+    title:
+      placeholder: Need a plumber urgently
+    description:
+      placeholder: What needs to be done, approximate date, urgency, details…
+    barrio:
+      placeholder: Villa Morra
+    budget:
+      short: Budget (Gs)
+    status:
+      open: Open
+      closed: Closed
+  edit:
+    title: Edit request

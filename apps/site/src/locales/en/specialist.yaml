@@ -1,0 +1,21 @@
+specialist:
+  detail:
+    title: Profile
+    locked:
+      cta: sign in
+    verified: ✓ Verified
+    contact_btn: Send message
+    services_h: Services offered
+    no_services:
+      title: No services posted yet
+    compose_h: Message
+    compose:
+      label: Message
+      placeholder: Hi, I am interested…
+    no_listings_err: This specialist has not posted services yet; the conversation cannot be started.
+    price_from: from
+    per_hour: hour
+    per_job: job
+    price_tbd: Price to be agreed
+    ask_about: Ask about this service
+    description: Specialist profile on PyaServ. Reach out directly, no commissions.

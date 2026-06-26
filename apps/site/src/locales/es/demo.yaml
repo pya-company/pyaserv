@@ -1,0 +1,24 @@
+demo:
+  banner_msg: 'MODO DEMO — los cambios no se guardan. Estás viendo la app real con datos ficticios.'
+  banner_exit: Salir del demo
+  exit_confirm_title: Salir del modo demo
+  exit_confirm_body: Nada de lo que probaste se guarda. Tu perfil real (si tenés uno) sigue exactamente como lo dejaste.
+  exit_confirm_yes: Sí, salir
+  exit_confirm_no: Seguir en demo
+  demo_tag: Demo
+  
+  # Tour steps
+  tour_t1_step1_title: Empezamos por tu cara
+  tour_t1_step1_body: Una buena foto duplica las consultas. Sacate una con luz natural.
+  tour_t1_step2_title: Tu headline
+  tour_t1_step2_body: 'Una línea corta: oficio + zona + ventaja. Ej: "Plomero 24h en Villa Morra".'
+  tour_t1_step3_title: Contales quién sos
+  tour_t1_step3_body: 2-3 frases. Tu experiencia, herramientas, qué zonas cubrís.
+  tour_t1_step4_title: Tu teléfono
+  tour_t1_step4_body: Cómo te contactan. Usá el mismo que tu WhatsApp si es posible.
+  tour_t1_step5_title: WhatsApp
+  tour_t1_step5_body: El botón principal de tu perfil llevará acá. Asegurate de que esté actualizado.
+  tour_t1_step6_title: Tu barrio principal
+  tour_t1_step6_body: Donde tenés más trabajo. Después podés agregar más zonas en la edición avanzada.
+  tour_t1_step7_title: ¡Listo!
+  tour_t1_step7_body: Cada paso adicional sube tu visibilidad. ¡A 100% desbloqueás 7 días de Boost gratis y la insignia "Perfil Maestro"!

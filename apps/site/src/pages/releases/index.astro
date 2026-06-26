@@ -1,111 +1,71 @@
 ---
 import Base from '~/layouts/Base.astro'
+import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
+import { RELEASES } from '~/data/releases.ts'
+import { renderReleaseBody } from '~/lib/markdown-mini.ts'
+import { tFor, type Locale } from '~/lib/i18n.ts'
 
-interface Release {
-  readonly date: string
-  readonly version: string
-  readonly title: string
-  readonly tags: ReadonlyArray<string>
-  readonly tldr: string
-  readonly sections: ReadonlyArray<{ readonly title: string; readonly items: ReadonlyArray<{ html: string; demoUrl?: string }> }>
-}
-
-const releases: ReadonlyArray<Release> = [
-  {
-    date: '2026-06-25',
-    version: 'v1.1.0',
-    title: 'Sprint 1-6 features live',
-    tags: ['profile', 'gamification', 'quotes', 'crm', 'tour', 'docs'],
-    tldr: 'Las 13 features de spec v1 están en producción. Probá cada una desde /docs/.',
-    sections: [
-      {
-        title: 'Nuevo',
-        items: [
-          { html: '<strong>Perfil público pyaserv.com/p/&lt;slug&gt;</strong> — página propia con badges, servicios, portfolio, horario y botón directo a WhatsApp.', demoUrl: '/demo/profile' },
-          { html: '<strong>Cotizador rápido</strong> — plantillas por oficio, IVA opcional, PDF descargable, envío por WhatsApp con un click.', demoUrl: '/demo/quote' },
-          { html: '<strong>Lite-CRM "Mis clientes"</strong> — clientes recurrentes se agregan automáticamente cuando se completa un trabajo. Notas editables.' },
-          { html: '<strong>Onboarding Tour</strong> — los nuevos profesionales son guiados paso a paso por el armado del perfil.', demoUrl: '/demo/tour' },
-          { html: '<strong>Sistema de XP, insignias y rachas</strong> — 18 insignias en 4 categorías, 5 niveles de tier (Aprendiz → Patrón), misiones diarias y semanales.', demoUrl: '/demo/badges' },
-          { html: '<strong>Idioma guaraní</strong> — sumá una versión en guaraní a tu perfil. UI base se mantiene en español.' },
-          { html: '<strong>Páginas SEO por zona</strong> — 400 landing pages tipo "Plomero en Villa Morra" generadas automáticamente.' },
-          { html: '<strong>Documentación pública</strong> — esta misma página + /docs/.' },
-        ],
-      },
-      {
-        title: 'Mejorado',
-        items: [
-          { html: 'Dashboard /me/ ahora muestra HUD con XP / racha / nivel arriba.' },
-          { html: 'Perfil avanzado: portada, servicios con precio, portfolio, horario, filtros de leads, traducción a guaraní.' },
-          { html: 'API extendida: 11 nuevos endpoints bajo /v1/me/ + /v1/p/:slug.' },
-        ],
-      },
-      {
-        title: 'Próximamente',
-        items: [
-          { html: 'Recap-card generator para WhatsApp Status (1080×1920 PNG)' },
-          { html: 'Suscripción mensual con paywall por cantidad de inquiries' },
-          { html: 'WhatsApp Business API para smart-matching automático' },
-        ],
-      },
-    ],
-  },
-  {
-    date: '2026-06-24',
-    version: 'v1.0.0',
-    title: 'Spec v1 Foundation',
-    tags: ['foundation', 'schema', 'i18n'],
-    tldr: 'Base de datos lista para todas las features de spec v1.',
-    sections: [
-      {
-        title: 'Nuevo',
-        items: [
-          { html: '<strong>Idioma guaraní</strong> — ahora podés ver PyaServ con vocablos en guaraní en los lugares con emoción (CTAs, saludos). El resto sigue en español.' },
-          { html: '<strong>40 barrios + distritos</strong> catalogados (Asunción + Departamento Central). Tu perfil puede listar hasta 8 zonas de trabajo.' },
-          { html: '<strong>Sistema de gamificación</strong> en la base de datos: XP events, badges catalog (18), quests, user_game_state.' },
-        ],
-      },
-    ],
-  },
-]
+const loc: Locale = 'es'
+const title = tFor(loc, 'releases.page_title')
+const intro = tFor(loc, 'releases.page_intro')
+const rss = tFor(loc, 'releases.rss_link')
+const readMore = tFor(loc, 'releases.read_more')
+const sectionLabel = (kind: string) => tFor(loc, `releases.section_${kind}`)
 ---
-<Base title="Novedades" active="home" description="Lo último que cambia en PyaServ. Suscribite para no perderte ninguna release.">
-  <section class="ps-docs-hero">
-    <h1>Novedades</h1>
-    <p>Lo último que va saliendo en PyaServ. Una entrada por release.</p>
-    <p style="margin-top:8px;font-size:13px;color:#9ca3af;">
-      <a href="/releases/rss.xml" style="color:#4f46e5;">RSS feed</a> · ¿Querés notificaciones por email? Decímelo desde <a href="/me/">/me/</a>.
+<Base title={title} active="home" description={intro}>
+  <section class="docs-hero">
+    <h1 data-i18n="releases.page_title">{title}</h1>
+    <p data-i18n="releases.page_intro">{intro}</p>
+    <p style="margin-top: var(--ps-space-2); font-size: 13px;">
+      <a href="/releases/rss.xml" style="color:var(--ps-acc);" data-i18n="releases.rss_link">{rss}</a>
     </p>
   </section>
 
-  <div style="max-width:760px;margin:0 auto;padding:0 16px 64px;">
-    {releases.map((r) => (
-      <article style="background:white;border:1px solid #e5e7eb;border-radius:14px;padding:24px;margin-bottom:20px;">
-        <header style="margin-bottom:16px;">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-            <span style="background:#eef2ff;color:#4338ca;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.05em;">{r.version}</span>
-            <span style="color:#6b7280;font-size:13px;">{r.date}</span>
+  <div class="release-list">
+    {RELEASES.map((r) => (
+      <article class="release-card" id={r.slug}>
+        <header class="release-card__head">
+          <div class="release-card__meta">
+            <span class="release-card__version">{r.version}</span>
+            <span class="release-card__date">{r.date}</span>
           </div>
-          <h2 style="margin:0;font-size:22px;color:#111827;">{r.title}</h2>
-          <p style="margin:8px 0 0 0;color:#4b5563;">{r.tldr}</p>
-          <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
-            {r.tags.map((t) => <span style="background:#f3f4f6;color:#6b7280;padding:1px 8px;border-radius:4px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;">{t}</span>)}
-          </div>
+          <h2 class="release-card__title">
+            <a href={`/releases/${r.slug}/`}>{r.title}</a>
+          </h2>
+          <p class="release-card__tldr">{r.tldr}</p>
+          {r.tags.length > 0 && (
+            <div class="release-card__tags">
+              {r.tags.map((tag) => <span class="cl-tag cl-tag--gray">{tag}</span>)}
+            </div>
+          )}
         </header>
 
-        {r.sections.map((sec) => (
-          <section style="margin-bottom:16px;">
-            <h3 style="font-size:13px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;margin:0 0 8px 0;">{sec.title}</h3>
-            <ul style="margin:0;padding-left:18px;">
-              {sec.items.map((item) => (
-                <li style="margin-bottom:8px;color:#1f2937;line-height:1.5;">
-                  <Fragment set:html={item.html} />
-                  {item.demoUrl && <a href={item.demoUrl} style="color:#4f46e5;margin-left:6px;font-weight:600;">Probar →</a>}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+        <div class="release-card__body">
+          {r.sections.map((sec) => (
+            <section class="release-section" data-kind={sec.kind}>
+              <h3 class="release-section__heading">
+                <span class="release-section__badge" data-kind={sec.kind}>{sectionLabel(sec.kind)}</span>
+                {sec.heading && <span class="release-section__title">{sec.heading}</span>}
+              </h3>
+              <div class="release-section__body" set:html={renderReleaseBody(sec.bodyMd)} />
+              {sec.media && sec.media.length > 0 && (
+                <div class="release-section__media">
+                  {sec.media.map((m) => (
+                    <figure class="release-media">
+                      <img src={m.src} alt={m.alt} loading="lazy" />
+                      {m.caption && <figcaption>{m.caption}</figcaption>}
+                    </figure>
+                  ))}
+                </div>
+              )}
+            </section>
+          ))}
+        </div>
+
+        <footer class="release-card__foot">
+          <a href={`/releases/${r.slug}/`} class="cl-btn cl-btn--ghost cl-btn--sm">{readMore}</a>
+        </footer>
       </article>
     ))}
   </div>

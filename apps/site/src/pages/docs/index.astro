@@ -2,132 +2,46 @@
 import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
-import { FeatureCard } from '~/components-lib/molecules.ts'
+import DocsSidebar from '~/components/DocsSidebar.astro'
+import { TOC } from '~/data/docs-toc.ts'
+import { tFor, type Locale } from '~/lib/i18n.ts'
 
-interface Feature {
-  readonly code: string
-  readonly title: string
-  readonly desc: string
-  readonly status: 'live' | 'demo' | 'soon'
-  readonly statusLabel: string
-  readonly docUrl?: string
-  readonly demoUrl?: string
-  readonly realUrl?: string
-}
-
-const features: ReadonlyArray<Feature> = [
-  { code: 'A', title: 'Tu perfil público',     status: 'live',
-    desc: 'Página propia con URL pyaserv.com/p/<tu-slug>. Foto, portada, bio, servicios con precio, galería, reseñas, badges, horario, botón directo a WhatsApp.',
-    docUrl: '/docs/perfil/', demoUrl: '/me/?demo=1&tour=T1', realUrl: '/p/maria-gonzalez-019ecf', statusLabel: 'En vivo' },
-  { code: 'K', title: 'Onboarding Tour',       status: 'live',
-    desc: '7 pasos guiados que llevan al nuevo profesional por el armado del perfil. Auto-lanza al primer ingreso a /me/.',
-    docUrl: '/docs/tour/', demoUrl: '/me/?demo=1&tour=T1', statusLabel: 'En vivo' },
-  { code: 'G', title: 'Insignias',             status: 'live',
-    desc: '18 insignias en 4 categorías (tier, hito, superlativo, colección). Aprendiz → Patrón. Compartibles.',
-    docUrl: '/docs/insignias/', demoUrl: '/me/?demo=1&tab=game', realUrl: '/me/?tab=game', statusLabel: 'En vivo' },
-  { code: 'J', title: 'XP, rachas, misiones',  status: 'live',
-    desc: 'Sistema de XP por acción. Racha diaria con freezes. Misiones diarias y semanales con recompensas.',
-    docUrl: '/docs/xp/', realUrl: '/me/?tab=game', statusLabel: 'En vivo' },
-  { code: 'E', title: 'Cotizador rápido',      status: 'live',
-    desc: 'Plantillas por oficio. Items con cantidad y precio, IVA opcional, PDF descargable, envío por WhatsApp con un click.',
-    docUrl: '/docs/cotizador/', demoUrl: '/me/quotes/new/?demo=1', realUrl: '/me/quotes/new/', statusLabel: 'En vivo' },
-  { code: 'B', title: 'Analítica',             status: 'live',
-    desc: 'Cuántos vieron tu perfil, cuántos clickearon WhatsApp, de dónde vienen, comparación con el promedio de tu rubro.',
-    docUrl: '/docs/analitica/', realUrl: '/me/?tab=stats', statusLabel: 'En vivo' },
-  { code: 'I', title: 'Mis clientes',          status: 'live',
-    desc: 'Lite-CRM: clientes recurrentes se agregan al completar un trabajo. Notas editables, recordatorio "6 meses sin verlo".',
-    docUrl: '/docs/mis-clientes/', realUrl: '/me/?tab=clients', statusLabel: 'En vivo' },
-  { code: 'F', title: 'Filtros de leads',      status: 'live',
-    desc: 'Configurá presupuesto mínimo + esconder cuentas nuevas (anti-spam).',
-    docUrl: '/docs/filtros-leads/', realUrl: '/me/?tab=profile', statusLabel: 'En vivo' },
-  { code: 'H', title: 'Multilingüe per-perfil',status: 'live',
-    desc: 'Versión en guaraní de tu bio/headline sin perder el SEO en español. Hreflang automático en el perfil público.',
-    docUrl: '/docs/multilingue/', realUrl: '/me/?tab=profile', statusLabel: 'En vivo' },
-  { code: 'L', title: 'Demo Mode v2',          status: 'live',
-    desc: 'Cualquier página real con ?demo=1 — apiFetch interceptado, datos mock, banner permanente, identidad logged-out. Mismo código que producción.',
-    docUrl: '/docs/demo-mode/', demoUrl: '/me/?demo=1', statusLabel: 'En vivo' },
-  { code: 'M', title: 'Docs + Releases',       status: 'live',
-    desc: 'Esta página. Cada feature con detalles, GIFs, link a demo y a la versión real. Notas de cada release con suscripción RSS.',
-    docUrl: '/docs/this-doc/', realUrl: '/releases/', statusLabel: 'En vivo' },
-  { code: 'P', title: 'Components (Storybook)',status: 'live',
-    desc: 'Catálogo de componentes pure-stateless con panel de props + locale switcher. Mismo cuerpo de código que producción.',
-    docUrl: '/components/', realUrl: '/components/', statusLabel: 'En vivo' },
-  { code: 'C', title: 'Recap-card PNG', status: 'soon',
-    desc: 'Generador 1080×1920 PNG semanal listo para compartir. Cada insignia desbloqueada también genera una tarjeta.',
-    docUrl: '/docs/recap-card/', statusLabel: 'Próximo' },
-  { code: 'D', title: 'SIFEN — factura electrónica', status: 'soon',
-    desc: 'Generación de factura electrónica integrada con DGII. En espera de consultoría tributaria.',
-    docUrl: '/docs/sifen/', statusLabel: 'Próximo' },
-  { code: 'N', title: 'Local-first / Offline',status: 'soon',
-    desc: 'Páginas se renderizan offline desde cache, mutations queued, sync en reconexión, conflict resolution. Multi-sprint, prioridad alta.',
-    docUrl: '/docs/local-first/', statusLabel: 'Planeado' },
-  { code: 'O', title: 'Mobile (Tauri WebView)',status: 'soon',
-    desc: 'iOS + Android app envolviendo el mismo código web. Single codebase. Sprint 7+.',
-    docUrl: '/docs/mobile/', statusLabel: 'Planeado' },
-]
+const loc: Locale = 'es'
+const title = tFor(loc, 'docs.page_title')
+const intro = tFor(loc, 'docs.page_intro')
+const statusLabel = (s: 'live' | 'demo' | 'soon') =>
+  s === 'live' ? tFor(loc, 'docs.status_live')
+  : s === 'demo' ? tFor(loc, 'docs.status_demo')
+  : tFor(loc, 'docs.status_soon')
 ---
-<Base title="Documentación" active="home" description="Catálogo completo de features de PyaServ. Probalas en modo demo antes de comprometerte.">
-  <section class="docs-hero">
-    <h1>Documentación</h1>
-    <p>Cada feature tiene página propia con detalles, link a demo y a producción. Si algo está marcado «Próximo», está en el roadmap.</p>
-    <nav class="docs-toc" aria-label="Secciones">
-      <a href="#features">Features ↓</a>
-      <a href="#releases">Novedades ↓</a>
-      <a href="/components/">Componentes ↗</a>
-    </nav>
-  </section>
+<Base title={title} active="home" description={intro}>
+  <div class="docs-wiki">
+    <DocsSidebar />
 
-  <section id="features" class="docs-section">
-    <div class="docs-section__head">
-      <h2>Features</h2>
-      <p>{features.length} en total · {features.filter((f) => f.status === 'live').length} en vivo</p>
-    </div>
-    <div class="docs-grid">
-      {features.map((f) => (
-        <Fragment set:html={FeatureCard({
-          code: f.code,
-          title: f.title,
-          description: f.desc,
-          status: f.status,
-          statusLabel: f.statusLabel,
-          docUrl: f.docUrl,
-          demoUrl: f.demoUrl,
-          realUrl: f.realUrl,
-          docLabel: 'Más detalles →',
-          demoLabel: 'Probar demo →',
-          realLabel: 'Ver real →',
-          soonLabel: 'Próximamente',
-        })} />
+    <main class="docs-content">
+      <header class="docpage__head" style="margin-bottom: var(--ps-space-5);">
+        <h1 data-i18n="docs.page_title" style="font-size: clamp(24px, 4vw, 32px); margin: 0 0 var(--ps-space-2) 0; font-weight: 800; letter-spacing: -0.02em; color: var(--ps-text);">{title}</h1>
+        <p data-i18n="docs.page_intro" style="margin: 0; color: var(--ps-text-muted); font-size: 16px; line-height: 1.55;">{intro}</p>
+      </header>
+
+      {TOC.map((entry) => (
+        <section style="margin-bottom: var(--ps-space-6);">
+          <h2 style="font-size: 18px; font-weight: 700; color: var(--ps-text); margin: 0 0 var(--ps-space-3) 0; letter-spacing: -0.01em;">
+            {tFor(loc, entry.group.i18nKey)}
+          </h2>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ps-space-2);">
+            {entry.pages.map((p) => (
+              <li>
+                <a href={`/docs/${p.slug}/`} style="display: flex; align-items: baseline; gap: var(--ps-space-2); padding: var(--ps-space-2) var(--ps-space-3); background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-sm); text-decoration: none; color: var(--ps-text); transition: border-color .15s, background .15s;">
+                  <span style="font-size: 11px; font-weight: 700; background: var(--ps-acc-soft); color: var(--ps-acc); padding: 2px 8px; border-radius: 3px; letter-spacing: .05em; flex-shrink: 0;">{p.code}</span>
+                  <span style="flex: 1; font-weight: 600;">{p.title}</span>
+                  <span class="docs-sidebar__status" data-status={p.status}>{statusLabel(p.status)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </div>
-  </section>
-
-  <section id="releases" class="docs-section">
-    <div class="docs-section__head">
-      <h2>Novedades</h2>
-      <p><a href="/releases/rss.xml" style="color:var(--ps-acc);">RSS</a></p>
-    </div>
-    <div class="docs-grid" style="grid-template-columns: 1fr;">
-      <article class="cl-feature-card">
-        <header class="cl-feature-card__header">
-          <h3 class="cl-feature-card__title">v1.1.0 · 2026-06-25 · Sprint 1-6 features live</h3>
-          <span class="cl-feature-card__status" data-status="live">En vivo</span>
-        </header>
-        <p class="cl-feature-card__desc">Las 13 features de spec v1 están en producción + components-lib + Demo Mode v2 + docs restructure.</p>
-        <div class="cl-feature-card__actions">
-          <a href="/releases/" class="cl-btn cl-btn--primary cl-btn--sm">Ver detalles →</a>
-        </div>
-      </article>
-      <article class="cl-feature-card">
-        <header class="cl-feature-card__header">
-          <h3 class="cl-feature-card__title">v1.0.0 · 2026-06-24 · Spec v1 Foundation</h3>
-          <span class="cl-feature-card__status" data-status="live">En vivo</span>
-        </header>
-        <p class="cl-feature-card__desc">Base de datos lista — schema, service areas, gamification core, GN i18n.</p>
-        <div class="cl-feature-card__actions">
-          <a href="/releases/" class="cl-btn cl-btn--primary cl-btn--sm">Ver detalles →</a>
-        </div>
-      </article>
-    </div>
-  </section>
+    </main>
+  </div>
 </Base>

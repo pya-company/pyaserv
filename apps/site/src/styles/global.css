@@ -353,12 +353,26 @@ flying-menu:not(:defined) { display: none; }
   min-width: 36px;
   border-radius: var(--ps-radius-pill);
   letter-spacing: 0.04em;
+  cursor: pointer;
   transition: color 120ms, background 120ms;
+  font-family: inherit;
 }
-.ps-lang-btn:hover,
-.ps-lang-btn:focus-visible { color: var(--ps-text); }
+.ps-lang-btn:hover { color: var(--ps-text); background: var(--ps-surface-2); }
+/* Унифицированный focus-visible: outline + offset для всех интерактивных. */
+.ps-lang-btn:focus-visible,
+.ps-theme-btn:focus-visible,
+.ps-topbar__nav-btn:focus-visible,
+.ps-tab:focus-visible,
+.cl-btn:focus-visible,
+.gt-btn:focus-visible,
+.gt-close:focus-visible,
+.ps-demo-banner__exit:focus-visible {
+  outline: 2px solid var(--ps-acc);
+  outline-offset: 2px;
+  color: var(--ps-text);
+}
 .ps-lang-btn[aria-pressed="true"] {
-  background: var(--ps-surface);
+  background: var(--ps-acc-soft);
   color: var(--ps-acc);
   box-shadow: var(--ps-shadow-sm);
 }
@@ -649,7 +663,10 @@ html[data-auth="user"] [data-auth-guest] { display: none; }
 .ps-fly__menuitem:hover { background: var(--ps-surface-2); }
 /* Pre-paint locale highlight on lang buttons */
 html[data-loc="es"] .ps-lang-btn[data-lang="es"],
-html[data-loc="en"] .ps-lang-btn[data-lang="en"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
+html[data-loc="en"] .ps-lang-btn[data-lang="en"],
+html[data-loc="de"] .ps-lang-btn[data-lang="de"],
+html[data-loc="ru"] .ps-lang-btn[data-lang="ru"],
+html[data-loc="gn"] .ps-lang-btn[data-lang="gn"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
 
 /* Dual-language render — see components/T.astro. We ship both ES and EN text
    in the HTML and hide the wrong one via html[lang]. Zero JS, zero pop-in,

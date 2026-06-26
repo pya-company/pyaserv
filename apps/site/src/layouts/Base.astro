@@ -53,9 +53,9 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
     <div id="demo-banner" class="ps-demo-banner" hidden role="banner" aria-live="polite">
       <div class="ps-demo-banner__msg">
         <span class="ps-demo-banner__icon" aria-hidden="true">⚠</span>
-        <span class="ps-demo-banner__text">MODO DEMO — los cambios no se guardan. <strong>Estás viendo la app real con datos ficticios.</strong></span>
+        <span class="ps-demo-banner__text" data-i18n="demo.banner_msg">MODO DEMO — los cambios no se guardan.</span>
       </div>
-      <button type="button" class="ps-demo-banner__exit" data-demo-exit>Salir del demo</button>
+      <button type="button" class="ps-demo-banner__exit" data-demo-exit data-i18n="demo.banner_exit">Salir del demo</button>
     </div>
     <header class="ps-topbar" id="topbar">
       <a href={href('/')} class="ps-topbar__brand">
@@ -73,13 +73,14 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         <button type="button" class="ps-topbar__nav-btn" data-open-login data-nav-login><T k="nav.login" /></button>
         <!-- Sign out: visible only to authed users via html[data-auth=guest]
              [data-nav-logout]{display:none}. Wired via document delegation. -->
-        <button type="button" class="ps-topbar__nav-btn" data-nav-logout id="nav-logout">
-          <span lang="es">Cerrar sesión</span>
-          <span lang="en">Sign out</span>
+        <button type="button" class="ps-topbar__nav-btn" data-nav-logout id="nav-logout" data-i18n="nav.logout">
+          Cerrar sesión
         </button>
         <div class="ps-lang-switch" role="group" data-i18n-aria="nav.lang_label" aria-label="Idioma">
           <button type="button" class="ps-lang-btn" data-lang="es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
-          <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
+          <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Switch to English">EN</button>
+          <button type="button" class="ps-lang-btn" data-lang="de" data-i18n-aria="nav.lang_de_aria" aria-label="Auf Deutsch wechseln">DE</button>
+          <button type="button" class="ps-lang-btn" data-lang="ru" data-i18n-aria="nav.lang_ru_aria" aria-label="Переключить на русский">RU</button>
         </div>
         <button type="button" class="ps-theme-btn" id="theme-btn" data-i18n-aria="nav.theme_label" aria-label="Cambiar tema">
           <span class="ps-theme-icon" aria-hidden="true"></span>
@@ -107,14 +108,15 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         <a href={href('/releases/')} role="menuitem"><T k="nav.releases" /></a>
         <a href={href('/me/')} role="menuitem" data-nav-me><T k="nav.me" /></a>
         <button type="button" role="menuitem" data-open-login data-nav-login class="ps-fly__menuitem"><T k="nav.login" /></button>
-        <button type="button" role="menuitem" data-nav-logout class="ps-fly__menuitem">
-          <span lang="es">Cerrar sesión</span>
-          <span lang="en">Sign out</span>
+        <button type="button" role="menuitem" data-nav-logout class="ps-fly__menuitem" data-i18n="nav.logout">
+          Cerrar sesión
         </button>
         <div class="ps-fly__row">
           <div class="ps-lang-switch" role="group" data-i18n-aria="nav.lang_label" aria-label="Idioma">
             <button type="button" class="ps-lang-btn" data-lang="es" data-i18n-aria="nav.lang_es_aria" aria-label="Cambiar a español">ES</button>
-            <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Cambiar a inglés">EN</button>
+            <button type="button" class="ps-lang-btn" data-lang="en" data-i18n-aria="nav.lang_en_aria" aria-label="Switch to English">EN</button>
+            <button type="button" class="ps-lang-btn" data-lang="de" data-i18n-aria="nav.lang_de_aria" aria-label="Auf Deutsch wechseln">DE</button>
+            <button type="button" class="ps-lang-btn" data-lang="ru" data-i18n-aria="nav.lang_ru_aria" aria-label="Переключить на русский">RU</button>
           </div>
           <button type="button" class="ps-theme-btn" data-i18n-aria="nav.theme_label" aria-label="Cambiar tema">
             <span class="ps-theme-icon" aria-hidden="true"></span>
@@ -158,7 +160,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       // survive every swap automatically.
 
       const isTheme = (v) => v === 'light' || v === 'dark' || v === 'auto'
-      const isLoc = (v) => v === 'es' || v === 'en'
+      const isLoc = (v) => v === 'es' || v === 'en' || v === 'de' || v === 'ru' || v === 'gn'
 
       // --- per-page wireup ---------------------------------------------------
       const initPage = () => {
@@ -167,7 +169,9 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         //    this the EN-locale user sees ES UI from /specialists/ onward.
         try {
           const stored = localStorage.getItem('pyaserv.locale')
-          const loc = isLoc(stored) ? stored : (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'es'
+          const lang = (navigator.language || '').toLowerCase()
+          const detected = lang.startsWith('de') ? 'de' : lang.startsWith('ru') ? 'ru' : lang.startsWith('es') ? 'es' : lang.startsWith('gn') ? 'gn' : 'en'
+          const loc = isLoc(stored) ? stored : detected
           document.documentElement.lang = loc
           document.documentElement.dataset.loc = loc
         } catch {}
@@ -533,21 +537,29 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       // и опционально запускаем tour из ?tour=<code>.
       import { isDemoMode, exitDemoMode } from '../lib/demo-stubs'
       import { startTour } from '../lib/guided-tour'
+      import { t } from '../lib/i18n'
       import '~/styles/demo-and-docs.css'
 
-      const demoTours = {
-        T1: {
-          code: 'T1',
-          steps: [
-            { selector: '#photo-preview, [data-photo-anchor], img', title: 'Tu cara', body: 'Una buena foto duplica las consultas. Sacate una con luz natural.' },
-            { selector: 'input[name="headline"]', title: 'Tu headline', body: 'Una línea corta: oficio + zona + ventaja. Ej: "Plomero 24h en Villa Morra".' },
-            { selector: 'textarea[name="bio"]', title: 'Contales quién sos', body: '2-3 frases. Tu experiencia, herramientas, qué zonas cubrís.' },
-            { selector: 'input[name="phone"]', title: 'Tu teléfono', body: 'Cómo te contactan. Usá el mismo que tu WhatsApp si es posible.' },
-            { selector: 'input[name="whatsapp"]', title: 'WhatsApp', body: 'El botón principal de tu perfil llevará acá. Asegurate de que esté actualizado.' },
-            { selector: 'input[name="barrio"]', title: 'Tu barrio principal', body: 'Donde tenés más trabajo. Después podés agregar más zonas en la edición avanzada.' },
-            { selector: '#completeness, #completeness-extended', title: '¡Listo!', body: 'Cada paso adicional sube tu visibilidad. ¡A 100% desbloqueás 7 días de Boost gratis y la insignia "Perfil Maestro"!' },
-          ],
-        },
+      const buildDemoTour = (code) => {
+        const tours = {
+          T1: {
+            code: 'T1',
+            steps: [
+              { selector: '#photo-preview, [data-photo-anchor], img', title: t('demo.tour_t1_step1_title'), body: t('demo.tour_t1_step1_body') },
+              { selector: 'input[name="headline"]', title: t('demo.tour_t1_step2_title'), body: t('demo.tour_t1_step2_body') },
+              { selector: 'textarea[name="bio"]', title: t('demo.tour_t1_step3_title'), body: t('demo.tour_t1_step3_body') },
+              { selector: 'input[name="phone"]', title: t('demo.tour_t1_step4_title'), body: t('demo.tour_t1_step4_body') },
+              { selector: 'input[name="whatsapp"]', title: t('demo.tour_t1_step5_title'), body: t('demo.tour_t1_step5_body') },
+              { selector: 'input[name="barrio"]', title: t('demo.tour_t1_step6_title'), body: t('demo.tour_t1_step6_body') },
+              { selector: '#completeness, #completeness-extended', title: t('demo.tour_t1_step7_title'), body: t('demo.tour_t1_step7_body') },
+            ],
+            labels: {
+              back: t('common.back'), next: t('common.next'),
+              skip: t('common.skip'), finish: t('common.finish'),
+            },
+          },
+        }
+        return tours[code]
       }
 
       const applyDemoChrome = () => {
@@ -567,10 +579,11 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           applyDemoChrome()
           const params = new URLSearchParams(location.search)
           const tourCode = params.get('tour')
-          if (tourCode && demoTours[tourCode]) {
+          const tour = tourCode ? buildDemoTour(tourCode) : null
+          if (tour) {
             // Wait for the page to render its anchors
             setTimeout(() => startTour({
-              ...demoTours[tourCode],
+              ...tour,
               onFinish: () => {},
               onSkip: () => {},
             }), 500)

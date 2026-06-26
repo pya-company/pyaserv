@@ -1,0 +1,25 @@
+common:
+  loading: Cargando…
+  sending: Enviando…
+  saving: Guardando…
+  publishing: Publicando…
+  verifying: Verificando…
+  save: Guardar
+  cancel: Cancelar
+  send: Enviar
+  delete: Eliminar
+  edit: Editar
+  back: Atrás
+  next: Siguiente
+  skip: Saltar
+  finish: ¡Listo!
+  close: Cerrar
+  missing_id: Falta el id
+  price_tbd: A coordinar
+  budget_tbd: A coordinar
+  now: ahora
+  no_description: (sin descripción)
+  brand_suffix: PyaServ
+  foot_brother: hermano de PyaEats
+  foot_built_on: construido sobre pya-platform
+  error_network: Error de red. Intentá de nuevo.

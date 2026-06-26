@@ -1,0 +1,22 @@
+docs:
+  page_title: Dokumentation
+  page_intro: PyaServ-Wiki. Jedes Feature hat seinen Abschnitt mit Details, Demo-Link und Produktions-Link.
+  sidebar_aria: Dokumentationsabschnitte
+  sidebar_search_placeholder: Suchen…
+  status_live: Live
+  status_demo: Demo
+  status_soon: Bald
+  status_planned: Geplant
+  btn_try_demo: Demo testen →
+  btn_view_real: Live ansehen →
+  btn_more: Mehr Details →
+  btn_soon: Demnächst
+  back_to_index: ← Gesamte Dokumentation
+  breadcrumb_root: Docs
+  
+  group_profile: Profil & Sichtbarkeit
+  group_gamification: Gamification
+  group_tools: Werkzeuge
+  group_system: System
+  group_roadmap: Roadmap
+  group_dev: Entwicklung

@@ -1,0 +1,76 @@
+me:
+  title: My dashboard
+  heading: My dashboard
+  logout: Sign out
+  tabs:
+    aria: Sections
+    profile: 👤 My profile
+    listings: 🛠️ My services
+    requests: 📢 My requests
+    inquiries: 💬 Conversations
+    stats: 📊 Stats
+  stats:
+    h: Stats
+    intro: Profile metrics — last 30 days.
+    empty: You don't have a specialist profile yet. Create one to start seeing metrics.
+    profile_view: Profile views
+    phone_click: Phone clicks
+    whatsapp_click: WhatsApp clicks
+    inquiries: Inquiries received
+    completed: Jobs completed
+  session_prefix: Signed in · userId
+  profile:
+    h: Specialist profile
+    intro: If you want to offer services, fill out your profile here.
+    display_name: Display name
+    headline:
+      placeholder: 24/7 plumber in Asunción
+    phone:
+      placeholder: +595 981 234567
+    whatsapp:
+      placeholder: +595 981 234567
+    barrio:
+      placeholder: Villa Morra
+    bio:
+      placeholder: Tell about your experience, tools, areas you cover…
+    saved: ✓ Profile saved
+    geoloc:
+      locating: Locating…
+      denied: Location access denied
+      unavailable: Geolocation unavailable
+    completeness:
+      empty: 'Profile complete: 0%'
+  listings:
+    h: My published services
+    new: + New
+    empty_profile:
+      title: Create your profile first
+      hint: Fill out the “My profile” tab before publishing.
+    empty:
+      title: You have not published services yet
+      hint: Tap “+ New” above to start.
+    price_from: from
+    confirm_delete: Delete this service?
+  requests:
+    h: My requests as a client
+    new: + New
+    empty:
+      title: You have no open requests
+      hint: If you need something specific, tap “+ New”.
+    status:
+      open: Open
+      closed: Closed
+    public_view: Public view →
+  inquiries:
+    h: Conversations
+    empty:
+      title: No conversations yet
+      hint: When you contact someone or they contact you, threads will appear here.
+    as_client: As client
+    as_specialist: As specialist
+    about_listing: About a service
+    about_request: About a request
+  notifs:
+    h: Notifications
+    email: Receive email notifications
+    saved: ✓ Preference saved

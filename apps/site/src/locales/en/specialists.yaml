@@ -1,0 +1,22 @@
+specialists:
+  title: Specialists
+  description: Plumbers, electricians, hairdressers, tutors — find them in your neighborhood in Asunción.
+  heading: Available specialists
+  intro: Filter by category or neighborhood. Contact happens outside the platform; PyaServ only introduces.
+  filter:
+    category:
+      all: All
+    barrio:
+      placeholder: Villa Morra, Carmelitas…
+    near_me: 📍 Near me
+    near_me_on: 📍 Near me · on
+    near_me_denied: Location access denied
+  empty:
+    title: Nothing here
+    hint: Try removing filters or changing the neighborhood.
+  count:
+    one: specialist
+    many: specialists
+  card:
+    verified: ✓ verified
+    cta: View profile →

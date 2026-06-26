@@ -1,0 +1,23 @@
+demo:
+  banner_msg: 'DEMO-MODUS — Änderungen werden nicht gespeichert. Du siehst die echte App mit fiktiven Daten.'
+  banner_exit: Demo verlassen
+  exit_confirm_title: Demo-Modus verlassen
+  exit_confirm_body: Nichts, was du ausprobiert hast, wird gespeichert. Dein echtes Profil (falls vorhanden) bleibt unverändert.
+  exit_confirm_yes: Ja, verlassen
+  exit_confirm_no: Im Demo bleiben
+  demo_tag: Demo
+  
+  tour_t1_step1_title: Fangen wir mit deinem Gesicht an
+  tour_t1_step1_body: Ein gutes Foto verdoppelt die Anfragen. Mach eins bei natürlichem Licht.
+  tour_t1_step2_title: Deine Überschrift
+  tour_t1_step2_body: 'Eine kurze Zeile: Beruf + Gebiet + Vorteil. Z.B.: "24h Klempner in Villa Morra".'
+  tour_t1_step3_title: Wer bist du?
+  tour_t1_step3_body: 2-3 Sätze. Deine Erfahrung, Werkzeuge, Gebiete die du abdeckst.
+  tour_t1_step4_title: Deine Telefonnummer
+  tour_t1_step4_body: Wie Kunden dich erreichen. Wenn möglich, dieselbe wie deine WhatsApp-Nummer.
+  tour_t1_step5_title: WhatsApp
+  tour_t1_step5_body: Der Hauptbutton deines Profils führt hierhin. Halte sie aktuell.
+  tour_t1_step6_title: Dein Hauptviertel
+  tour_t1_step6_body: Wo du am meisten arbeitest. Weitere Gebiete kannst du später hinzufügen.
+  tour_t1_step7_title: Fertig!
+  tour_t1_step7_body: Jeder Schritt erhöht deine Sichtbarkeit. Bei 100% schaltest du 7 Tage Boost und das "Master Profile"-Abzeichen frei!

@@ -1,0 +1,22 @@
+listing:
+  new:
+    title: New service
+    back: ← My services
+    intro: Publish a concrete service you offer. It will appear in the public catalog of specialists, filterable by category.
+    submit: Publish
+  field:
+    category: Category
+    title:
+      placeholder: Water heater repair
+    description:
+      placeholder: What the service includes, materials, areas you cover…
+    price_from:
+      short: Price from (Gs)
+    unit:
+      none: —
+      hour: Hour
+      job: Job
+  edit:
+    title: Edit service
+    not_found: Service not found or not yours
+    confirm_delete: Delete permanently?

@@ -1,0 +1,23 @@
+demo:
+  banner_msg: 'DEMO MODE — changes are not saved. You are viewing the real app with fake data.'
+  banner_exit: Exit demo
+  exit_confirm_title: Exit demo mode
+  exit_confirm_body: Nothing you tried is saved. Your real profile (if any) is exactly as you left it.
+  exit_confirm_yes: Yes, exit
+  exit_confirm_no: Stay in demo
+  demo_tag: Demo
+  
+  tour_t1_step1_title: Start with your face
+  tour_t1_step1_body: A good photo doubles inquiries. Take one in natural light.
+  tour_t1_step2_title: Your headline
+  tour_t1_step2_body: 'One short line: trade + area + edge. Eg: "24h plumber in Villa Morra".'
+  tour_t1_step3_title: Tell who you are
+  tour_t1_step3_body: 2-3 sentences. Your experience, tools, areas you cover.
+  tour_t1_step4_title: Your phone
+  tour_t1_step4_body: How clients reach you. Use the same one as WhatsApp if possible.
+  tour_t1_step5_title: WhatsApp
+  tour_t1_step5_body: The main button on your profile goes here. Keep it up to date.
+  tour_t1_step6_title: Your main neighborhood
+  tour_t1_step6_body: Where you have most work. You can add more areas later in advanced edit.
+  tour_t1_step7_title: Done!
+  tour_t1_step7_body: Each step raises your visibility. At 100% you unlock 7 free Boost days and the "Master Profile" badge!
