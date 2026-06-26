@@ -15,6 +15,11 @@
   box-shadow: 0 4px 0 0 color-mix(in srgb, var(--ps-warn) 70%, black);
   font-family: var(--ps-font-sans);
 }
+/* CRITICAL FIX (regression 2026-06-26): `display: flex` above overrode the
+   UA stylesheet's `[hidden] { display: none }`, so the banner stayed visible
+   even when the JS set `banner.hidden = true`. Explicit override required.
+   Also reset body padding-top added by html[data-demo-mode]. */
+.ps-demo-banner[hidden] { display: none !important; }
 .ps-demo-banner__msg {
   display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
 }
