@@ -1,0 +1,13 @@
+title: Onboarding Tour
+tldr: Tour interactivo de 7 pasos que lleva al nuevo profesional por el armado del perfil. Auto-lanza al primer ingreso a /me/ si el perfil está incompleto.
+sections:
+  - heading: Triggers
+    body: 'T1 "Tu primer perfil" — auto-lanza si: (a) primera visita a /me/, (b) no existe registro en `user_tours_completed`, (c) `profile_complete_pct < 100`.'
+  - heading: Pasos T1
+    body: 1. Foto · 2. Headline · 3. Bio · 4. Teléfono · 5. WhatsApp · 6. Barrio · 7. Completeness review.
+  - heading: Engine
+    body: Driver.js v1.5 (~5 KB) lazy-loaded. Spotlight + tooltip + Next/Prev/Skip. Persiste status `completed` o `skipped` en `user_tours_completed` table.
+  - heading: Re-launch
+    body: Sin recompensa XP repetida. Se puede re-lanzar manualmente desde el help menu (próximo sprint).
+  - heading: Demo Mode v2
+    body: En vez de Driver.js, ?demo=1 activa el nuevo IntelliJ-style overlay con darken-spotlight y navegación step-by-step.

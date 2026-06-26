@@ -1,0 +1,13 @@
+title: Demo Mode v2
+tldr: Cualquier página real con ?demo=1 = apiFetch interceptado, datos mock, banner permanente, identidad logged-out. Mismo código que producción.
+sections:
+  - heading: Cómo funciona
+    body: >-
+      apiFetch detecta `URLSearchParams.has('demo')` y devuelve canned stubs en vez de hacer fetch real. Todas las páginas reales (`/me/`, `/p/<slug>`, `/me/quotes/new/`) renderizan con los mismos
+      componentes pero con datos demo.
+  - heading: Safety Charter (10 mechanisms)
+    body: >-
+      Spec §15.2. Banner naranja non-dismissible, body tint, html[data-demo-mode], prefijo "Demo:" en todos los nombres, sessionStorage state, logged-out identity, exit modal, 10-min idle timeout, NO
+      data import, audit beacon.
+  - heading: Tours dentro de Demo
+    body: ?demo=1&tour=T1 lanza el tour overlay sobre la página real (IntelliJ-style en v2 próximo).

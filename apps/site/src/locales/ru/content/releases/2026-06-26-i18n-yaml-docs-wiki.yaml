@@ -1,0 +1,56 @@
+title: i18n YAML + 4 языка + docs-вики + полные страницы релизов
+tldr: Строки вынесены в YAML по локалям. 4 равноправных языка — ES, EN, DE, RU. Docs — теперь вики с боковым меню. У каждого релиза свой URL с полными деталями.
+sections:
+  - kind: new
+    heading: i18n на основе YAML
+    body: |
+      · Каждая строка живёт в `apps/site/src/locales/<lang>/<ns>.yaml` — один файл на namespace.
+      · Бросаешь YAML, запускаешь `bun run i18n:build`, деплоишь. Ноль хардкоженых строк в новом коде.
+      · **309 ключей** в ES + EN с обязательным паритетом (`i18n.test.ts` юнит-тест), 97 в DE/RU bootstrap, GN sparse.
+      · Цепочка fallback: locale → EN → ES → key (last-ditch). EN — canonical.
+      · API `t(key)` без изменений — никаких breaking changes в callsites.
+  - kind: new
+    heading: Четыре равноправных языка — ES / EN / DE / RU
+    body: |
+      · Auto-detect браузера без испанского bias: `de` → DE, `ru` → RU, `es` → ES, fallback EN.
+      · Четыре кнопки в lang-switcher топбара и flying-menu (было 2).
+      · Aria-labels переведены на каждый язык для скрин-ридеров.
+      · Spec §17 (multi-lang strategy) — начальный таргет: expat-сообщества в Парагвае (немецкое, английское, русское) + локальное.
+  - kind: new
+    heading: Документация как вики
+    body: |
+      · `/docs/` — теперь вики-вид с sidebar-навигацией слева (никаких карточек).
+      · Категории: Профиль и видимость · Геймификация · Инструменты · Система · Roadmap.
+      · У каждой фичи своя страница `/docs/<slug>/`.
+      · Поиск по docs через Pagefind — в следующем релизе.
+  - kind: new
+    heading: Релизы — полные страницы
+    body: |
+      · `/releases/` теперь показывает полные карточки с контентом (не мини).
+      · У каждого релиза свой URL `/releases/<slug>/` — шарится, индексируется.
+      · Типизированные секции: Новое / Улучшено / Исправлено / Скоро.
+      · Слоты для GIF на секцию (Playwright→ffmpeg pipeline скоро).
+  - kind: fixed
+    heading: Demo-баннер вечный bug + тесты
+    body: |
+      · `.ps-demo-banner { display: flex }` перебивало UA `[hidden]{display:none}`, баннер оставался видимым всегда.
+      · Fix: `.ps-demo-banner[hidden] { display: none !important }`.
+      · Suite `tests/e2e/demo-mode.common.spec.ts` — **9 сценариев × 2 viewport = 18 тестов**, все прошли.
+      · Sticky in-demo навигация: ссылки на `/me/* /p/* /specialists/* /clients/*` auto-получают `?demo=1`; остальные — выход из демо.
+  - kind: fixed
+    heading: Кнопки — унифицированный focus-visible
+    body: |
+      · Одно CSS-правило покрывает `.cl-btn, .ps-lang-btn, .ps-theme-btn, .ps-tab, .gt-btn, .ps-demo-banner__exit` с `outline: 2px solid var(--ps-acc); outline-offset: 2px`.
+      · Hover отделён от focus-visible (раньше тот же селектор — плохая доступность).
+  - kind: fixed
+    heading: Dark theme в новых компонентах
+    body: |
+      · Все `cl-*` (Button, Card, BadgePill, ProfileHeader, и т.д.) теперь используют `--ps-*` токены из `global.css` вместо хардкоженых цветов.
+      · Demo banner и guided-tour respect активную тему.
+  - kind: next
+    heading: Скоро
+    body: |
+      · Pagefind search в /docs/ + /releases/.
+      · Ежемесячный email-digest подписка.
+      · In-app toast при новом релизе с последнего визита.
+      · Recording pipeline: Playwright → ffmpeg → WebP auto-embedded в release notes.

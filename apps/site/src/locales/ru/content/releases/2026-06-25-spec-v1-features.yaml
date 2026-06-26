@@ -1,0 +1,50 @@
+title: Spec v1 фичи в работе — 13 функций + components-lib + Demo v2
+tldr: Все 13 фич spec v1 в продакшене + pure-stateless components-lib + Demo Mode v2 с apiFetch interception.
+sections:
+  - kind: new
+    heading: Публичный профиль + 4 новых endpoint'а
+    body: |
+      · `/p/<твой-slug>` с фото, обложкой, био, услугами, бейджами, расписанием, WhatsApp CTA.
+      · API: `/v1/p/:slug` агрегирует profile + reviews + badges + tier + areas.
+      · Pretty URL через CF Pages `_redirects` rewrite.
+  - kind: new
+    heading: Быстрый калькулятор смет с PDF
+    body: |
+      · `/me/quotes/new` — редактор позиций, IVA toggle, jsPDF client-side скачивание, шаринг через WhatsApp.
+      · Шаблоны по профессиям (далее: предзагруженные библиотеки).
+  - kind: new
+    heading: Полный gamification engine
+    body: |
+      · XP, 5 tiers (Ученик → Патрон), 18 бейджей в 4 категориях, ежедневная streak с freezes.
+      · Ежедневные (3) и недельные (2) квесты с auto-seed.
+      · HUD в `/me/` с XP / 🔥 streak / ⚡ tier.
+      · Auto-XP grants на события: ответ < 1ч, job completed, review с фото.
+  - kind: new
+    heading: Lite-CRM "Мои клиенты"
+    body: |
+      · Auto-создание `client_record` при завершении работы.
+      · Редактируемые заметки, счётчик работ на клиента.
+      · Далее: напоминания о сервисе через N месяцев.
+  - kind: new
+    heading: Onboarding Tour T1
+    body: |
+      · Driver.js lazy-loaded, 7 направленных шагов.
+      · Auto-запуск при первом визите `/me/` если profile_complete_pct < 100.
+      · Persist в таблице `user_tours_completed`.
+  - kind: new
+    heading: Hyperlocal SEO landings × 400
+    body: |
+      · `/servicios/<профессия>/<район>/` — 10 профессий × 40 районов = 400 авто-генерируемых страниц.
+      · У каждой уникальный title/meta, FAQ, CTA «Ты профессионал?», live-fetch matching specialists.
+  - kind: new
+    heading: Demo Mode v2
+    body: |
+      · Любая страница + `?demo=1` = то же приложение с canned data (без mock pages).
+      · apiFetch перехватывает вызовы через demoStub.
+      · 10 механизмов Safety Charter активны: оранжевый баннер, body tint, html[data-demo-mode], logged-out identity, exit modal, 10-min idle timeout, no data import, audit beacon.
+  - kind: new
+    heading: Components library + Storybook lite
+    body: |
+      · `apps/site/src/components-lib/` — 19 pure stateless функций (atoms / molecules / organisms).
+      · `/components/` список с props panel + locale switcher (i18n debugging).
+      · Demo Mode v2 reuses те же функции.

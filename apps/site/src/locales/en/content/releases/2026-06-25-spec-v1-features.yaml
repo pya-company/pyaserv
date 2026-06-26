@@ -1,0 +1,50 @@
+title: Spec v1 features live — 13 features + components-lib + Demo v2
+tldr: All 13 features of spec v1 in production + pure-stateless components-lib + Demo Mode v2 with apiFetch interception.
+sections:
+  - kind: new
+    heading: Public profile + 4 new endpoints
+    body: |
+      · `/p/<your-slug>` with photo, cover, bio, services, badges, schedule, WhatsApp CTA.
+      · API: `/v1/p/:slug` aggregates profile + reviews + badges + tier + areas.
+      · Pretty URL via CF Pages `_redirects` rewrite.
+  - kind: new
+    heading: Quick quote builder with PDF
+    body: |
+      · `/me/quotes/new` — item editor, IVA toggle, jsPDF client-side download, WhatsApp share.
+      · Per-trade templates (next: pre-loaded libraries).
+  - kind: new
+    heading: Full gamification engine
+    body: |
+      · XP, 5 tiers (Apprentice → Patron), 18 badges in 4 categories, daily streak with freezes.
+      · Daily (3) and weekly (2) quests with auto-seed.
+      · HUD on `/me/` with XP / 🔥 streak / ⚡ tier.
+      · Auto XP grants on events: response < 1h, job completed, review with photo.
+  - kind: new
+    heading: Lite-CRM "My clients"
+    body: |
+      · Auto-create `client_record` when a job is completed.
+      · Editable notes, job count per client.
+      · Next: maintenance reminders N months later.
+  - kind: new
+    heading: Onboarding Tour T1
+    body: |
+      · Driver.js lazy-loaded, 7 guided steps.
+      · Auto-launch on first `/me/` visit if profile_complete_pct < 100.
+      · Persisted in `user_tours_completed` table.
+  - kind: new
+    heading: Hyperlocal SEO landings × 400
+    body: |
+      · `/servicios/<trade>/<area>/` — 10 trades × 40 areas = 400 auto-generated pages.
+      · Each with unique title/meta, FAQ, "Are you a professional?" CTA, live-fetch of matching specialists.
+  - kind: new
+    heading: Demo Mode v2
+    body: |
+      · Any route + `?demo=1` = same app with canned data (no mock pages).
+      · apiFetch intercepts calls via demoStub.
+      · 10 Safety Charter mechanisms active: orange banner, body tint, html[data-demo-mode], logged-out identity, exit modal, 10-min idle timeout, no data import, audit beacon.
+  - kind: new
+    heading: Components library + Storybook lite
+    body: |
+      · `apps/site/src/components-lib/` — 19 pure stateless functions (atoms / molecules / organisms).
+      · `/components/` list with props panel + locale switcher (i18n debugging).
+      · Demo Mode v2 reuses these same functions.

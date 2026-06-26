@@ -1,0 +1,15 @@
+title: Documentación + Releases
+tldr: Esta página. Cada feature tiene página de detalle. Releases en /releases/ con RSS.
+sections:
+  - heading: Estructura
+    body: |-
+      · `/docs/` — index con cards de todas las features.
+      · `/docs/<slug>/` — página de detalle por feature (esta misma).
+      · `/releases/` — notas de release ordenadas por fecha.
+      · `/releases/rss.xml` — feed RSS 2.0.
+      · `/components/` — Storybook lite (catálogo de componentes pure-stateless).
+  - heading: Próximo
+    body: |-
+      · Pagefind search across docs + releases.
+      · Subscripción email mensual.
+      · Toast on login si hay novedades desde la última visita.

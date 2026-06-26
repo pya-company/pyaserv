@@ -3,15 +3,28 @@ import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
 import { RELEASES } from '~/data/releases.ts'
+import { getReleaseContent } from '~/lib/content.ts'
 import { renderReleaseBody } from '~/lib/markdown-mini.ts'
 import { tFor, type Locale } from '~/lib/i18n.ts'
 
+// Default-locale SSR render — clientside JS swaps to user locale via data-i18n.
+// Per-release content text doesn't have a data-i18n equivalent, so SSR picks
+// the default (es); JS-rendered locale switching causes a full page reload
+// (setLocale → location.reload) so the new SSR pass picks the right copy.
 const loc: Locale = 'es'
 const title = tFor(loc, 'releases.page_title')
 const intro = tFor(loc, 'releases.page_intro')
 const rss = tFor(loc, 'releases.rss_link')
 const readMore = tFor(loc, 'releases.read_more')
 const sectionLabel = (kind: string) => tFor(loc, `releases.section_${kind}`)
+
+const enriched = RELEASES.map((r) => ({
+  schema: r,
+  content: getReleaseContent(loc, r.slug),
+})).filter((x) => x.content !== null) as Array<{
+  schema: typeof RELEASES[number]
+  content: NonNullable<ReturnType<typeof getReleaseContent>>
+}>
 ---
 <Base title={title} active="home" description={intro}>
   <section class="docs-hero">
@@ -23,48 +36,38 @@ const sectionLabel = (kind: string) => tFor(loc, `releases.section_${kind}`)
   </section>
 
   <div class="release-list">
-    {RELEASES.map((r) => (
-      <article class="release-card" id={r.slug}>
+    {enriched.map(({ schema, content }) => (
+      <article class="release-card" id={schema.slug}>
         <header class="release-card__head">
           <div class="release-card__meta">
-            <span class="release-card__version">{r.version}</span>
-            <span class="release-card__date">{r.date}</span>
+            <span class="release-card__version">{schema.version}</span>
+            <span class="release-card__date">{schema.date}</span>
           </div>
           <h2 class="release-card__title">
-            <a href={`/releases/${r.slug}/`}>{r.title}</a>
+            <a href={`/releases/${schema.slug}/`}>{content.title}</a>
           </h2>
-          <p class="release-card__tldr">{r.tldr}</p>
-          {r.tags.length > 0 && (
+          <p class="release-card__tldr">{content.tldr}</p>
+          {schema.tags.length > 0 && (
             <div class="release-card__tags">
-              {r.tags.map((tag) => <span class="cl-tag cl-tag--gray">{tag}</span>)}
+              {schema.tags.map((tag) => <span class="cl-tag cl-tag--gray">{tag}</span>)}
             </div>
           )}
         </header>
 
         <div class="release-card__body">
-          {r.sections.map((sec) => (
+          {content.sections.map((sec) => (
             <section class="release-section" data-kind={sec.kind}>
               <h3 class="release-section__heading">
                 <span class="release-section__badge" data-kind={sec.kind}>{sectionLabel(sec.kind)}</span>
                 {sec.heading && <span class="release-section__title">{sec.heading}</span>}
               </h3>
-              <div class="release-section__body" set:html={renderReleaseBody(sec.bodyMd)} />
-              {sec.media && sec.media.length > 0 && (
-                <div class="release-section__media">
-                  {sec.media.map((m) => (
-                    <figure class="release-media">
-                      <img src={m.src} alt={m.alt} loading="lazy" />
-                      {m.caption && <figcaption>{m.caption}</figcaption>}
-                    </figure>
-                  ))}
-                </div>
-              )}
+              <div class="release-section__body" set:html={renderReleaseBody(sec.body)} />
             </section>
           ))}
         </div>
 
         <footer class="release-card__foot">
-          <a href={`/releases/${r.slug}/`} class="cl-btn cl-btn--ghost cl-btn--sm">{readMore}</a>
+          <a href={`/releases/${schema.slug}/`} class="cl-btn cl-btn--ghost cl-btn--sm">{readMore}</a>
         </footer>
       </article>
     ))}

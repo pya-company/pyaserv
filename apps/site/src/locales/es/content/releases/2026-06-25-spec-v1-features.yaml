@@ -1,0 +1,50 @@
+title: Spec v1 features live — 13 funciones + components-lib + Demo v2
+tldr: Las 13 features de spec v1 en producción + components-lib pure-stateless + Demo Mode v2 con apiFetch interception.
+sections:
+  - kind: new
+    heading: Perfil público + 4 nuevos endpoints
+    body: |
+      · `/p/<tu-slug>` con foto, portada, bio, servicios, badges, horario, WhatsApp CTA.
+      · API: `/v1/p/:slug` agrega profile + reviews + badges + tier + areas.
+      · Pretty URL via CF Pages `_redirects` rewrite.
+  - kind: new
+    heading: Cotizador rápido con PDF
+    body: |
+      · `/me/quotes/new` — editor de items, IVA toggle, jsPDF descarga client-side, share por WhatsApp.
+      · Templates por oficio (próximo: bibliotecas pre-cargadas).
+  - kind: new
+    heading: Gamification engine completo
+    body: |
+      · XP, 5 tiers (Aprendiz → Patrón), 18 badges en 4 categorías, racha diaria con freezes.
+      · Misiones diarias (3) y semanales (2) con auto-seed.
+      · HUD en `/me/` con XP / 🔥 racha / ⚡ tier.
+      · XP grants automáticos en eventos: respuesta < 1h, job completed, review con foto.
+  - kind: new
+    heading: Lite-CRM "Mis clientes"
+    body: |
+      · Auto-creación de `client_record` cuando se completa un trabajo.
+      · Notas editables, contador de trabajos por cliente.
+      · Próximo: recordatorios de mantenimiento N meses después.
+  - kind: new
+    heading: Onboarding Tour T1
+    body: |
+      · Driver.js lazy-loaded, 7 pasos guiados.
+      · Auto-launch al primer ingreso a `/me/` si profile_complete_pct < 100.
+      · Persistencia en tabla `user_tours_completed`.
+  - kind: new
+    heading: Hyperlocal SEO landings × 400
+    body: |
+      · `/servicios/<oficio>/<barrio>/` — 10 oficios × 40 zonas = 400 páginas auto-generadas.
+      · Cada una con title/meta únicos, FAQ, CTA "¿Sos profesional?", live-fetch de specialists matching.
+  - kind: new
+    heading: Demo Mode v2
+    body: |
+      · Cualquier ruta + `?demo=1` = misma app con datos canned (sin pages mock).
+      · apiFetch intercepta llamadas via demoStub.
+      · 10 mechanisms del Safety Charter activos: banner naranja, body tint, html[data-demo-mode], identidad logged-out, exit modal, idle timeout 10min, no data import, audit beacon.
+  - kind: new
+    heading: Components library + Storybook lite
+    body: |
+      · `apps/site/src/components-lib/` — 19 funciones pure stateless (atoms / molecules / organisms).
+      · `/components/` lista con props panel + locale switcher (debug i18n).
+      · Demo Mode v2 reutiliza estas mismas funciones.

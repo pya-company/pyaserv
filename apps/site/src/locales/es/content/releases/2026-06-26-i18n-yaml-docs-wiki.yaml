@@ -1,0 +1,56 @@
+title: i18n YAML + 4 idiomas + docs wiki + releases full pages
+tldr: Strings movidas a YAML por idioma. 4 idiomas equal — ES, EN, DE, RU. Docs es ahora wiki con sidebar. Cada release tiene página propia con detalles.
+sections:
+  - kind: new
+    heading: i18n basado en YAML
+    body: |
+      · Cada string vive en `apps/site/src/locales/<lang>/<ns>.yaml` — un archivo por namespace.
+      · Drop un YAML, ejecutá `bun run i18n:build`, listo. Cero hardcoded strings en código nuevo.
+      · **309 keys** en ES + EN con paridad obligatoria (unit test `i18n.test.ts`), 97 en DE/RU bootstrap, GN sparse.
+      · Cadena de fallback: locale → EN → ES → key (last-ditch). EN canonical.
+      · API `t(key)` igual que antes — sin breaking changes en callsites.
+  - kind: new
+    heading: Cuatro idiomas equal — ES / EN / DE / RU
+    body: |
+      · Auto-detect del navegador sin sesgo al español: `de` → DE, `ru` → RU, `es` → ES, fallback EN.
+      · Cuatro botones en el switcher de idioma del topbar y flying-menu (antes solo 2).
+      · Aria-labels traducidas en cada idioma para el screen reader del usuario.
+      · Spec §17 (multi-lang strategy) — target inicial: comunidades expat en Paraguay (alemana, inglesa, rusa) + local.
+  - kind: new
+    heading: Documentación como wiki
+    body: |
+      · `/docs/` ahora es vista wiki con sidebar de navegación a la izquierda (no más cards).
+      · Categorías: Perfil & visibilidad · Gamification · Herramientas · Sistema · Roadmap.
+      · Cada feature mantiene su página propia `/docs/<slug>/`.
+      · Buscador de docs viene con Pagefind en próximo release.
+  - kind: new
+    heading: Releases — páginas completas
+    body: |
+      · `/releases/` ahora muestra cards completas con todo el contenido (no mini-cards).
+      · Cada release tiene su URL propia `/releases/<slug>/` — link compartible, indexable.
+      · Soporte para secciones tipadas: Nuevo / Mejorado / Arreglado / Próximamente.
+      · Slots para GIFs por sección (próximamente: pipeline Playwright→ffmpeg para auto-recordings).
+  - kind: fixed
+    heading: Demo banner stuck bug + tests
+    body: |
+      · `.ps-demo-banner { display: flex }` sobrescribía el UA `[hidden]{display:none}`, dejando el banner visible siempre.
+      · Fix: `.ps-demo-banner[hidden] { display: none !important }`.
+      · Suite `tests/e2e/demo-mode.common.spec.ts` — **9 scenarios × 2 viewports = 18 tests**, todos passing.
+      · Sticky in-demo navigation: links a `/me/* /p/* /specialists/* /clients/*` auto-reciben `?demo=1`; los demás cortan demo.
+  - kind: fixed
+    heading: Botones — focus-visible unificado
+    body: |
+      · Una sola regla CSS cubre `.cl-btn, .ps-lang-btn, .ps-theme-btn, .ps-tab, .gt-btn, .ps-demo-banner__exit` con `outline: 2px solid var(--ps-acc); outline-offset: 2px`.
+      · Hover separado del focus-visible (antes mismo selector — accesibilidad pobre).
+  - kind: fixed
+    heading: Dark theme en componentes nuevos
+    body: |
+      · Todos los `cl-*` (Button, Card, BadgePill, ProfileHeader, etc.) ahora usan tokens `--ps-*` de `global.css` en vez de colores hardcoded.
+      · Demo banner y guided-tour respetan el tema activo.
+  - kind: next
+    heading: Próximo
+    body: |
+      · Pagefind search en /docs/ + /releases/.
+      · Email digest suscripción mensual.
+      · In-app toast cuando hay release nuevo desde la última visita.
+      · Recording pipeline: Playwright → ffmpeg → WebP GIFs auto-embedded en release notes.

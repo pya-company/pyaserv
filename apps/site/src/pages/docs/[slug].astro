@@ -4,6 +4,7 @@ import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
 import DocsSidebar from '~/components/DocsSidebar.astro'
 import { DOC_PAGES } from '~/data/docs-content.ts'
+import { getDocContent } from '~/lib/content.ts'
 import { renderReleaseBody } from '~/lib/markdown-mini.ts'
 import { tFor, type Locale } from '~/lib/i18n.ts'
 
@@ -15,14 +16,16 @@ const loc: Locale = 'es'
 const statusLabel = doc.status === 'live' ? tFor(loc, 'docs.status_live')
   : doc.status === 'demo' ? tFor(loc, 'docs.status_demo')
   : tFor(loc, 'docs.status_soon')
+const content = getDocContent(loc, doc.slug)
+if (!content) throw new Error(`Missing doc content for ${doc.slug}`)
 ---
-<Base title={`${doc.title} — ${tFor(loc, 'docs.page_title')}`} active="home" description={doc.tldr}>
+<Base title={`${content.title} — ${tFor(loc, 'docs.page_title')}`} active="home" description={content.tldr}>
   <div class="docs-wiki">
     <DocsSidebar currentSlug={doc.slug} />
 
     <article class="docs-content docpage">
       <nav class="docpage__crumbs">
-        <a href="/docs/">{tFor(loc, 'docs.breadcrumb_root')}</a> · <span>{doc.title}</span>
+        <a href="/docs/">{tFor(loc, 'docs.breadcrumb_root')}</a> · <span>{content.title}</span>
       </nav>
 
       <header>
@@ -30,8 +33,8 @@ const statusLabel = doc.status === 'live' ? tFor(loc, 'docs.status_live')
           <span class="docpage__code">{doc.code}</span>
           <span class="docpage__status" data-status={doc.status}>{statusLabel}</span>
         </div>
-        <h1>{doc.title}</h1>
-        <p class="docpage__tldr">{doc.tldr}</p>
+        <h1>{content.title}</h1>
+        <p class="docpage__tldr">{content.tldr}</p>
 
         {(doc.demoUrl || doc.realUrl) && (
           <div class="docpage__actions">
@@ -41,10 +44,10 @@ const statusLabel = doc.status === 'live' ? tFor(loc, 'docs.status_live')
         )}
       </header>
 
-      {doc.sections.map((section) => (
+      {content.sections.map((section) => (
         <section>
           <h2>{section.heading}</h2>
-          <Fragment set:html={renderReleaseBody(section.bodyMd)} />
+          <Fragment set:html={renderReleaseBody(section.body)} />
         </section>
       ))}
 

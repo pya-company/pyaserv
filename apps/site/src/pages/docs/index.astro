@@ -4,6 +4,7 @@ import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
 import DocsSidebar from '~/components/DocsSidebar.astro'
 import { TOC } from '~/data/docs-toc.ts'
+import { getDocContent } from '~/lib/content.ts'
 import { tFor, type Locale } from '~/lib/i18n.ts'
 
 const loc: Locale = 'es'
@@ -30,15 +31,19 @@ const statusLabel = (s: 'live' | 'demo' | 'soon') =>
             {tFor(loc, entry.group.i18nKey)}
           </h2>
           <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ps-space-2);">
-            {entry.pages.map((p) => (
-              <li>
-                <a href={`/docs/${p.slug}/`} style="display: flex; align-items: baseline; gap: var(--ps-space-2); padding: var(--ps-space-2) var(--ps-space-3); background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-sm); text-decoration: none; color: var(--ps-text); transition: border-color .15s, background .15s;">
-                  <span style="font-size: 11px; font-weight: 700; background: var(--ps-acc-soft); color: var(--ps-acc); padding: 2px 8px; border-radius: 3px; letter-spacing: .05em; flex-shrink: 0;">{p.code}</span>
-                  <span style="flex: 1; font-weight: 600;">{p.title}</span>
-                  <span class="docs-sidebar__status" data-status={p.status}>{statusLabel(p.status)}</span>
-                </a>
-              </li>
-            ))}
+            {entry.pages.map((p) => {
+              const content = getDocContent(loc, p.slug)
+              const title = content?.title ?? p.slug
+              return (
+                <li>
+                  <a href={`/docs/${p.slug}/`} style="display: flex; align-items: baseline; gap: var(--ps-space-2); padding: var(--ps-space-2) var(--ps-space-3); background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-sm); text-decoration: none; color: var(--ps-text); transition: border-color .15s, background .15s;">
+                    <span style="font-size: 11px; font-weight: 700; background: var(--ps-acc-soft); color: var(--ps-acc); padding: 2px 8px; border-radius: 3px; letter-spacing: .05em; flex-shrink: 0;">{p.code}</span>
+                    <span style="flex: 1; font-weight: 600;">{title}</span>
+                    <span class="docs-sidebar__status" data-status={p.status}>{statusLabel(p.status)}</span>
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </section>
       ))}

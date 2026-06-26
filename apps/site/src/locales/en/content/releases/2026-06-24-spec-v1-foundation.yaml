@@ -1,0 +1,27 @@
+title: Spec v1 Foundation — schema + service areas + gamification base
+tldr: Database ready for all spec v1 features. 4 migrations applied to prod D1.
+sections:
+  - kind: new
+    heading: Migrations
+    body: |
+      · **0009** — `specialist_profiles` extensions (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).
+      · **0010** — gamification tables (user_game_state, xp_events, badges_catalog with 18 seeded, user_badges, quests).
+      · **0011** — user_tours_completed + slug backfill for existing profiles.
+      · **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.
+  - kind: new
+    heading: Canonical service areas
+    body: |
+      · 40 areas seeded: 25 Asunción neighborhoods + 15 Departamento Central districts.
+      · `service_areas` table (canonical) + `specialist_service_areas` link (many-to-many, up to 8 areas per professional).
+  - kind: new
+    heading: Gamification base system
+    body: |
+      · Event-sourced: every XP grant is an immutable row in `xp_events`.
+      · Materialization: `user_game_state` with denormalized projection for fast HUD reads.
+      · 18 badges seeded in 4 categories (tier · milestone · superlative · collection).
+  - kind: new
+    heading: Guarani language (sparse)
+    body: |
+      · Locale type extended to `'es' | 'en' | 'gn'`.
+      · GN sparse dictionary, ES fallback for missing keys.
+      · Per-specialist: bio_gn, headline_gn optional.

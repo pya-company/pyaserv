@@ -3,6 +3,7 @@ import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
 import { RELEASES } from '~/data/releases.ts'
+import { getReleaseContent } from '~/lib/content.ts'
 import { renderReleaseBody } from '~/lib/markdown-mini.ts'
 import { tFor, type Locale } from '~/lib/i18n.ts'
 
@@ -13,8 +14,10 @@ const { release } = Astro.props
 const loc: Locale = 'es'
 const backLabel = tFor(loc, 'releases.back_to_index')
 const sectionLabel = (kind: string) => tFor(loc, `releases.section_${kind}`)
+const content = getReleaseContent(loc, release.slug)
+if (!content) throw new Error(`Missing release content for ${release.slug}`)
 ---
-<Base title={`${release.title} — ${tFor(loc, 'releases.page_title')}`} active="home" description={release.tldr}>
+<Base title={`${content.title} — ${tFor(loc, 'releases.page_title')}`} active="home" description={content.tldr}>
   <article class="release-detail">
     <nav class="docpage__crumbs">
       <a href="/releases/">{tFor(loc, 'releases.page_title')}</a> · <span>{release.version}</span>
@@ -25,8 +28,8 @@ const sectionLabel = (kind: string) => tFor(loc, `releases.section_${kind}`)
         <span class="release-card__version">{release.version}</span>
         <span class="release-card__date">{release.date}</span>
       </div>
-      <h1>{release.title}</h1>
-      <p class="release-detail__tldr">{release.tldr}</p>
+      <h1>{content.title}</h1>
+      <p class="release-detail__tldr">{content.tldr}</p>
       {release.tags.length > 0 && (
         <div class="release-card__tags">
           {release.tags.map((tag) => <span class="cl-tag cl-tag--gray">{tag}</span>)}
@@ -35,23 +38,13 @@ const sectionLabel = (kind: string) => tFor(loc, `releases.section_${kind}`)
     </header>
 
     <div class="release-detail__body">
-      {release.sections.map((sec) => (
+      {content.sections.map((sec) => (
         <section class="release-section" data-kind={sec.kind}>
           <h2 class="release-section__heading">
             <span class="release-section__badge" data-kind={sec.kind}>{sectionLabel(sec.kind)}</span>
             {sec.heading && <span class="release-section__title">{sec.heading}</span>}
           </h2>
-          <div class="release-section__body" set:html={renderReleaseBody(sec.bodyMd)} />
-          {sec.media && sec.media.length > 0 && (
-            <div class="release-section__media">
-              {sec.media.map((m) => (
-                <figure class="release-media">
-                  <img src={m.src} alt={m.alt} loading="lazy" />
-                  {m.caption && <figcaption>{m.caption}</figcaption>}
-                </figure>
-              ))}
-            </div>
-          )}
+          <div class="release-section__body" set:html={renderReleaseBody(sec.body)} />
         </section>
       ))}
     </div>

@@ -1,0 +1,14 @@
+title: Cotizador rápido
+tldr: Plantillas por oficio + editor de items + IVA opcional + PDF descargable + envío por WhatsApp con un click.
+sections:
+  - heading: Flow
+    body: |-
+      1. Elegí plantilla (opcional, por oficio).
+      2. Llená/editá items (nombre + cantidad + precio).
+      3. Toggle IVA 10 %.
+      4. "Guardar y descargar PDF" — genera PDF client-side con jsPDF.
+      5. "Enviar por WhatsApp" — abre wa.me con un mensaje pre-llenado con el resumen.
+  - heading: Plantillas
+    body: Sin plantillas pre-cargadas (vacío al inicio). Después de armar tu primer presupuesto, podés "Guardar como plantilla" para reutilizar.
+  - heading: PDF
+    body: Generado en el browser con jspdf 4.2. Sin server side fonts ni Workers complejos. Funciona offline (una vez que la página esté cacheada).

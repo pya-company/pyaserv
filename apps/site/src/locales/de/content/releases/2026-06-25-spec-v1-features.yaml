@@ -1,0 +1,50 @@
+title: Spec v1 Features live — 13 Funktionen + components-lib + Demo v2
+tldr: Alle 13 Features von Spec v1 in Produktion + pure-stateless components-lib + Demo Mode v2 mit apiFetch-Interception.
+sections:
+  - kind: new
+    heading: Öffentliches Profil + 4 neue Endpoints
+    body: |
+      · `/p/<dein-slug>` mit Foto, Cover, Bio, Dienstleistungen, Abzeichen, Zeitplan, WhatsApp-CTA.
+      · API: `/v1/p/:slug` aggregiert Profil + Reviews + Abzeichen + Tier + Gebiete.
+      · Pretty URL via CF Pages `_redirects` Rewrite.
+  - kind: new
+    heading: Schneller Kostenvoranschlag mit PDF
+    body: |
+      · `/me/quotes/new` — Item-Editor, IVA-Toggle, jsPDF Client-side Download, WhatsApp-Share.
+      · Vorlagen pro Beruf (nächstes Mal: vorgeladene Bibliotheken).
+  - kind: new
+    heading: Vollständige Gamification-Engine
+    body: |
+      · XP, 5 Tiers (Lehrling → Patron), 18 Abzeichen in 4 Kategorien, tägliche Serie mit Freezes.
+      · Tägliche (3) und wöchentliche (2) Quests mit Auto-Seed.
+      · HUD in `/me/` mit XP / 🔥 Serie / ⚡ Tier.
+      · Auto-XP-Grants bei Events: Antwort < 1h, Job abgeschlossen, Bewertung mit Foto.
+  - kind: new
+    heading: Lite-CRM "Meine Kunden"
+    body: |
+      · Auto-Erstellung von `client_record` bei Job-Abschluss.
+      · Bearbeitbare Notizen, Job-Zähler pro Kunde.
+      · Nächstes Mal: Wartungserinnerungen N Monate später.
+  - kind: new
+    heading: Onboarding-Tour T1
+    body: |
+      · Driver.js lazy-geladen, 7 geführte Schritte.
+      · Auto-Launch beim ersten `/me/`-Besuch wenn profile_complete_pct < 100.
+      · Persistiert in `user_tours_completed` Tabelle.
+  - kind: new
+    heading: Hyperlocal SEO-Landings × 400
+    body: |
+      · `/servicios/<beruf>/<gebiet>/` — 10 Berufe × 40 Gebiete = 400 auto-generierte Seiten.
+      · Jede mit eindeutigem Title/Meta, FAQ, "Bist du ein Profi?"-CTA, Live-Fetch passender Specialists.
+  - kind: new
+    heading: Demo Mode v2
+    body: |
+      · Jede Route + `?demo=1` = gleiche App mit Canned Data (keine Mock-Pages).
+      · apiFetch fängt Aufrufe via demoStub ab.
+      · 10 Safety-Charter-Mechanismen aktiv: oranges Banner, Body-Tint, html[data-demo-mode], Logged-out-Identität, Exit-Modal, 10-Min Idle-Timeout, kein Data-Import, Audit-Beacon.
+  - kind: new
+    heading: Components Library + Storybook lite
+    body: |
+      · `apps/site/src/components-lib/` — 19 pure stateless Funktionen (Atoms / Molecules / Organisms).
+      · `/components/` Liste mit Props-Panel + Locale-Switcher (i18n-Debugging).
+      · Demo Mode v2 nutzt dieselben Funktionen.

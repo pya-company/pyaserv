@@ -1,5 +1,6 @@
 ---
 import { TOC } from '~/data/docs-toc.ts'
+import { getDocContent } from '~/lib/content.ts'
 import { tFor, type Locale } from '~/lib/i18n.ts'
 
 interface Props { currentSlug?: string }
@@ -12,6 +13,8 @@ const loc: Locale = 'es'
       <h3 class="docs-sidebar__group-title">{tFor(loc, entry.group.i18nKey)}</h3>
       <ul class="docs-sidebar__list">
         {entry.pages.map((page) => {
+          const content = getDocContent(loc, page.slug)
+          const title = content?.title ?? page.slug
           const isActive = currentSlug === page.slug
           const statusLabel = page.status === 'live' ? tFor(loc, 'docs.status_live')
             : page.status === 'demo' ? tFor(loc, 'docs.status_demo')
@@ -20,7 +23,7 @@ const loc: Locale = 'es'
             <li class="docs-sidebar__item">
               <a href={`/docs/${page.slug}/`} aria-current={isActive ? 'page' : undefined}>
                 <span class="docs-sidebar__code">{page.code}</span>
-                <span>{page.title}</span>
+                <span>{title}</span>
                 <span class="docs-sidebar__status" data-status={page.status}>{statusLabel}</span>
               </a>
             </li>
