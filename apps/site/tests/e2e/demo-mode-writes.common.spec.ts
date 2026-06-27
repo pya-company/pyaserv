@@ -48,7 +48,12 @@ const trackProdApiCalls = (page: Page): Request[] => {
 
 const writeMethods = new Set(['POST', 'PATCH', 'PUT', 'DELETE'])
 const onlyWrites = (reqs: Request[]): Request[] =>
-  reqs.filter((r) => writeMethods.has(r.method().toUpperCase()))
+  reqs
+    .filter((r) => writeMethods.has(r.method().toUpperCase()))
+    // /demo-audit is intentional fire-and-forget telemetry about demo-mode
+    // adoption — it never touches user data and is the whole reason demo
+    // mode exists for product measurement. Exclude it from the bleed-check.
+    .filter((r) => !r.url().includes('/demo-audit'))
 
 const describeCalls = (reqs: Request[]): string =>
   reqs.map((r) => `${r.method()} ${r.url()}`).join('\n')

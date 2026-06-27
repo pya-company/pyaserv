@@ -1,0 +1,13 @@
+login:
+  title: Вход
+  description: Войдите в PyaServ по e-mail — без пароля. Шестизначный код придёт письмом.
+  intro: Паролей нет — мы пришлём шестизначный код на почту.
+  email_label: E-mail
+  email:
+    placeholder: vashemya@email.com
+  send_code: Отправить код
+  code: Код (6 цифр)
+  confirm: Подтвердить
+  change_email: Сменить e-mail
+  sent_ok: Проверьте почту — там письмо с шестизначным кодом.
+  success: ✓ Готово, перенаправляем…

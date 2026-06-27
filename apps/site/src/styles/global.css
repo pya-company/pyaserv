@@ -244,6 +244,8 @@ button { font: inherit; cursor: pointer; }
   align-items: center;
   gap: var(--ps-space-2);
   margin-right: auto;
+  min-height: 44px;
+  padding-block: var(--ps-space-1);
 }
 .ps-topbar__brand-em { color: var(--ps-acc); }
 

@@ -1,0 +1,22 @@
+listing:
+  new:
+    title: Neue Dienstleistung
+    back: ← Meine Dienstleistungen
+    intro: Veröffentlichen Sie eine konkrete Dienstleistung, die Sie anbieten. Sie erscheint im öffentlichen Fachleute-Katalog und ist nach Kategorie filterbar.
+    submit: Veröffentlichen
+  field:
+    category: Kategorie
+    title:
+      placeholder: Reparatur des Warmwasserbereiters
+    description:
+      placeholder: Was die Dienstleistung umfasst, Material, abgedeckte Gebiete…
+    price_from:
+      short: Preis ab (Gs)
+    unit:
+      none: —
+      hour: Stunde
+      job: Auftrag
+  edit:
+    title: Dienstleistung bearbeiten
+    not_found: Dienstleistung nicht gefunden oder gehört Ihnen nicht
+    confirm_delete: Endgültig löschen?

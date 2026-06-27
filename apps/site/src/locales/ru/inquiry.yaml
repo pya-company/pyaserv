@@ -1,0 +1,27 @@
+inquiry:
+  detail:
+    title: Переписка
+    back: ← Переписки
+    heading: Переписка
+    view_subject: Открыть объявление
+    placeholder: Напишите сообщение…
+    about_listing: По услуге
+    about_request: По заявке
+  back: ← Переписки
+  view_subject: Открыть объявление
+  compose_placeholder: Напишите сообщение…
+  subject_listing: По услуге
+  subject_request: По заявке
+  status_negotiating: Обсуждение
+  status_in_progress: В работе
+  status_done: Готово
+  status_cancelled: Отменено
+  btn_start: Начать работу
+  btn_done: Отметить выполненным
+  btn_cancel: Отменить
+  cancel_confirm: Отменить эту работу?
+  review_h: Оцените работу
+  review_body_label: Комментарий (по желанию)
+  review_body_placeholder: Расскажите другим, как всё прошло.
+  review_submit: Отправить отзыв
+  review_thanks: Спасибо за отзыв!

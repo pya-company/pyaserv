@@ -1,0 +1,34 @@
+request:
+  detail:
+    title: Заявка
+    status:
+      open: Открыта
+      closed: Закрыта
+    locked:
+      cta: войти
+    reply_btn: Откликнуться
+    compose_h: Отклик
+    compose:
+      label: Сообщение клиенту
+      placeholder: Здравствуйте, я готов взяться…
+    description: Заявка размещена клиентом. Откликайтесь напрямую, без комиссии.
+  new:
+    title: Новая заявка
+    back: ← Мои заявки
+    intro: Опишите, какая работа нужна. Подходящие специалисты смогут откликнуться — связь через личные сообщения.
+    submit: Опубликовать заявку
+  field:
+    category: Категория
+    title:
+      placeholder: Срочно нужен сантехник
+    description:
+      placeholder: Что нужно сделать, примерные сроки, срочность, детали…
+    barrio:
+      placeholder: Villa Morra
+    budget:
+      short: Бюджет (Gs)
+    status:
+      open: Открыта
+      closed: Закрыта
+  edit:
+    title: Изменить заявку

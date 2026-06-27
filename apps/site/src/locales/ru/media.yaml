@@ -1,0 +1,7 @@
+media:
+  upload: Загрузить фото
+  uploading: Загружаем…
+  replace: Заменить фото
+  remove: Удалить
+  too_big: Файл должен быть не больше 5 МБ.
+  bad_type: Только JPG, PNG или WebP.

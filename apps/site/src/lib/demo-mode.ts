@@ -119,13 +119,14 @@ interface AuditPayload {
 
 export const emitAudit = (event: string, payload: AuditPayload): void => {
   const detail = { event: `demo.${event}`, ...payload, at: now() }
-  // Beacon avoids racing the document destroy on exit; falls back to fetch
-  // on browsers without sendBeacon. Endpoint may 404 in MVP — that's fine,
-  // audit is best-effort.
+  // Beacon to api.pyaserv.com so Pages doesn't 405 the POST (Pages is static).
+  // If the route isn't wired on the worker side yet, sendBeacon still returns
+  // true synchronously — we only care about not polluting the same-origin
+  // network log with bogus 405s during MVP.
   try {
     const blob = new Blob([JSON.stringify(detail)], { type: 'application/json' })
     if (globalThis.navigator?.sendBeacon) {
-      globalThis.navigator.sendBeacon('/api/demo-audit', blob)
+      globalThis.navigator.sendBeacon('https://api.pyaserv.com/demo-audit', blob)
     }
   } catch {
     // never throw from audit

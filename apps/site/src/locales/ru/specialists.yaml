@@ -1,0 +1,24 @@
+specialists:
+  title: Специалисты
+  description: Сантехники, электрики, парикмахеры, репетиторы — найдите их в своём районе Асунсьона.
+  heading: Доступные специалисты
+  intro: Фильтруйте по категории или району. Связь идёт вне платформы; PyaServ только знакомит.
+  filter:
+    category_label: Категория
+    barrio_label: Район
+    category:
+      all: Все
+    barrio:
+      placeholder: Villa Morra, Carmelitas…
+    near_me: 📍 Рядом со мной
+    near_me_on: 📍 Рядом со мной · включено
+    near_me_denied: Доступ к местоположению запрещён
+  empty:
+    title: Здесь пусто
+    hint: Уберите фильтры или поменяйте район.
+  count:
+    one: специалист
+    many: специалистов
+  card:
+    verified: ✓ проверен
+    cta: Открыть профиль →

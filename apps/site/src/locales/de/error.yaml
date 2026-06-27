@@ -1,0 +1,4 @@
+error:
+  network: Netzwerkfehler. Bitte erneut versuchen.
+  not_found_title: Diese Seite existiert nicht oder wurde verschoben.
+  back_home: ← Zurück zur Startseite
