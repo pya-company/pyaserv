@@ -49,6 +49,8 @@ me:
       denied: Location access denied
       unavailable: Geolocation unavailable
     completeness:
+
+      label: "Profile complete: {pct}%"
       empty: 'Profile complete: 0%'
   listings:
     h: My published services

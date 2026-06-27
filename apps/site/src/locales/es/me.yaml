@@ -49,6 +49,8 @@ me:
       denied: Acceso a ubicación denegado
       unavailable: Geolocalización no disponible
     completeness:
+
+      label: "Perfil completo: {pct}%"
       empty: 'Perfil completo: 0%'
   listings:
     h: Mis servicios publicados

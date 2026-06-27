@@ -41,15 +41,22 @@
 # CDN can serve from cache, instead of returning Cf-Cache-Status: DYNAMIC.
 /
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /specialists/
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /clients/
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /docs/
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /docs/*
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /releases/
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /releases/*
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400

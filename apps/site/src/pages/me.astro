@@ -15,8 +15,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
          down when JS later writes "Sesión: <userId>…" into this paragraph. -->
     <p id="me-info" class="ps-card__sub" style="min-height:1.25rem"></p>
 
-    <!-- Gamification HUD: XP / streak / tier. Hidden until specialist profile exists. -->
-    <div id="game-hud" class="ps-game-hud" hidden>
+    <!-- Gamification HUD: XP / streak / tier. Always reserved so /v1/me/game-state
+         resolving doesn't shift the form below it (was a 0.13 CLS source). Cells
+         start at placeholder values; JS only updates text content, no height swap. -->
+    <div id="game-hud" class="ps-game-hud">
       <div class="ps-game-hud__cell">
         <div class="ps-game-hud__value" id="hud-xp">—</div>
         <div class="ps-game-hud__label">XP</div>
@@ -442,7 +444,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const computeCompleteness = () => {
         const pct = completenessPct(snapshotFromForm(pf, photoKey.value || null))
         completenessFill.style.width = pct + '%'
-        completenessLabel.textContent = interp(t('me.profile.completeness'), { pct })
+        completenessLabel.textContent = interp(t('me.profile.completeness.label'), { pct })
       }
       pf.addEventListener('input', computeCompleteness)
       photoInput.addEventListener('change', () => setTimeout(computeCompleteness, 50))
@@ -846,7 +848,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         const s = state.data ?? state
         const hud = document.getElementById('game-hud')
         if (hud) {
-          hud.hidden = false
           document.getElementById('hud-xp').textContent = String(s.xp)
           const streak = s.streak?.current ?? 0
           const streakEl = document.getElementById('hud-streak')

@@ -49,6 +49,8 @@ me:
       denied: Zugriff auf den Standort verweigert
       unavailable: Standortermittlung nicht verfügbar
     completeness:
+
+      label: "Profil vollständig: {pct}%"
       empty: 'Profil ausgefüllt: 0 %'
   listings:
     h: Meine veröffentlichten Dienstleistungen

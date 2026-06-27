@@ -42,7 +42,7 @@ test.describe('locale persistence', () => {
     await expect(page).toHaveURL(/\/specialists\/$/)
     // Click the first specialist card → detail page.
     await page.locator('a.ps-card').first().click()
-    await expect(page).toHaveURL(/\/specialists\/[0-9a-f-]+\/$/)
+    await expect(page).toHaveURL(/\/specialists\/[0-9a-z-]+\/$/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
   })
 })
