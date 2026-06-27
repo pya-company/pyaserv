@@ -165,6 +165,7 @@ export const DICTS = {
     "login.change_email": "Cambiar email",
     "login.sent_ok": "Revisá tu email — buscá un código de 6 dígitos.",
     "login.success": "✓ Listo, redirigiendo…",
+    "login.reason_dashboard": "Iniciá sesión para acceder a tu panel.",
     "me.title": "Mi panel",
     "me.heading": "Mi panel",
     "me.logout": "Cerrar sesión",
@@ -520,6 +521,7 @@ export const DICTS = {
     "login.change_email": "Change email",
     "login.sent_ok": "Check your email — look for a 6-digit code.",
     "login.success": "✓ Done, redirecting…",
+    "login.reason_dashboard": "Sign in to access your dashboard.",
     "me.title": "My dashboard",
     "me.heading": "My dashboard",
     "me.logout": "Sign out",
@@ -875,6 +877,7 @@ export const DICTS = {
     "login.change_email": "E-Mail ändern",
     "login.sent_ok": "Prüfen Sie Ihr Postfach — dort liegt ein sechsstelliger Code.",
     "login.success": "✓ Fertig, Sie werden weitergeleitet…",
+    "login.reason_dashboard": "Melden Sie sich an, um auf Ihr Konto zuzugreifen.",
     "me.title": "Mein Dashboard",
     "me.heading": "Mein Dashboard",
     "me.logout": "Abmelden",
@@ -1230,6 +1233,7 @@ export const DICTS = {
     "login.change_email": "Сменить e-mail",
     "login.sent_ok": "Проверьте почту — там письмо с шестизначным кодом.",
     "login.success": "✓ Готово, перенаправляем…",
+    "login.reason_dashboard": "Войдите, чтобы открыть свой кабинет.",
     "me.title": "Мой кабинет",
     "me.heading": "Мой кабинет",
     "me.logout": "Выйти",
@@ -1425,7 +1429,8 @@ export const DICTS = {
   },
   "gn": {
     "common.save": "Mbohasapyre",
-    "common.finish": "I porã!"
+    "common.finish": "I porã!",
+    "reason_dashboard": "Sign in to access your dashboard."
   }
 } as const
 export const CONTENT = {

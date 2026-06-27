@@ -56,6 +56,13 @@
   document.documentElement.lang = loc
   document.documentElement.dataset.loc = loc
   document.documentElement.dataset.theme = theme
+  // Flag for dev-only UI affordances (storybook nav link, debug toggles).
+  // Treat localhost + *.pages.dev preview as dev; the bare pyaserv.com prod
+  // domain stays clean.
+  var h = location.hostname
+  if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.pages.dev')) {
+    document.documentElement.dataset.dev = '1'
+  }
   try {
     document.documentElement.dataset.auth = sessionStorage.getItem('pyaserv.token') ? 'user' : 'guest'
   } catch (e) {

@@ -85,13 +85,13 @@ const truncate = (s: string, n = 220): string => s.length > n ? `${s.slice(0, n)
 
     <form id="filters" class="ps-filters" autocomplete="off">
       <label>
-        <T k="specialists.filter.category" as="span" />
+        <T k="specialists.filter.category_label" as="span" />
         <select name="category" id="f-category" aria-label="Categoría">
           <option value="" data-i18n="specialists.filter.category.all">Todas</option>
         </select>
       </label>
       <label>
-        <T k="specialists.filter.barrio" as="span" />
+        <T k="specialists.filter.barrio_label" as="span" />
         <input type="text" name="barrio" id="f-barrio" list="ps-barrios" data-i18n-placeholder="specialists.filter.barrio.placeholder" placeholder="Villa Morra, Carmelitas…" />
       </label>
     </form>

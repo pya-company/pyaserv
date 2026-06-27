@@ -11,3 +11,5 @@ login:
   change_email: Change email
   sent_ok: Check your email — look for a 6-digit code.
   success: ✓ Done, redirecting…
+
+  reason_dashboard: Sign in to access your dashboard.

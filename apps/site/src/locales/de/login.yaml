@@ -11,3 +11,5 @@ login:
   change_email: E-Mail ändern
   sent_ok: Prüfen Sie Ihr Postfach — dort liegt ein sechsstelliger Code.
   success: ✓ Fertig, Sie werden weitergeleitet…
+
+  reason_dashboard: Melden Sie sich an, um auf Ihr Konto zuzugreifen.

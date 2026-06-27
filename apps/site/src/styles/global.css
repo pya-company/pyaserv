@@ -287,6 +287,12 @@ button { font: inherit; cursor: pointer; }
   .ps-topbar__nav .ps-dev-only { display: none; }
 }
 
+/* Dev-only nav affordances (storybook, debug toggles): hidden everywhere by
+   default, revealed only when bootstrap.js stamps <html data-dev="1"> on
+   localhost + .pages.dev preview hosts. Production pyaserv.com stays clean. */
+.ps-dev-only { display: none; }
+html[data-dev="1"] .ps-dev-only { display: revert; }
+
 /* ----- flying-menu integration (mobile only) -----------------------------
    Custom element from @igor-ganov/flying-menu. Draggable, corner-snapping
    floating button on mobile. ::part(trigger) / ::part(menu) come from the

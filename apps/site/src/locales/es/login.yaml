@@ -11,3 +11,5 @@ login:
   change_email: Cambiar email
   sent_ok: Revisá tu email — buscá un código de 6 dígitos.
   success: ✓ Listo, redirigiendo…
+
+  reason_dashboard: Iniciá sesión para acceder a tu panel.

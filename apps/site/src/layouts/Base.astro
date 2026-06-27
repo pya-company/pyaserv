@@ -249,10 +249,12 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           if (url.searchParams.get('login') === '1' &&
               document.documentElement.dataset.auth !== 'user') {
             const next = url.searchParams.get('next') ?? ''
+            const reason = url.searchParams.get('reason') ?? ''
             url.searchParams.delete('login')
             url.searchParams.delete('next')
+            url.searchParams.delete('reason')
             history.replaceState({}, '', url.toString())
-            openLoginDialog(next)
+            openLoginDialog(next, reason)
           }
         } catch {}
       }
@@ -334,13 +336,33 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         // any other status: silently fall through to the email form
       }
 
-      const openLoginDialog = (next) => {
+      const openLoginDialog = (next, reason) => {
         const d = dlg()
         if (!d) return
         if (document.documentElement.dataset.auth === 'user') return // never show to authed users
         if (d.open) return
         dlgState.next = typeof next === 'string' ? next : ''
         dlgReset()
+        // Reason-banner inside the dialog: e.g. "Sign in to access your
+        // dashboard" when redirected here from /me/. Localized via i18n keys
+        // login.reason_<reason>; falls back silently if the key is missing.
+        try {
+          const banner = d.querySelector('[data-login-reason]')
+          if (banner) {
+            if (reason && typeof reason === 'string') {
+              const key = 'login.reason_' + reason.replace(/[^a-z0-9_]/gi, '')
+              const msg = t(key)
+              if (msg && msg !== key) {
+                banner.textContent = msg
+                banner.hidden = false
+              } else {
+                banner.hidden = true
+              }
+            } else {
+              banner.hidden = true
+            }
+          }
+        } catch {}
         if (typeof d.showModal === 'function') d.showModal()
         else d.setAttribute('open', '')
         // Auto-attempt passkey-first. Promise resolves silently when OS prompt

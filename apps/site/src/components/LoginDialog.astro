@@ -22,6 +22,7 @@ import T from './T.astro'
   </form>
   <div class="ps-dlg__body">
     <h2 id="login-dlg-title"><T k="login.title" /></h2>
+    <p class="ps-dlg__reason" data-login-reason role="status" hidden></p>
     <T k="login.intro" as="p" />
 
     <!-- action="javascript:void(0)" + data-astro-reload jointly prevent Astro
