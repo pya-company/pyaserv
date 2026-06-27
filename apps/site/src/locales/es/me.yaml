@@ -6,9 +6,19 @@ me:
     aria: Secciones
     profile: 👤 Mi perfil
     listings: 🛠️ Mis servicios
+    quotes: 📄 Cotizaciones
+    clients: 👥 Mis clientes
+    game: 🏆 Logros
     requests: 📢 Mis pedidos
     inquiries: 💬 Conversaciones
     stats: 📊 Estadísticas
+  ext:
+    summary: Perfil avanzado (portada · servicios · zonas · portfolio · horario · filtros · guaraní)
+    add_service: + Agregar servicio
+    add_photo: + Agregar foto
+    save: Guardar perfil avanzado
+  loading_passkeys: Cargando passkeys…
+  loading_quests: Cargando misiones…
   stats:
     h: Estadísticas
     intro: Métricas de tu perfil — últimos 30 días.
@@ -23,16 +33,16 @@ me:
     h: Perfil de profesional
     intro: Si querés ofrecer servicios, completá tu perfil acá.
     display_name: Nombre que mostramos
-    headline:
-      placeholder: Plomero 24h en Asunción
-    phone:
-      placeholder: +595 981 234567
-    whatsapp:
-      placeholder: +595 981 234567
-    barrio:
-      placeholder: Villa Morra
-    bio:
-      placeholder: Contales tu experiencia, herramientas, zonas que cubrís…
+    headline: Frase corta (headline)
+    phone: Teléfono
+    whatsapp: WhatsApp (opcional)
+    barrio: Barrio
+    bio: Bio
+    headline_placeholder: Plomero 24h en Asunción
+    phone_placeholder: +595 981 234567
+    whatsapp_placeholder: +595 981 234567
+    barrio_placeholder: Villa Morra
+    bio_placeholder: Contales tu experiencia, herramientas, zonas que cubrís…
     saved: ✓ Perfil guardado
     geoloc:
       locating: Buscando ubicación…

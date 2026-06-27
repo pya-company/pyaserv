@@ -2,6 +2,7 @@ login:
   title: Sign in
   description: Sign in to PyaServ with your email — no password. 6-digit code by email.
   intro: No passwords — we email you a 6-digit code.
+  email_label: Email
   email:
     placeholder: yourname@email.com
   send_code: Send code

@@ -22,23 +22,36 @@
   }
 
   // 2. Locale + theme + auth pre-paint
-  var isLoc = function (v) { return v === 'es' || v === 'en' }
+  var isLoc = function (v) { return v === 'es' || v === 'en' || v === 'de' || v === 'ru' || v === 'gn' }
   var isTheme = function (v) { return v === 'light' || v === 'dark' || v === 'auto' }
+  // ?lang=<code> wins over stored preference so a deep-link in any locale
+  // takes effect on the first paint (and is then persisted to localStorage so
+  // a reload keeps the language).
   var loc = null
   var theme = null
   try {
-    var s = localStorage.getItem('pyaserv.locale')
-    if (isLoc(s)) loc = s
+    var qp = new URLSearchParams(location.search).get('lang')
+    if (isLoc(qp)) {
+      loc = qp
+      try { localStorage.setItem('pyaserv.locale', qp) } catch (e) { /* */ }
+    }
+  } catch (e) { /* */ }
+  try {
+    if (!loc) {
+      var s = localStorage.getItem('pyaserv.locale')
+      if (isLoc(s)) loc = s
+    }
     var t = localStorage.getItem('pyaserv.theme')
     if (isTheme(t)) theme = t
   } catch (e) { /* SSR or private mode */ }
   if (!loc) {
-    try {
-      var qp = new URLSearchParams(location.search).get('lang')
-      if (isLoc(qp)) loc = qp
-    } catch (e) { /* */ }
+    var nav = (navigator.language || '').toLowerCase()
+    if (nav.indexOf('de') === 0) loc = 'de'
+    else if (nav.indexOf('ru') === 0) loc = 'ru'
+    else if (nav.indexOf('es') === 0) loc = 'es'
+    else if (nav.indexOf('gn') === 0) loc = 'gn'
+    else loc = 'en'
   }
-  if (!loc) loc = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'es'
   if (!theme) theme = 'auto'
   document.documentElement.lang = loc
   document.documentElement.dataset.loc = loc

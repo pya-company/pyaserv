@@ -2,6 +2,7 @@ login:
   title: Iniciar sesión
   description: Entrá a PyaServ con tu email — sin contraseña. Código de 6 dígitos por correo.
   intro: Sin contraseñas — te mandamos un código de 6 dígitos por email.
+  email_label: Email
   email:
     placeholder: tunombre@correo.com
   send_code: Enviar código

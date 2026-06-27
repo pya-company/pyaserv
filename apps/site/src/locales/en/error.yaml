@@ -1,2 +1,4 @@
 error:
   network: Network error. Please try again.
+  not_found_title: This page does not exist or has moved.
+  back_home: ← Back to home

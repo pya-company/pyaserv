@@ -29,7 +29,7 @@ import T from './T.astro'
          delegated submit handler in Base.astro takes over via capture phase. -->
     <form id="dlg-start" class="ps-form" action="javascript:void(0)" data-astro-reload>
       <label>
-        <T k="login.email" as="span" />
+        <T k="login.email_label" as="span" />
         <input type="email" name="email" required autocomplete="username webauthn" data-i18n-placeholder="login.email.placeholder" placeholder="tunombre@correo.com" />
       </label>
       <button type="submit" class="ps-btn"><T k="login.send_code" /></button>

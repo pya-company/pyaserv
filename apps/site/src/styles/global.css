@@ -252,9 +252,37 @@ button { font: inherit; cursor: pointer; }
   display: flex;
   gap: var(--ps-space-1);
   flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;        /* allow children to shrink past content size */
+  margin-left: auto;
+  overflow: hidden;    /* fail-safe so an oversized child cannot push siblings off-screen */
 }
 @media (max-width: 719.98px) {
   .ps-topbar__nav { display: none; }
+}
+/* Narrow-desktop densification (720–960 px): shrink padding + font on nav
+   links so DE/RU lang + theme button fit without wrapping the Sign-in CTA. */
+@media (min-width: 720px) and (max-width: 960px) {
+  .ps-topbar { padding-left: 8px; padding-right: 8px; gap: 4px; }
+  .ps-topbar__brand { font-size: 0.95rem; }
+  .ps-topbar__nav { gap: 0; }
+  .ps-topbar__nav a {
+    padding: 4px 5px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    min-height: 32px;
+  }
+  .ps-topbar__nav-btn {
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  .ps-lang-switch { padding: 1px; }
+  .ps-lang-btn { padding: 1px 3px; min-width: 20px; min-height: 26px; font-size: 0.65rem; }
+  .ps-theme-btn { padding: 2px 4px; }
+  /* Hide the dev-only /components/ link at narrow desktop to claw back space. */
+  .ps-topbar__nav .ps-dev-only { display: none; }
 }
 
 /* ----- flying-menu integration (mobile only) -----------------------------
@@ -340,6 +368,8 @@ flying-menu:not(:defined) { display: none; }
 }
 @media (max-width: 719.98px) {
   .ps-lang-switch { align-self: stretch; justify-content: center; margin-top: var(--ps-space-2); }
+  /* WCAG 2.5.5 AAA — tappable targets ≥44×44 inside the mobile flying-menu. */
+  .ps-fly__menu .ps-lang-btn { min-height: 44px; min-width: 44px; padding: 8px 12px; }
 }
 .ps-lang-btn {
   appearance: none;
@@ -553,6 +583,9 @@ flying-menu:not(:defined) { display: none; }
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ps-acc) 18%, transparent);
 }
 .ps-form { display: grid; gap: var(--ps-space-3); margin: var(--ps-space-3) 0; max-width: 36rem; }
+/* Respect the [hidden] attribute — `display: grid` above otherwise overrides
+   the UA stylesheet and forces gated forms (e.g. login verify) to stay visible. */
+.ps-form[hidden] { display: none; }
 @media (min-width: 720px) { .ps-form { gap: var(--ps-space-4); } }
 .ps-form textarea { min-height: 6rem; resize: vertical; font-family: inherit; }
 
@@ -672,8 +705,11 @@ html[data-loc="gn"] .ps-lang-btn[data-lang="gn"] { background: var(--ps-acc-soft
    in the HTML and hide the wrong one via html[lang]. Zero JS, zero pop-in,
    zero text width swap. Works on the first frame because the head inline
    bootstrap.js sets <html lang> + <html data-loc> before <body> parses. */
-html[lang="es"] [lang="en"],
-html[lang="en"] [lang="es"] { display: none; }
+html[lang="es"] [lang="en"], html[lang="es"] [lang="de"], html[lang="es"] [lang="ru"], html[lang="es"] [lang="gn"],
+html[lang="en"] [lang="es"], html[lang="en"] [lang="de"], html[lang="en"] [lang="ru"], html[lang="en"] [lang="gn"],
+html[lang="de"] [lang="es"], html[lang="de"] [lang="en"], html[lang="de"] [lang="ru"], html[lang="de"] [lang="gn"],
+html[lang="ru"] [lang="es"], html[lang="ru"] [lang="en"], html[lang="ru"] [lang="de"], html[lang="ru"] [lang="gn"],
+html[lang="gn"] [lang="es"], html[lang="gn"] [lang="en"], html[lang="gn"] [lang="de"], html[lang="gn"] [lang="ru"] { display: none; }
 /* Reset that's only for descendants of our T component — we don't want to
    accidentally hide content that uses lang for genuine multilingual quoting. */
 

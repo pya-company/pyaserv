@@ -20,3 +20,6 @@ docs:
   group_system: System
   group_roadmap: Roadmap
   group_dev: Entwicklung
+  index_featured_h: Hier starten
+  index_latest_h: Neueste Releases
+  index_try_cta: Testen →

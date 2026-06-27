@@ -67,13 +67,13 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
 
     <form id="filters" class="ps-filters" autocomplete="off">
       <label>
-        <T k="specialists.filter.category" as="span" />
+        <T k="specialists.filter.category_label" as="span" />
         <select name="category" id="f-category" aria-label="Categoría">
           <option value="" data-i18n="specialists.filter.category.all">Todas</option>
         </select>
       </label>
       <label>
-        <T k="specialists.filter.barrio" as="span" />
+        <T k="specialists.filter.barrio_label" as="span" />
         <input type="text" name="barrio" id="f-barrio" list="ps-barrios" data-i18n-placeholder="specialists.filter.barrio.placeholder" placeholder="Villa Morra, Carmelitas…" />
       </label>
       <button type="button" id="near-me-btn" class="ps-btn ps-btn--ghost ps-btn--sm"><T k="specialists.filter.near_me" /></button>
@@ -217,6 +217,15 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
 
     form.addEventListener('input', load)
     form.addEventListener('submit', (e) => { e.preventDefault(); load() })
+    // Demo Mode (?demo=1) — SSR baked real prod cards into the markup. Replace
+    // them immediately with the demoStub'd list so no real names leak in demo.
+    try {
+      if (new URLSearchParams(location.search).has('demo')) {
+        results.innerHTML = ''
+        results.setAttribute('aria-busy', 'true')
+        void load()
+      }
+    } catch {}
     const nearBtn = document.getElementById('near-me-btn')
     nearBtn.addEventListener('click', () => {
       if (!navigator.geolocation) return

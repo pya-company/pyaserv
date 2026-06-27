@@ -6,9 +6,19 @@ me:
     aria: Sections
     profile: 👤 My profile
     listings: 🛠️ My services
+    quotes: 📄 Quotes
+    clients: 👥 My clients
+    game: 🏆 Achievements
     requests: 📢 My requests
     inquiries: 💬 Conversations
     stats: 📊 Stats
+  ext:
+    summary: Advanced profile (cover · services · areas · portfolio · schedule · filters · guaraní)
+    add_service: + Add service
+    add_photo: + Add photo
+    save: Save advanced profile
+  loading_passkeys: Loading passkeys…
+  loading_quests: Loading quests…
   stats:
     h: Stats
     intro: Profile metrics — last 30 days.
@@ -23,16 +33,16 @@ me:
     h: Specialist profile
     intro: If you want to offer services, fill out your profile here.
     display_name: Display name
-    headline:
-      placeholder: 24/7 plumber in Asunción
-    phone:
-      placeholder: +595 981 234567
-    whatsapp:
-      placeholder: +595 981 234567
-    barrio:
-      placeholder: Villa Morra
-    bio:
-      placeholder: Tell about your experience, tools, areas you cover…
+    headline: Short headline
+    phone: Phone
+    whatsapp: WhatsApp (optional)
+    barrio: Neighborhood
+    bio: Bio
+    headline_placeholder: 24/7 plumber in Asunción
+    phone_placeholder: +595 981 234567
+    whatsapp_placeholder: +595 981 234567
+    barrio_placeholder: Villa Morra
+    bio_placeholder: Tell about your experience, tools, areas you cover…
     saved: ✓ Profile saved
     geoloc:
       locating: Locating…

@@ -23,7 +23,8 @@ const escapeAttr = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const l10n = (m: Record<string, string>): string => `data-l10n-text='${escapeAttr(JSON.stringify(m))}'`
 ---
-<aside class="docs-sidebar" aria-label={tFor(loc, 'docs.sidebar_aria')}>
+<details class="docs-sidebar" aria-label={tFor(loc, 'docs.sidebar_aria')}>
+  <summary>{tFor(loc, 'docs.sidebar_aria')}</summary>
   {TOC.map((entry) => (
     <div class="docs-sidebar__group">
       <Fragment set:html={`<h3 class="docs-sidebar__group-title" ${l10n(groupLabelMap(entry.group.i18nKey))}>${tFor(loc, entry.group.i18nKey)}</h3>`} />
@@ -37,8 +38,8 @@ const l10n = (m: Record<string, string>): string => `data-l10n-text='${escapeAtt
           return (
             <li class="docs-sidebar__item">
               <a href={`/docs/${page.slug}/`} aria-current={isActive ? 'page' : undefined}>
-                <span class="docs-sidebar__code">{page.code}</span>
                 <Fragment set:html={`<span ${l10n(titleMap)}>${title}</span>`} />
+                <span class="docs-sidebar__code">{page.code}</span>
                 <Fragment set:html={`<span class="docs-sidebar__status" data-status="${page.status}" ${l10n(statusLabelMap(page.status))}>${statusLabel}</span>`} />
               </a>
             </li>
@@ -47,4 +48,19 @@ const l10n = (m: Record<string, string>): string => `data-l10n-text='${escapeAtt
       </ul>
     </div>
   ))}
-</aside>
+</details>
+<script is:inline>
+  // Force the <details class="docs-sidebar"> open on desktop (≥821px) so the
+  // mobile drawer affordance does not hide nav on wider viewports. Re-check
+  // on resize so dragging the window across the breakpoint stays correct.
+  (function () {
+    const apply = function () {
+      const s = document.querySelector('details.docs-sidebar')
+      if (!s) return
+      if (window.matchMedia('(min-width: 821px)').matches) s.setAttribute('open', '')
+    }
+    apply()
+    window.addEventListener('resize', apply)
+    document.addEventListener('astro:page-load', apply)
+  })()
+</script>

@@ -3,17 +3,35 @@ import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
 import '~/styles/demo-and-docs.css'
 import DocsSidebar from '~/components/DocsSidebar.astro'
-import { TOC } from '~/data/docs-toc.ts'
-import { getDocContent } from '~/lib/content.ts'
-import { tFor, type Locale } from '~/lib/i18n.ts'
+import { DOC_PAGES } from '~/data/docs-content.ts'
+import { RELEASES } from '~/data/releases.ts'
+import { getDocContent, getReleaseContent } from '~/lib/content.ts'
+import { tFor, LOCALES, type Locale } from '~/lib/i18n.ts'
+import { getAllLocales } from '~/lib/l10n-emit.ts'
 
 const loc: Locale = 'es'
 const title = tFor(loc, 'docs.page_title')
 const intro = tFor(loc, 'docs.page_intro')
-const statusLabel = (s: 'live' | 'demo' | 'soon') =>
-  s === 'live' ? tFor(loc, 'docs.status_live')
-  : s === 'demo' ? tFor(loc, 'docs.status_demo')
-  : tFor(loc, 'docs.status_soon')
+const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
+
+const labelMap = (key: string): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, key)
+  return out
+}
+const escapeAttr = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const l10n = (m: Record<string, string>): string => `data-l10n-text='${escapeAttr(JSON.stringify(m))}'`
+
+// Featured docs — the curated entries with demoUrl so the index can surface
+// "Probar →" CTAs (wireframe §16.8). Keeps the main column from being a
+// verbatim sidebar mirror.
+const FEATURED_SLUGS = ['perfil', 'insignias', 'cotizador', 'demo-mode'] as const
+const featured = FEATURED_SLUGS
+  .map((s) => DOC_PAGES.find((p) => p.slug === s))
+  .filter((p): p is (typeof DOC_PAGES)[number] => Boolean(p))
+
+const latestReleases = RELEASES.slice(0, 3)
 ---
 <Base title={title} active="home" description={intro}>
   <div class="docs-wiki">
@@ -25,28 +43,46 @@ const statusLabel = (s: 'live' | 'demo' | 'soon') =>
         <p data-i18n="docs.page_intro" style="margin: 0; color: var(--ps-text-muted); font-size: 16px; line-height: 1.55;">{intro}</p>
       </header>
 
-      {TOC.map((entry) => (
-        <section style="margin-bottom: var(--ps-space-6);">
-          <h2 style="font-size: 18px; font-weight: 700; color: var(--ps-text); margin: 0 0 var(--ps-space-3) 0; letter-spacing: -0.01em;">
-            {tFor(loc, entry.group.i18nKey)}
-          </h2>
-          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ps-space-2);">
-            {entry.pages.map((p) => {
-              const content = getDocContent(loc, p.slug)
-              const title = content?.title ?? p.slug
-              return (
-                <li>
-                  <a href={`/docs/${p.slug}/`} style="display: flex; align-items: baseline; gap: var(--ps-space-2); padding: var(--ps-space-2) var(--ps-space-3); background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-sm); text-decoration: none; color: var(--ps-text); transition: border-color .15s, background .15s;">
-                    <span style="font-size: 11px; font-weight: 700; background: var(--ps-acc-soft); color: var(--ps-acc); padding: 2px 8px; border-radius: 3px; letter-spacing: .05em; flex-shrink: 0;">{p.code}</span>
-                    <span style="flex: 1; font-weight: 600;">{title}</span>
-                    <span class="docs-sidebar__status" data-status={p.status}>{statusLabel(p.status)}</span>
-                  </a>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-      ))}
+      <section class="docs-index__featured" style="margin-bottom: var(--ps-space-6);">
+        <Fragment set:html={`<h2 ${l10n(labelMap('docs.group_tools'))} style="font-size: 18px; font-weight: 700; color: var(--ps-text); margin: 0 0 var(--ps-space-3) 0; letter-spacing: -0.01em;">${tFor(loc, 'docs.group_tools')}</h2>`} />
+        <div class="docs-index__cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--ps-space-3);">
+          {featured.map((p) => {
+            const c = getDocContent(loc, p.slug)
+            const titleMap = getAllLocales('docs', p.slug, ['title'])
+            const tldrMap = getAllLocales('docs', p.slug, ['tldr'])
+            return (
+              <article style="background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-md); padding: var(--ps-space-4); display: flex; flex-direction: column; gap: var(--ps-space-2);">
+                <Fragment set:html={`<h3 ${l10n(titleMap)} style="margin: 0; font-size: 16px; font-weight: 700; color: var(--ps-text);">${c?.title ?? p.slug}</h3>`} />
+                {c?.tldr && <Fragment set:html={`<p ${l10n(tldrMap)} style="margin: 0; color: var(--ps-text-muted); font-size: 13px; line-height: 1.5;">${c.tldr}</p>`} />}
+                <div style="display: flex; gap: var(--ps-space-2); margin-top: var(--ps-space-2);">
+                  {p.demoUrl && (
+                    <Fragment set:html={`<a href="${p.demoUrl}" class="cl-btn cl-btn--primary cl-btn--sm" ${l10n(labelMap('docs.index_try_cta'))}>${tFor(loc, 'docs.index_try_cta')}</a>`} />
+                  )}
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      </section>
+
+      <section class="docs-index__latest" style="margin-bottom: var(--ps-space-6);">
+        <Fragment set:html={`<h2 ${l10n(labelMap('docs.index_latest_h'))} style="font-size: 18px; font-weight: 700; color: var(--ps-text); margin: 0 0 var(--ps-space-3) 0; letter-spacing: -0.01em;">${tFor(loc, 'docs.index_latest_h')}</h2>`} />
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--ps-space-2);">
+          {latestReleases.map((r) => {
+            const c = getReleaseContent(loc, r.slug)
+            const titleMap = getAllLocales('releases', r.slug, ['title'])
+            return (
+              <li>
+                <a href={`/releases/${r.slug}/`} style="display: flex; align-items: baseline; gap: var(--ps-space-2); padding: var(--ps-space-2) var(--ps-space-3); background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-sm); text-decoration: none; color: var(--ps-text);">
+                  <span style="font-size: 11px; font-weight: 700; background: var(--ps-acc-soft); color: var(--ps-acc); padding: 2px 8px; border-radius: 3px; letter-spacing: .05em; flex-shrink: 0; font-family: var(--ps-font-mono);">{r.version}</span>
+                  <Fragment set:html={`<span ${l10n(titleMap)} style="flex: 1; font-weight: 600;">${c?.title ?? r.slug}</span>`} />
+                  <span style="color: var(--ps-text-soft); font-size: 12px;">{r.date}</span>
+                </a>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
     </main>
   </div>
 </Base>

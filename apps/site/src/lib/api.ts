@@ -25,8 +25,14 @@ export const apiFetch = async <T = unknown>(
   // Если stub возвращает null — пропускаем в реальный fetch (нужно для
   // не-описанных endpoints; они read-only в demo контексте).
   if (isDemoMode()) {
-    const stub = await demoStub<T>(path, init)
-    if (stub !== null) return stub
+    const stub = await demoStub<unknown>(path, init)
+    if (stub !== null) {
+      // Stubs are written as `{ data: ... }` to mirror the live API envelope.
+      // apiFetch unwraps `data` for real responses, so do the same here.
+      return (typeof stub === 'object' && stub !== null && 'data' in stub
+        ? (stub as { data: T }).data
+        : stub) as T
+    }
   }
   const token = getToken()
   const headers = new Headers(init.headers)
@@ -89,6 +95,12 @@ const MAX_IMG_BYTES = 5 * 1024 * 1024
 export const uploadImage = async (file: File): Promise<string> => {
   if (!ALLOWED_IMG_TYPES.has(file.type)) throw new Error(t('media.bad_type'))
   if (file.size > MAX_IMG_BYTES) throw new Error(t('media.too_big'))
+  // Demo Mode v2 — short-circuit through demoStub before any network call.
+  // Safety Charter mech 5 / AC-L2: NEVER write to the real DB from any demo route.
+  if (isDemoMode()) {
+    const stub = await demoStub<{ data: { key: string } }>('/v1/media', { method: 'POST' })
+    if (stub && typeof stub === 'object' && 'data' in stub) return stub.data.key
+  }
   const token = getToken()
   const headers = new Headers()
   headers.set('Content-Type', file.type)

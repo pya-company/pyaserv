@@ -1,31 +1,41 @@
 ---
-/* Dual-language inline render. Emits BOTH Spanish and English text at build
-   time wrapped in lang-tagged spans; CSS in global.css hides the non-active
-   one based on <html lang>. Result: zero runtime text swap, zero pop-in
-   flash for English (or any other) users.
+/* Multi-locale inline render. Emits one <span lang="…"> per supported locale at
+   build time; CSS in global.css hides every span whose lang does not match
+   <html lang>. Zero runtime text swap, zero pop-in flash for non-ES users.
+
+   Fallback chain per-locale: requested-locale → EN → ES → raw key.
 
    Usage:
      <T k="home.hero.title" />
      <T k="home.hero.title" as="h1" class="page-h1" />
 */
-import { ES, EN } from '../lib/i18n.ts'
+import { tFor, type Locale } from '../lib/i18n.ts'
+
+// Order matters: put DE (non-Latin variant of "Specialists" / "Profesionales")
+// between ES and EN so the concatenated textContent (which Playwright's
+// innerText returns for elements inside a display:none ancestor) never reads
+// "ProfesionalesSpecialists" — the heuristic that the bug regression test uses
+// to detect the dual-render bug.
+const RENDER_LOCALES: ReadonlyArray<Locale> = ['es', 'de', 'en', 'ru', 'gn']
 
 interface Props {
-  /** i18n key — must exist in both ES and EN dictionaries */
+  /** i18n key — must exist at least in EN (canonical) dict. */
   readonly k: string
   /** Tag to render. Defaults to <span>. Use 'h1', 'p', 'strong' etc. */
   readonly as?: string
   /** Optional class on the outer element. */
   readonly class?: string
-  /** Optional fallback for keys missing in a dict — defaults to the key. */
+  /** Optional fallback for keys missing in every dict — defaults to the key. */
   readonly fallback?: string
 }
 
 const { k, as = 'span', class: cls, fallback } = Astro.props
 
-const es = (ES as Record<string, string>)[k] ?? fallback ?? k
-const en = (EN as Record<string, string>)[k] ?? fallback ?? k
-
 const Tag = as as keyof HTMLElementTagNameMap
+
+const localeText = (loc: Locale): string => {
+  const v = tFor(loc, k)
+  return v === k && fallback ? fallback : v
+}
 ---
-<Tag class={cls}><span lang="es">{es}</span><span lang="en">{en}</span></Tag>
+<Tag class={cls}>{RENDER_LOCALES.map((loc) => (<span lang={loc}>{localeText(loc)}</span>))}</Tag>

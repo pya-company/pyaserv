@@ -117,7 +117,7 @@ interface AuditPayload {
   readonly [k: string]: string | number | boolean | null
 }
 
-const emitAudit = (event: string, payload: AuditPayload): void => {
+export const emitAudit = (event: string, payload: AuditPayload): void => {
   const detail = { event: `demo.${event}`, ...payload, at: now() }
   // Beacon avoids racing the document destroy on exit; falls back to fetch
   // on browsers without sendBeacon. Endpoint may 404 in MVP — that's fine,

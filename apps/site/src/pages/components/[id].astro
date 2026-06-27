@@ -11,6 +11,7 @@ const { story } = Astro.props
 const atoms = STORIES.filter((s) => s.level === 'atom')
 const molecules = STORIES.filter((s) => s.level === 'molecule')
 const organisms = STORIES.filter((s) => s.level === 'organism')
+const storyJson = JSON.stringify(story)
 ---
 <Base title={`${story.name} · Components`} active="home" description={story.description}>
   <div class="cl-sb-shell" data-story={story.id}>
@@ -44,17 +45,23 @@ const organisms = STORIES.filter((s) => s.level === 'organism')
     </aside>
   </div>
 
-  <script define:vars={{ storyData: story }}>
+  <script type="application/json" id="story-data" set:html={storyJson}></script>
+
+  <script>
+    // @ts-nocheck
+    // Bundled module — Astro produces a hashed _astro/*.js file allowed by CSP `script-src 'self'`.
+    // Story payload arrives via the JSON <script type="application/json" id="story-data"> element;
+    // no inline executable code, no `define:vars` (which forces inline emission).
     import * as molecules from '~/components-lib/molecules.ts'
     import { ProfileHeader, GameHUD, CompletenessBar, ProfilePublicView } from '~/components-lib/organisms.ts'
 
     const ALL = { ...molecules, ProfileHeader, GameHUD, CompletenessBar, ProfilePublicView }
-    const renderFn = ALL[storyData.name]
-    if (!renderFn) {
-      document.getElementById('story-viewport').innerHTML = `<p style="color:#dc2626;">No render function for ${storyData.name}</p>`
-    }
 
-    let props = JSON.parse(JSON.stringify(storyData.initialProps))
+    const readStoryData = () => {
+      const el = document.getElementById('story-data')
+      if (!el || !el.textContent) return null
+      try { return JSON.parse(el.textContent) } catch { return null }
+    }
 
     const setByPath = (obj, path, value) => {
       const parts = path.split('.')
@@ -72,17 +79,25 @@ const organisms = STORIES.filter((s) => s.level === 'organism')
       return cur
     }
 
+    let storyData = null
+    let renderFn = null
+    let props = {}
+
     const render = () => {
+      const viewport = document.getElementById('story-viewport')
+      const propsJson = document.getElementById('story-props-json')
+      if (!viewport) return
       try {
-        if (renderFn) document.getElementById('story-viewport').innerHTML = renderFn(props)
-        document.getElementById('story-props-json').textContent = JSON.stringify(props, null, 2)
+        if (renderFn) viewport.innerHTML = renderFn(props)
+        if (propsJson) propsJson.textContent = JSON.stringify(props, null, 2)
       } catch (e) {
-        document.getElementById('story-viewport').innerHTML = `<p style="color:#dc2626;">Render error: ${e.message}</p>`
+        viewport.innerHTML = `<p style="color:#dc2626;">Render error: ${e.message}</p>`
       }
     }
 
     const buildKnobs = () => {
       const form = document.getElementById('story-knobs')
+      if (!form || !storyData) return
       form.innerHTML = storyData.knobs.map((k) => {
         const v = getByPath(props, k.path)
         const id = `knob-${k.path.replace(/\./g, '-')}`
@@ -118,17 +133,26 @@ const organisms = STORIES.filter((s) => s.level === 'organism')
       form.addEventListener('change', handler)
     }
 
-    document.getElementById('story-locale').addEventListener('change', (e) => {
-      document.documentElement.lang = e.target.value
-      document.documentElement.dataset.loc = e.target.value
-    })
-
     const init = () => {
-      if (location.pathname.startsWith('/components/') && location.pathname !== '/components/') {
-        buildKnobs()
-        render()
+      storyData = readStoryData()
+      if (!storyData) return
+      renderFn = ALL[storyData.name]
+      props = JSON.parse(JSON.stringify(storyData.initialProps))
+      const viewport = document.getElementById('story-viewport')
+      if (!renderFn && viewport) {
+        viewport.innerHTML = `<p style="color:#dc2626;">No render function for ${storyData.name}</p>`
+      }
+      buildKnobs()
+      render()
+      const localeSel = document.getElementById('story-locale')
+      if (localeSel) {
+        localeSel.addEventListener('change', (e) => {
+          document.documentElement.lang = e.target.value
+          document.documentElement.dataset.loc = e.target.value
+        })
       }
     }
+
     document.addEventListener('astro:page-load', init)
     init()
   </script>

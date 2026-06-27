@@ -562,7 +562,59 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       import { isDemoMode, exitDemoMode } from '../lib/demo-stubs'
       import { startTour } from '../lib/guided-tour'
       import { t } from '../lib/i18n'
+      import { initDemoState, readDemoState, startIdleWatcher, emitAudit, clearDemoState } from '../lib/demo-mode'
       import '~/styles/demo-and-docs.css'
+
+      let idleCtl = null
+      const ensureDemoState = () => {
+        // Mech 5 — sandboxed sessionStorage sentinel per page. Re-uses an
+        // existing one within its TTL so navigation inside demo does not
+        // reset the clock.
+        const feature = 'session'
+        if (!readDemoState(feature)) initDemoState(feature, { entry: location.pathname })
+        return feature
+      }
+
+      const performExit = () => {
+        emitAudit('demo_exited', { feature: 'session' })
+        clearDemoState('session')
+        exitDemoMode()
+        const url = new URL(location.href)
+        url.searchParams.delete('demo')
+        url.searchParams.delete('tour')
+        location.href = url.pathname + (url.search || '')
+      }
+
+      const openExitConfirmModal = () => {
+        // Replace any prior modal so repeated clicks do not pile up.
+        const existing = document.getElementById('demo-exit-confirm')
+        if (existing) existing.remove()
+        const dlg = document.createElement('dialog')
+        dlg.id = 'demo-exit-confirm'
+        dlg.className = 'ps-dlg'
+        dlg.innerHTML = `
+          <div class="ps-dlg__body">
+            <h2 id="demo-exit-confirm-title">${t('demo.exit_confirm_title')}</h2>
+            <p>${t('demo.exit_confirm_body')}</p>
+            <div class="ps-row" style="gap:12px;margin-top:16px;justify-content:flex-end;">
+              <button type="button" class="ps-btn ps-btn--ghost" data-demo-exit-no>${t('demo.exit_confirm_no')}</button>
+              <button type="button" class="ps-btn" data-demo-exit-yes>${t('demo.exit_confirm_yes')}</button>
+            </div>
+          </div>
+        `
+        document.body.appendChild(dlg)
+        if (typeof dlg.showModal === 'function') dlg.showModal()
+        else dlg.setAttribute('open', '')
+        dlg.querySelector('[data-demo-exit-no]')?.addEventListener('click', () => {
+          if (typeof dlg.close === 'function') dlg.close()
+          dlg.remove()
+        })
+        dlg.querySelector('[data-demo-exit-yes]')?.addEventListener('click', () => {
+          if (typeof dlg.close === 'function') dlg.close()
+          dlg.remove()
+          performExit()
+        })
+      }
 
       const buildDemoTour = (code) => {
         const tours = {
@@ -586,21 +638,44 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         return tours[code]
       }
 
+      const writeBannerH = () => {
+        const banner = document.getElementById('demo-banner')
+        if (!banner) return
+        const h = banner.getBoundingClientRect().height
+        if (h > 0) document.documentElement.style.setProperty('--ps-demo-banner-h', `${Math.ceil(h)}px`)
+      }
+      const measureBannerHeight = () => {
+        // Immediate (catches cases where the banner already laid out) +
+        // rAF (catches first paint where [hidden] just got removed).
+        writeBannerH()
+        requestAnimationFrame(writeBannerH)
+      }
       const applyDemoChrome = () => {
         const banner = document.getElementById('demo-banner')
         if (banner) banner.hidden = false
         // Hide login/logout chrome — demo runs as logged-out visually
         document.documentElement.dataset.demoMode = '1'
+        measureBannerHeight()
       }
       const removeDemoChrome = () => {
         const banner = document.getElementById('demo-banner')
         if (banner) banner.hidden = true
         delete document.documentElement.dataset.demoMode
+        document.documentElement.style.removeProperty('--ps-demo-banner-h')
       }
+      // Re-measure on viewport changes — wrap behaviour shifts height.
+      window.addEventListener('resize', () => {
+        if (document.documentElement.dataset.demoMode === '1') measureBannerHeight()
+      })
 
       const initDemo = () => {
         if (isDemoMode()) {
           applyDemoChrome()
+          const feature = ensureDemoState()
+          // Mech 8 — start the 10-min idle auto-exit watcher exactly once.
+          if (!idleCtl) {
+            idleCtl = startIdleWatcher(feature, () => performExit())
+          }
           const params = new URLSearchParams(location.search)
           const tourCode = params.get('tour')
           const tour = tourCode ? buildDemoTour(tourCode) : null
@@ -618,6 +693,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           stickifyLinks()
         } else {
           removeDemoChrome()
+          if (idleCtl) { idleCtl.stop(); idleCtl = null }
         }
       }
 
@@ -643,14 +719,8 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         const exit = t.closest('[data-demo-exit]')
         if (exit) {
           e.preventDefault()
-          exitDemoMode()
-          // Navigate to current pathname WITHOUT demo/tour params.
-          // No confirm — exit is reversible (open the demo link again).
-          const url = new URL(location.href)
-          url.searchParams.delete('demo')
-          url.searchParams.delete('tour')
-          const dest = url.pathname + (url.search || '')
-          location.href = dest
+          // Mech 7 — confirm modal. performExit() runs only on "Yes".
+          openExitConfirmModal()
         }
       })
 

@@ -34,9 +34,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     <div class="ps-tabs" role="tablist" data-i18n-aria="me.tabs.aria" aria-label="Secciones">
       <button class="ps-tab" role="tab" id="tab-profile" aria-controls="panel-profile" data-tab="profile"><T k="me.tabs.profile" /></button>
       <button class="ps-tab" role="tab" id="tab-listings" aria-controls="panel-listings" data-tab="listings"><T k="me.tabs.listings" /></button>
-      <button class="ps-tab" role="tab" id="tab-quotes" aria-controls="panel-quotes" data-tab="quotes">📄 Cotizaciones</button>
-      <button class="ps-tab" role="tab" id="tab-clients" aria-controls="panel-clients" data-tab="clients">👥 Mis clientes</button>
-      <button class="ps-tab" role="tab" id="tab-game" aria-controls="panel-game" data-tab="game">🏆 Logros</button>
+      <button class="ps-tab" role="tab" id="tab-quotes" aria-controls="panel-quotes" data-tab="quotes"><T k="me.tabs.quotes" /></button>
+      <button class="ps-tab" role="tab" id="tab-clients" aria-controls="panel-clients" data-tab="clients"><T k="me.tabs.clients" /></button>
+      <button class="ps-tab" role="tab" id="tab-game" aria-controls="panel-game" data-tab="game"><T k="me.tabs.game" /></button>
       <button class="ps-tab" role="tab" id="tab-requests" aria-controls="panel-requests" data-tab="requests"><T k="me.tabs.requests" /></button>
       <button class="ps-tab" role="tab" id="tab-inquiries" aria-controls="panel-inquiries" data-tab="inquiries"><T k="me.tabs.inquiries" /></button>
       <button class="ps-tab" role="tab" id="tab-stats" aria-controls="panel-stats" data-tab="stats"><T k="me.tabs.stats" /></button>
@@ -75,19 +75,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         </label>
         <label>
           <span data-i18n="me.profile.headline">Frase corta (headline)</span>
-          <input name="headline" required maxlength="120" data-i18n-placeholder="me.profile.headline.placeholder" placeholder="Plomero 24h en Asunción" />
+          <input name="headline" required maxlength="120" data-i18n-placeholder="me.profile.headline_placeholder" placeholder="Plomero 24h en Asunción" />
         </label>
         <label>
           <span data-i18n="me.profile.phone">Teléfono</span>
-          <input name="phone" required type="tel" autocomplete="tel" data-i18n-placeholder="me.profile.phone.placeholder" placeholder="+595 981 234567" />
+          <input name="phone" required type="tel" autocomplete="tel" data-i18n-placeholder="me.profile.phone_placeholder" placeholder="+595 981 234567" />
         </label>
         <label>
           <span data-i18n="me.profile.whatsapp">WhatsApp (opcional)</span>
-          <input name="whatsapp" type="tel" autocomplete="tel" data-i18n-placeholder="me.profile.whatsapp.placeholder" placeholder="+595 981 234567" />
+          <input name="whatsapp" type="tel" autocomplete="tel" data-i18n-placeholder="me.profile.whatsapp_placeholder" placeholder="+595 981 234567" />
         </label>
         <label>
           <span data-i18n="me.profile.barrio">Barrio</span>
-          <input name="barrio" required list="ps-barrios" data-i18n-placeholder="me.profile.barrio.placeholder" placeholder="Villa Morra" />
+          <input name="barrio" required list="ps-barrios" data-i18n-placeholder="me.profile.barrio_placeholder" placeholder="Villa Morra" />
         </label>
 
         <div class="ps-row" style="align-items:center">
@@ -99,14 +99,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
         <label>
           <span data-i18n="me.profile.bio">Bio</span>
-          <textarea name="bio" rows="4" maxlength="2000" data-i18n-placeholder="me.profile.bio.placeholder" placeholder="Contales tu experiencia, herramientas, zonas que cubrís…"></textarea>
+          <textarea name="bio" rows="4" maxlength="2000" data-i18n-placeholder="me.profile.bio_placeholder" placeholder="Contales tu experiencia, herramientas, zonas que cubrís…"></textarea>
         </label>
         <button type="submit" class="ps-btn" data-i18n="common.save">Guardar</button>
         <p id="profile-msg" class="ps-msg" role="alert"></p>
       </form>
 
       <details style="margin-top:24px;background:#f9fafb;border-radius:10px;padding:16px;">
-        <summary style="font-weight:700;cursor:pointer;">Perfil avanzado (portada · servicios · zonas · portfolio · horario · filtros · guaraní)</summary>
+        <summary style="font-weight:700;cursor:pointer;" data-i18n="me.ext.summary"></summary>
         <div id="ext-msg" class="ps-msg" style="margin-top:8px;color:#10b981;"></div>
 
         <label style="display:block;margin-top:16px;">
@@ -116,14 +116,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
         <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Servicios con precio</h3>
         <div id="ext-services"></div>
-        <button type="button" id="ext-add-service" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;">+ Agregar servicio</button>
+        <button type="button" id="ext-add-service" data-i18n="me.ext.add_service" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
 
         <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Zonas (hasta 8)</h3>
         <div id="ext-areas" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
 
         <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Portfolio (URLs de fotos)</h3>
         <div id="ext-portfolio"></div>
-        <button type="button" id="ext-add-photo" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;">+ Agregar foto</button>
+        <button type="button" id="ext-add-photo" data-i18n="me.ext.add_photo" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
 
         <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Horario</h3>
         <div id="ext-schedule" style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;align-items:center;font-size:13px;"></div>
@@ -153,7 +153,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <input id="ext-ruc" type="text" maxlength="20" placeholder="Ej: 80012345-1" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
         </label>
 
-        <button type="button" id="ext-save" class="ps-btn" style="margin-top:16px;width:100%;">Guardar perfil avanzado</button>
+        <button type="button" id="ext-save" data-i18n="me.ext.save" class="ps-btn" style="margin-top:16px;width:100%;"></button>
       </details>
 
       <fieldset class="ps-banner ps-stack ps-notif-fieldset">
@@ -178,10 +178,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
              doesn't shift when GET /api/auth/passkeys returns. JS swaps the
              content + removes the data-skeleton attr on first paint. -->
         <div id="passkey-list" class="ps-stack" aria-live="polite" data-skeleton="1" style="min-height:3rem">
-          <p class="ps-card__sub" style="margin:0">
-            <span lang="es">Cargando passkeys…</span>
-            <span lang="en">Loading passkeys…</span>
-          </p>
+          <p class="ps-card__sub" data-i18n="me.loading_passkeys"></p>
         </div>
         <button type="button" id="passkey-add" class="ps-btn ps-btn--sm">
           <span lang="es">+ Agregar passkey</span>
@@ -225,9 +222,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       <h2>Logros e insignias</h2>
       <div id="completeness-extended" style="margin-bottom:16px;"></div>
       <h3 style="margin-top:24px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Misiones de hoy</h3>
-      <div id="quests-daily" class="ps-quests" aria-busy="true"><p class="ps-card__sub">Cargando misiones…</p></div>
+      <div id="quests-daily" class="ps-quests" aria-busy="true"><p class="ps-card__sub" data-i18n="me.loading_quests"></p></div>
       <h3 style="margin-top:16px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Misión semanal</h3>
-      <div id="quests-weekly" class="ps-quests" aria-busy="true"><p class="ps-card__sub">Cargando misión semanal…</p></div>
+      <div id="quests-weekly" class="ps-quests" aria-busy="true"><p class="ps-card__sub" data-i18n="me.loading_quests"></p></div>
       <h3 style="margin-top:24px;font-size:16px;">Insignias</h3>
       <div id="badges-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;" aria-busy="true"></div>
     </div>
@@ -275,7 +272,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const escape = escapeHtml
 
       const token = getToken()
-      if (!token) { location.href = `${base}/login/?next=${encodeURIComponent(location.pathname)}`; return }
+      if (!token) {
+        // Demo mode entry point — anonymous CTA on /docs/demo-mode/ links here.
+        // Skip the login redirect entirely: demoStub serves canned data and the
+        // page should run logged-out. Without this guard, the redirect drops
+        // ?demo=1 (location.pathname strips the search) and breaks the docs CTA.
+        const isDemo = (() => {
+          try { return new URLSearchParams(location.search).has('demo') } catch { return false }
+        })()
+        if (!isDemo) {
+          // Preserve ?demo=… and any other params across the auth bounce by
+          // sending pathname + search to /login/?next=.
+          const target = location.pathname + location.search
+          location.href = `${base}/login/?next=${encodeURIComponent(target)}`
+          return
+        }
+      }
 
       document.getElementById('logout').addEventListener('click', () => {
         clearToken()

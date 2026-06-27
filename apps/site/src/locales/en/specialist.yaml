@@ -1,4 +1,28 @@
 specialist:
+  public:
+    loading: Loading…
+    about: About me
+    services: Services
+    work_areas: Work areas
+    jobs: Jobs
+    badges: Badges
+    contact_whatsapp: Contact on WhatsApp
+    wa_template: 'Hi {name}, I am reaching out via PyaServ.'
+    not_found_title: Profile not found
+    not_found_body: This specialist does not exist or has not finished their registration.
+    see_all: View all specialists →
+    no_slug_title: Missing specialist identifier
+    no_slug_body: 'This URL expects ?slug=<identifier>.'
+    wa_verified: ✓ WhatsApp verified
+    cedula_verified: ✓ Cédula verified
+    price_from: 'From {amount}'
+    price_to_arrange: To be agreed
+    tier:
+      aprendiz: apprentice
+      oficial: journeyman
+      maestro: master
+      maestro_mayor: grand master
+      patron: patron
   detail:
     title: Profile
     locked:

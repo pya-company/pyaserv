@@ -91,7 +91,12 @@ export const DICTS = {
     "docs.group_system": "Sistema",
     "docs.group_roadmap": "Roadmap",
     "docs.group_dev": "Desarrollo",
+    "docs.index_featured_h": "Empezá por acá",
+    "docs.index_latest_h": "Últimas novedades",
+    "docs.index_try_cta": "Probar →",
     "error.network": "Error de red. Intentá de nuevo.",
+    "error.not_found_title": "Esta página no existe o se movió.",
+    "error.back_home": "← Volver al inicio",
     "foot.brother": "hermano de PyaEats",
     "foot.built_on": "construido sobre pya-platform",
     "home.title": "Servicios en Paraguay sin comisiones",
@@ -152,6 +157,7 @@ export const DICTS = {
     "login.title": "Iniciar sesión",
     "login.description": "Entrá a PyaServ con tu email — sin contraseña. Código de 6 dígitos por correo.",
     "login.intro": "Sin contraseñas — te mandamos un código de 6 dígitos por email.",
+    "login.email_label": "Email",
     "login.email.placeholder": "tunombre@correo.com",
     "login.send_code": "Enviar código",
     "login.code": "Código (6 dígitos)",
@@ -165,9 +171,18 @@ export const DICTS = {
     "me.tabs.aria": "Secciones",
     "me.tabs.profile": "👤 Mi perfil",
     "me.tabs.listings": "🛠️ Mis servicios",
+    "me.tabs.quotes": "📄 Cotizaciones",
+    "me.tabs.clients": "👥 Mis clientes",
+    "me.tabs.game": "🏆 Logros",
     "me.tabs.requests": "📢 Mis pedidos",
     "me.tabs.inquiries": "💬 Conversaciones",
     "me.tabs.stats": "📊 Estadísticas",
+    "me.ext.summary": "Perfil avanzado (portada · servicios · zonas · portfolio · horario · filtros · guaraní)",
+    "me.ext.add_service": "+ Agregar servicio",
+    "me.ext.add_photo": "+ Agregar foto",
+    "me.ext.save": "Guardar perfil avanzado",
+    "me.loading_passkeys": "Cargando passkeys…",
+    "me.loading_quests": "Cargando misiones…",
     "me.stats.h": "Estadísticas",
     "me.stats.intro": "Métricas de tu perfil — últimos 30 días.",
     "me.stats.empty": "Aún no tenés perfil de profesional. Creá tu perfil para empezar a ver métricas.",
@@ -180,11 +195,16 @@ export const DICTS = {
     "me.profile.h": "Perfil de profesional",
     "me.profile.intro": "Si querés ofrecer servicios, completá tu perfil acá.",
     "me.profile.display_name": "Nombre que mostramos",
-    "me.profile.headline.placeholder": "Plomero 24h en Asunción",
-    "me.profile.phone.placeholder": "+595 981 234567",
-    "me.profile.whatsapp.placeholder": "+595 981 234567",
-    "me.profile.barrio.placeholder": "Villa Morra",
-    "me.profile.bio.placeholder": "Contales tu experiencia, herramientas, zonas que cubrís…",
+    "me.profile.headline": "Frase corta (headline)",
+    "me.profile.phone": "Teléfono",
+    "me.profile.whatsapp": "WhatsApp (opcional)",
+    "me.profile.barrio": "Barrio",
+    "me.profile.bio": "Bio",
+    "me.profile.headline_placeholder": "Plomero 24h en Asunción",
+    "me.profile.phone_placeholder": "+595 981 234567",
+    "me.profile.whatsapp_placeholder": "+595 981 234567",
+    "me.profile.barrio_placeholder": "Villa Morra",
+    "me.profile.bio_placeholder": "Contales tu experiencia, herramientas, zonas que cubrís…",
     "me.profile.saved": "✓ Perfil guardado",
     "me.profile.geoloc.locating": "Buscando ubicación…",
     "me.profile.geoloc.denied": "Acceso a ubicación denegado",
@@ -278,6 +298,28 @@ export const DICTS = {
     "reviews.empty": "Sin reseñas todavía.",
     "reviews.avg_one": "reseña",
     "reviews.avg_many": "reseñas",
+    "specialist.public.loading": "Cargando…",
+    "specialist.public.about": "Sobre mí",
+    "specialist.public.services": "Servicios",
+    "specialist.public.work_areas": "Zonas de trabajo",
+    "specialist.public.jobs": "Trabajos",
+    "specialist.public.badges": "Insignias",
+    "specialist.public.contact_whatsapp": "Contactar por WhatsApp",
+    "specialist.public.wa_template": "Hola {name}, te contacto desde PyaServ.",
+    "specialist.public.not_found_title": "Perfil no encontrado",
+    "specialist.public.not_found_body": "Este profesional no existe o aún no completó su registro.",
+    "specialist.public.see_all": "Ver todos los profesionales →",
+    "specialist.public.no_slug_title": "Falta el identificador del profesional",
+    "specialist.public.no_slug_body": "Esta URL espera ?slug=<identificador>.",
+    "specialist.public.wa_verified": "✓ WhatsApp verificado",
+    "specialist.public.cedula_verified": "✓ Cédula verificada",
+    "specialist.public.price_from": "Desde {amount}",
+    "specialist.public.price_to_arrange": "A coordinar",
+    "specialist.public.tier.aprendiz": "aprendiz",
+    "specialist.public.tier.oficial": "oficial",
+    "specialist.public.tier.maestro": "maestro",
+    "specialist.public.tier.maestro_mayor": "maestro mayor",
+    "specialist.public.tier.patron": "patron",
     "specialist.detail.title": "Perfil",
     "specialist.detail.locked.cta": "iniciá sesión",
     "specialist.detail.verified": "✓ Verificado",
@@ -298,6 +340,8 @@ export const DICTS = {
     "specialists.description": "Plomeros, electricistas, peluqueras, profes — encontralos en tu barrio en Asunción.",
     "specialists.heading": "Profesionales disponibles",
     "specialists.intro": "Filtrá por categoría o barrio. El contacto se hace fuera de la plataforma; PyaServ solo presenta.",
+    "specialists.filter.category_label": "Categoría",
+    "specialists.filter.barrio_label": "Barrio",
     "specialists.filter.category.all": "Todas",
     "specialists.filter.barrio.placeholder": "Villa Morra, Carmelitas…",
     "specialists.filter.near_me": "📍 Cerca de mí",
@@ -402,7 +446,12 @@ export const DICTS = {
     "docs.group_system": "System",
     "docs.group_roadmap": "Roadmap",
     "docs.group_dev": "Development",
+    "docs.index_featured_h": "Start here",
+    "docs.index_latest_h": "Latest releases",
+    "docs.index_try_cta": "Try it →",
     "error.network": "Network error. Please try again.",
+    "error.not_found_title": "This page does not exist or has moved.",
+    "error.back_home": "← Back to home",
     "foot.brother": "sibling of PyaEats",
     "foot.built_on": "built on pya-platform",
     "home.title": "Services in Paraguay without fees",
@@ -463,6 +512,7 @@ export const DICTS = {
     "login.title": "Sign in",
     "login.description": "Sign in to PyaServ with your email — no password. 6-digit code by email.",
     "login.intro": "No passwords — we email you a 6-digit code.",
+    "login.email_label": "Email",
     "login.email.placeholder": "yourname@email.com",
     "login.send_code": "Send code",
     "login.code": "Code (6 digits)",
@@ -476,9 +526,18 @@ export const DICTS = {
     "me.tabs.aria": "Sections",
     "me.tabs.profile": "👤 My profile",
     "me.tabs.listings": "🛠️ My services",
+    "me.tabs.quotes": "📄 Quotes",
+    "me.tabs.clients": "👥 My clients",
+    "me.tabs.game": "🏆 Achievements",
     "me.tabs.requests": "📢 My requests",
     "me.tabs.inquiries": "💬 Conversations",
     "me.tabs.stats": "📊 Stats",
+    "me.ext.summary": "Advanced profile (cover · services · areas · portfolio · schedule · filters · guaraní)",
+    "me.ext.add_service": "+ Add service",
+    "me.ext.add_photo": "+ Add photo",
+    "me.ext.save": "Save advanced profile",
+    "me.loading_passkeys": "Loading passkeys…",
+    "me.loading_quests": "Loading quests…",
     "me.stats.h": "Stats",
     "me.stats.intro": "Profile metrics — last 30 days.",
     "me.stats.empty": "You don't have a specialist profile yet. Create one to start seeing metrics.",
@@ -491,11 +550,16 @@ export const DICTS = {
     "me.profile.h": "Specialist profile",
     "me.profile.intro": "If you want to offer services, fill out your profile here.",
     "me.profile.display_name": "Display name",
-    "me.profile.headline.placeholder": "24/7 plumber in Asunción",
-    "me.profile.phone.placeholder": "+595 981 234567",
-    "me.profile.whatsapp.placeholder": "+595 981 234567",
-    "me.profile.barrio.placeholder": "Villa Morra",
-    "me.profile.bio.placeholder": "Tell about your experience, tools, areas you cover…",
+    "me.profile.headline": "Short headline",
+    "me.profile.phone": "Phone",
+    "me.profile.whatsapp": "WhatsApp (optional)",
+    "me.profile.barrio": "Neighborhood",
+    "me.profile.bio": "Bio",
+    "me.profile.headline_placeholder": "24/7 plumber in Asunción",
+    "me.profile.phone_placeholder": "+595 981 234567",
+    "me.profile.whatsapp_placeholder": "+595 981 234567",
+    "me.profile.barrio_placeholder": "Villa Morra",
+    "me.profile.bio_placeholder": "Tell about your experience, tools, areas you cover…",
     "me.profile.saved": "✓ Profile saved",
     "me.profile.geoloc.locating": "Locating…",
     "me.profile.geoloc.denied": "Location access denied",
@@ -589,6 +653,28 @@ export const DICTS = {
     "reviews.empty": "No reviews yet.",
     "reviews.avg_one": "review",
     "reviews.avg_many": "reviews",
+    "specialist.public.loading": "Loading…",
+    "specialist.public.about": "About me",
+    "specialist.public.services": "Services",
+    "specialist.public.work_areas": "Work areas",
+    "specialist.public.jobs": "Jobs",
+    "specialist.public.badges": "Badges",
+    "specialist.public.contact_whatsapp": "Contact on WhatsApp",
+    "specialist.public.wa_template": "Hi {name}, I am reaching out via PyaServ.",
+    "specialist.public.not_found_title": "Profile not found",
+    "specialist.public.not_found_body": "This specialist does not exist or has not finished their registration.",
+    "specialist.public.see_all": "View all specialists →",
+    "specialist.public.no_slug_title": "Missing specialist identifier",
+    "specialist.public.no_slug_body": "This URL expects ?slug=<identifier>.",
+    "specialist.public.wa_verified": "✓ WhatsApp verified",
+    "specialist.public.cedula_verified": "✓ Cédula verified",
+    "specialist.public.price_from": "From {amount}",
+    "specialist.public.price_to_arrange": "To be agreed",
+    "specialist.public.tier.aprendiz": "apprentice",
+    "specialist.public.tier.oficial": "journeyman",
+    "specialist.public.tier.maestro": "master",
+    "specialist.public.tier.maestro_mayor": "grand master",
+    "specialist.public.tier.patron": "patron",
     "specialist.detail.title": "Profile",
     "specialist.detail.locked.cta": "sign in",
     "specialist.detail.verified": "✓ Verified",
@@ -609,6 +695,8 @@ export const DICTS = {
     "specialists.description": "Plumbers, electricians, hairdressers, tutors — find them in your neighborhood in Asunción.",
     "specialists.heading": "Available specialists",
     "specialists.intro": "Filter by category or neighborhood. Contact happens outside the platform; PyaServ only introduces.",
+    "specialists.filter.category_label": "Category",
+    "specialists.filter.barrio_label": "Neighborhood",
     "specialists.filter.category.all": "All",
     "specialists.filter.barrio.placeholder": "Villa Morra, Carmelitas…",
     "specialists.filter.near_me": "📍 Near me",
@@ -691,6 +779,9 @@ export const DICTS = {
     "docs.group_system": "System",
     "docs.group_roadmap": "Roadmap",
     "docs.group_dev": "Entwicklung",
+    "docs.index_featured_h": "Hier starten",
+    "docs.index_latest_h": "Neueste Releases",
+    "docs.index_try_cta": "Testen →",
     "nav.menu_open": "Menü öffnen",
     "nav.primary_aria": "Hauptnavigation",
     "nav.specialists": "Fachleute",
@@ -790,6 +881,9 @@ export const DICTS = {
     "docs.group_system": "Система",
     "docs.group_roadmap": "Дорожная карта",
     "docs.group_dev": "Разработка",
+    "docs.index_featured_h": "Начните здесь",
+    "docs.index_latest_h": "Последние релизы",
+    "docs.index_try_cta": "Попробовать →",
     "nav.menu_open": "Открыть меню",
     "nav.primary_aria": "Главная навигация",
     "nav.specialists": "Специалисты",
@@ -1225,6 +1319,60 @@ export const CONTENT = {
   },
   "en": {
     "docs": {
+      "cotizador": {
+        "title": "Quick quoter",
+        "tldr": "Per-trade templates + line-item editor + optional VAT + downloadable PDF + one-click WhatsApp send.",
+        "sections": [
+          {
+            "heading": "Flow",
+            "body": "1. Pick a template (optional, per trade).\n2. Fill / edit items (name + qty + price).\n3. Toggle 10% VAT.\n4. \"Save and download PDF\" — generates the PDF client-side with jsPDF.\n5. \"Send via WhatsApp\" — opens wa.me with a pre-filled summary message."
+          },
+          {
+            "heading": "Templates",
+            "body": "No templates ship pre-loaded (empty list at start). After building your first quote you can \"Save as template\" to reuse."
+          },
+          {
+            "heading": "PDF",
+            "body": "Generated in the browser with jspdf 4.2. No server-side fonts or complex Workers. Works offline once the page is cached."
+          }
+        ]
+      },
+      "insignias": {
+        "title": "Badges",
+        "tldr": "18 badges in 4 categories that recognize specialist achievements. Public on the profile, optionally hideable.",
+        "sections": [
+          {
+            "heading": "Categories",
+            "body": "· **Tier** (5): Apprentice → Patron of the Craft\n· **Milestone** (5): first job, 10/50/100 jobs, first 5★\n· **Superlative** (3): speedster of the month, neighborhood star, master of the neighborhood\n· **Collection** (5): Master Profile, multilingual, builder, squad, fully verified"
+          },
+          {
+            "heading": "Rarity",
+            "body": "common · rare · epic · legendary. Drives pill color and visual weight."
+          },
+          {
+            "heading": "Auto-grant",
+            "body": "Superlatives are evaluated monthly (cron next sprint). Milestones + collection awards fire on events (job completed, photo added, ruc set)."
+          },
+          {
+            "heading": "Visibility",
+            "body": "Public on the profile by default. The user can hide individual badges from /me/?tab=game."
+          }
+        ]
+      },
+      "multilingue": {
+        "title": "Per-profile multilingual",
+        "tldr": "Guaraní version of your bio/headline without losing Spanish SEO. Coming soon: DE, EN, RU as equal class.",
+        "sections": [
+          {
+            "heading": "Today",
+            "body": "`bio_gn` and `headline_gn` fields in \"Advanced profile\". When filled, they show up at `/p/<slug>?lang=gn` with the matching hreflang."
+          },
+          {
+            "heading": "2026-06-25 strategy (PIVOT)",
+            "body": "The commercial strategy pivoted to DE/EN/RU/ES as **equal languages** — targeting expat communities in Paraguay (German, English, Russian) alongside local. Migration 0013 will add `bio_de`/`bio_ru`/`headline_de`/`headline_ru` columns in Sprint 2."
+          }
+        ]
+      },
       "perfil": {
         "title": "Your public profile",
         "tldr": "Your own page at pyaserv.com/p/<your-slug> with photo, cover, bio, services with price, portfolio gallery, reviews, badges, schedule, and a direct WhatsApp button.",
@@ -1248,6 +1396,28 @@ export const CONTENT = {
           {
             "heading": "How \"completeness\" is calculated",
             "body": "10 steps, 10 % each, starting at 20 % endowed-progress (Nunes 2006). At 100 %: \"Master Profile\" badge + 7 free Boost days.\n"
+          }
+        ]
+      },
+      "xp": {
+        "title": "XP, streaks, quests",
+        "tldr": "Full gamification system: XP per action, 5 tiers, daily streak with freezes, daily and weekly quests with XP + boost rewards.",
+        "sections": [
+          {
+            "heading": "XP table (spec §4.4)",
+            "body": "· Reply < 1h: +5 · Reply < 24h: +2 · Job completed: +25 · Review: +30 · Review with photo: +50 · 5★ bonus: +20 · Portfolio photo: +5 · Share job: +15 · Daily quest: +10 · Weekly quest: +50 · Referral: +100"
+          },
+          {
+            "heading": "Tiers",
+            "body": "Apprentice (0) → Journeyman (100) → Master (500) → Grand Master (2000) → Patron of the Craft (5000). Sticky — never go down."
+          },
+          {
+            "heading": "Streak",
+            "body": "Any \"active\" action on a given day (reply, photo, login with activity). Auto-freeze if no leads (max 3/month). Manual pause up to 14 days. Repair 1×/month for 100 XP."
+          },
+          {
+            "heading": "Quests",
+            "body": "3 daily (10 XP each) + 1-2 weekly (50 XP). Auto-seeded when the user opens /me/?tab=game."
           }
         ]
       }

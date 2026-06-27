@@ -4,6 +4,8 @@ specialists:
   heading: Profesionales disponibles
   intro: Filtrá por categoría o barrio. El contacto se hace fuera de la plataforma; PyaServ solo presenta.
   filter:
+    category_label: Categoría
+    barrio_label: Barrio
     category:
       all: Todas
     barrio:

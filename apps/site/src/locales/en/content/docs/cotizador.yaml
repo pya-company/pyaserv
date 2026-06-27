@@ -1,0 +1,14 @@
+title: Quick quoter
+tldr: Per-trade templates + line-item editor + optional VAT + downloadable PDF + one-click WhatsApp send.
+sections:
+  - heading: Flow
+    body: |-
+      1. Pick a template (optional, per trade).
+      2. Fill / edit items (name + qty + price).
+      3. Toggle 10% VAT.
+      4. "Save and download PDF" — generates the PDF client-side with jsPDF.
+      5. "Send via WhatsApp" — opens wa.me with a pre-filled summary message.
+  - heading: Templates
+    body: No templates ship pre-loaded (empty list at start). After building your first quote you can "Save as template" to reuse.
+  - heading: PDF
+    body: Generated in the browser with jspdf 4.2. No server-side fonts or complex Workers. Works offline once the page is cached.

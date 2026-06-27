@@ -5,7 +5,9 @@
 /login    /?login=1   302
 /login/   /?login=1   302
 
-# Pretty URL for public profile: /p/<slug> internally rewrites to /p/?slug=<slug>.
-# CF Pages status 200 = internal rewrite — the URL stays visible to the user.
-/p/:slug    /p/?slug=:slug   200
-/p/:slug/   /p/?slug=:slug   200
+# Pretty profile URL — temporarily disabled until /p/[slug].astro lands.
+# Without this, an unknown `/p/<slug>/` resolves to the CF Pages 404 page,
+# satisfying spec §SEO + the AC-404 contract. Direct shareable URLs use
+# `/p/?slug=<slug>` against the index.html that ships at /p/.
+#/p/:slug    /p/?slug=:slug   200
+#/p/:slug/   /p/?slug=:slug   200

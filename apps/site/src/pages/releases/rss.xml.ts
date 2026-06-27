@@ -1,30 +1,30 @@
 import type { APIRoute } from 'astro'
+import { RELEASES } from '~/data/releases.ts'
+import { getReleaseContent } from '~/lib/content.ts'
 
-const releases = [
-  {
-    date: '2026-06-25',
-    version: 'v1.1.0',
-    title: 'Sprint 1-6 features live',
-    desc: 'Las 13 features de spec v1 están en producción.',
-  },
-  {
-    date: '2026-06-24',
-    version: 'v1.0.0',
-    title: 'Spec v1 Foundation',
-    desc: 'Base de datos lista para todas las features.',
-  },
-]
+const escapeXml = (s: string): string =>
+  s.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
 
 export const GET: APIRoute = () => {
-  const items = releases.map((r) => `
+  // Single source of truth: data/releases.ts + per-locale YAML.
+  // Picks the EN content as canonical for the feed.
+  const items = RELEASES.map((r) => {
+    const c = getReleaseContent('en', r.slug) ?? getReleaseContent('es', r.slug)
+    const title = c?.title ?? r.slug
+    const desc = c?.tldr ?? ''
+    return `
     <item>
-      <title>${r.title} (${r.version})</title>
-      <link>https://pyaserv.com/releases/</link>
+      <title>${escapeXml(`${title} (${r.version})`)}</title>
+      <link>https://pyaserv.com/releases/${r.slug}/</link>
       <guid isPermaLink="false">pyaserv-${r.version}</guid>
-      <description>${r.desc}</description>
+      <description>${escapeXml(desc)}</description>
       <pubDate>${new Date(`${r.date}T12:00:00Z`).toUTCString()}</pubDate>
-    </item>
-  `).join('')
+    </item>`
+  }).join('')
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -32,8 +32,7 @@ export const GET: APIRoute = () => {
     <title>PyaServ — Novedades</title>
     <link>https://pyaserv.com/releases/</link>
     <description>Lo último en PyaServ. Una entrada por release.</description>
-    <language>es-PY</language>
-    ${items}
+    <language>es-PY</language>${items}
   </channel>
 </rss>`
 

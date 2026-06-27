@@ -4,6 +4,8 @@ specialists:
   heading: Available specialists
   intro: Filter by category or neighborhood. Contact happens outside the platform; PyaServ only introduces.
   filter:
+    category_label: Category
+    barrio_label: Neighborhood
     category:
       all: All
     barrio:
