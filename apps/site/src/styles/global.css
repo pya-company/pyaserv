@@ -289,9 +289,14 @@ button { font: inherit; cursor: pointer; }
 
 /* Dev-only nav affordances (storybook, debug toggles): hidden everywhere by
    default, revealed only when bootstrap.js stamps <html data-dev="1"> on
-   localhost + .pages.dev preview hosts. Production pyaserv.com stays clean. */
-.ps-dev-only { display: none; }
-html[data-dev="1"] .ps-dev-only { display: revert; }
+   localhost + .pages.dev preview hosts. Production pyaserv.com stays clean.
+   Specific selectors so the rule wins against `.ps-topbar__nav a` (0-2-0). */
+.ps-topbar__nav .ps-dev-only,
+.ps-fly .ps-dev-only,
+a.ps-dev-only { display: none !important; }
+html[data-dev="1"] .ps-topbar__nav .ps-dev-only,
+html[data-dev="1"] .ps-fly .ps-dev-only,
+html[data-dev="1"] a.ps-dev-only { display: revert !important; }
 
 /* ----- flying-menu integration (mobile only) -----------------------------
    Custom element from @igor-ganov/flying-menu. Draggable, corner-snapping
