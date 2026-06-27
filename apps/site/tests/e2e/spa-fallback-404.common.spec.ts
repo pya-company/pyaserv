@@ -97,7 +97,11 @@ test.describe('SPA fallback must not swallow unknown routes', () => {
   })
 
   test('unknown /p/<slug>/ returns 404 (getStaticPaths must not be masked)', async ({ request }) => {
-    const res = await fetchBody(request, '/p/notexist-slug/')
+    // Use a per-process random slug so a stuck CF edge cache entry can never
+    // poison the assertion across runs (we hit one earlier where the slug
+    // "notexist-slug" had a 7-day s-maxage on a pre-fix 200 response).
+    const fresh = `nf-${Math.random().toString(36).slice(2, 10)}`
+    const res = await fetchBody(request, `/p/${fresh}/`)
 
     expect(res.status, 'bogus listing slug must 404').toBe(404)
     expect(res.body, 'body must not be the home page').not.toMatch(HOME_MARKER)

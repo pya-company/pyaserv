@@ -8,7 +8,7 @@
   #   - connect-src: 'self' + api.pyaserv.com (our worker)
   #   - frame-ancestors 'none' replaces X-Frame-Options
   #   - upgrade-insecure-requests for any stray http://
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://api.pyaserv.com; font-src 'self' data:; connect-src 'self' https://api.pyaserv.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default ps-html lit-html
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://api.pyaserv.com https://images.unsplash.com; font-src 'self' data:; connect-src 'self' https://api.pyaserv.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default ps-html lit-html
   Content-Security-Policy-Report-Only: require-trusted-types-for 'script'
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   Cross-Origin-Opener-Policy: same-origin

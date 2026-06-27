@@ -11,3 +11,10 @@
 # `/p/?slug=<slug>` against the index.html that ships at /p/.
 #/p/:slug    /p/?slug=:slug   200
 #/p/:slug/   /p/?slug=:slug   200
+
+# /p/<bogus>/ MUST return a real 404, not the SPA fallback to /p/index.html.
+# CF Pages SPA fallback would serve /p/index.html for any /p/<slug>/ since
+# the directory has an index. Using `:slug` placeholders so /p/ itself is
+# untouched (its index.html still handles ?slug= query-param flow).
+/p/:slug/   /404/   404
+/p/:slug    /404/   404
