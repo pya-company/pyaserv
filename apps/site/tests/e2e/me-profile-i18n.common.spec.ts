@@ -33,11 +33,8 @@
  */
 import { expect, test } from '@playwright/test'
 
-const setLocaleEn = async (page: import('@playwright/test').Page) => {
-  await page.addInitScript(() => {
-    try { localStorage.setItem('pyaserv.locale', 'en') } catch {}
-  })
-}
+// Path-based routing: navigate to /en/... to make the page render in EN.
+// No localStorage helper needed — URL is the source of truth.
 
 // A real, public specialist slug returned by the prod API. Used in the
 // bug report's repro steps.
@@ -89,12 +86,8 @@ test.describe('/me/ markup — hardcoded Spanish leaks regardless of locale', ()
 })
 
 test.describe('/p/?slug=… i18n — public profile must respect EN locale', () => {
-  test.beforeEach(async ({ page }) => {
-    await setLocaleEn(page)
-  })
-
   test('section titles + CTA are translated, not hardcoded ES', async ({ page }) => {
-    await page.goto(`/p/?slug=${PUBLIC_SLUG}`)
+    await page.goto(`/en/p/?slug=${PUBLIC_SLUG}`)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
     // Wait for the client fetch to /v1/p/<slug> to settle so sections render.
     await page.waitForLoadState('networkidle')
@@ -115,7 +108,7 @@ test.describe('/p/?slug=… i18n — public profile must respect EN locale', () 
     await page.route('**/v1/p/**', async () => {
       // Never resolve — keep the placeholder visible.
     })
-    await page.goto(`/p/?slug=${PUBLIC_SLUG}`)
+    await page.goto(`/en/p/?slug=${PUBLIC_SLUG}`)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
     const name = page.locator('#profile-name')

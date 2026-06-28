@@ -20,15 +20,12 @@ import { expect, test } from '@playwright/test'
 const SLUGS_MISSING_EN = ['insignias', 'cotizador', 'multilingue', 'xp'] as const
 
 test.describe('docs wiki — EN localization', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      try { localStorage.setItem('pyaserv.locale', 'en') } catch {}
-    })
-  })
+  // Path-based routing: /en/docs/<slug>/ renders the EN variant. No
+  // localStorage seed needed — URL is the source of truth.
 
   for (const slug of SLUGS_MISSING_EN) {
     test(`/docs/${slug}/ H1 renders in English when lang=en`, async ({ page }) => {
-      await page.goto(`/docs/${slug}/`)
+      await page.goto(`/en/docs/${slug}/`)
       await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
       const h1 = page.locator('article.docpage h1')
@@ -47,7 +44,7 @@ test.describe('docs wiki — EN localization', () => {
   }
 
   test('/docs/insignias/ section H2 ("Categorías") localizes on EN', async ({ page }) => {
-    await page.goto('/docs/insignias/')
+    await page.goto('/en/docs/insignias/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
     const h2 = page.locator('article.docpage section h2').first()
@@ -63,10 +60,10 @@ test.describe('docs wiki — EN localization', () => {
   })
 
   test('/docs/ sidebar entry "Multilingüe per-perfil" localizes on EN', async ({ page }) => {
-    await page.goto('/docs/')
+    await page.goto('/en/docs/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
-    const link = page.locator('.docs-sidebar__item a[href="/docs/multilingue/"] span').first()
+    const link = page.locator('.docs-sidebar__item a[href$="/docs/multilingue/"] span').first()
     const l10n = await link.getAttribute('data-l10n-text')
     expect(l10n).toBeTruthy()
     const parsed = JSON.parse(l10n ?? '{}') as Record<string, string>
@@ -78,7 +75,7 @@ test.describe('docs wiki — EN localization', () => {
   })
 
   test('/docs/ index group H2 ("Herramientas") localizes on EN', async ({ page }) => {
-    await page.goto('/docs/')
+    await page.goto('/en/docs/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
     // Find the group H2 that, in ES, reads "Herramientas".
@@ -91,7 +88,7 @@ test.describe('docs wiki — EN localization', () => {
   })
 
   test('/docs/insignias/ breadcrumb tail localizes on EN', async ({ page }) => {
-    await page.goto('/docs/insignias/')
+    await page.goto('/en/docs/insignias/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
     const tail = page.locator('nav.docpage__crumbs span[data-l10n-text]').first()

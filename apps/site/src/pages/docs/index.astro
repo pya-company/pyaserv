@@ -9,7 +9,7 @@ import { getDocContent, getReleaseContent } from '~/lib/content.ts'
 import { tFor, LOCALES, type Locale } from '~/lib/i18n.ts'
 import { getAllLocales } from '~/lib/l10n-emit.ts'
 
-const loc: Locale = 'es'
+const loc: Locale = (Astro.currentLocale ?? 'es') as Locale
 const title = tFor(loc, 'docs.page_title')
 const intro = tFor(loc, 'docs.page_intro')
 const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')

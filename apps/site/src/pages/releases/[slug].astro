@@ -12,7 +12,7 @@ export function getStaticPaths() {
   return RELEASES.map((r) => ({ params: { slug: r.slug }, props: { release: r } }))
 }
 const { release } = Astro.props
-const loc: Locale = 'es'
+const loc: Locale = (Astro.currentLocale ?? 'es') as Locale
 const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
 const content = getReleaseContent(loc, release.slug)
 if (!content) throw new Error(`Missing release content for ${release.slug}`)

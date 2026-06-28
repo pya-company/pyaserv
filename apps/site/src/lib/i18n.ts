@@ -28,43 +28,43 @@ const detectFromNavigator = (): Locale => {
   return 'en'
 }
 
+// Locale = first non-empty path segment if it's a recognized locale code,
+// else 'es' (default). Pure URL-derived — no localStorage, no ?lang query.
 export const getLocale = (): Locale => {
-  if (typeof globalThis === 'undefined') return 'en'
+  if (typeof globalThis === 'undefined') return 'es'
   try {
-    const stored = globalThis.localStorage?.getItem(STORAGE_KEY)
-    if (isLocale(stored)) return stored
+    const path = globalThis.location?.pathname ?? '/'
+    const seg = path.split('/').filter(Boolean)[0]
+    if (isLocale(seg)) return seg
   } catch {}
-  try {
-    const url = new URL(globalThis.location?.href ?? 'http://x/')
-    const qp = url.searchParams.get('lang')
-    if (isLocale(qp)) return qp
-  } catch {}
-  return detectFromNavigator()
+  return 'es'
 }
 
+// Strip leading /es|en|de|ru/ prefix from a pathname, normalize trailing
+// slash. "/en/specialists/" → "/specialists/", "/specialists/" → "/specialists/".
+const stripLocalePrefix = (pathname: string): string => {
+  const parts = pathname.split('/').filter(Boolean)
+  if (parts.length > 0 && (LOCALES as readonly string[]).includes(parts[0])) {
+    parts.shift()
+  }
+  const out = '/' + parts.join('/')
+  return out === '/' ? '/' : (pathname.endsWith('/') ? out + '/' : out)
+}
+
+// Path-based locale routing: pyaserv.com/ = ES (default at root),
+// pyaserv.com/en/foo = EN, /de/foo = DE, /ru/foo = RU. setLocale
+// navigates to the same page under the new locale prefix — no client-side
+// content swap, no localStorage. The URL is the source of truth.
 export const setLocale = (l: Locale): void => {
-  try { globalThis.localStorage?.setItem(STORAGE_KEY, l) } catch {}
-  if (typeof document !== 'undefined') {
-    document.documentElement.lang = l
-    document.documentElement.dataset.loc = l
-  }
-  // Reflect the choice in the URL so the link a user shares from the address
-  // bar carries the language — `?lang=ru` opens that page in Russian on the
-  // recipient's browser regardless of their stored preference. Uses
-  // replaceState so back-button history isn't polluted with one entry per
-  // language click. bootstrap.js reads ?lang= first on every page load.
-  if (typeof location !== 'undefined' && typeof history !== 'undefined') {
-    try {
-      const url = new URL(location.href)
-      if (url.searchParams.get('lang') !== l) {
-        url.searchParams.set('lang', l)
-        history.replaceState(history.state, '', url.toString())
-      }
-    } catch {}
-  }
-  // Dispatch a custom event so app code can re-render content without a
-  // full reload. Base.astro listens → applyContent + applyI18n + aria-pressed.
-  try { globalThis.dispatchEvent(new CustomEvent('pyaserv:locale', { detail: { locale: l } })) } catch {}
+  if (typeof location === 'undefined') return
+  try {
+    const base = stripLocalePrefix(location.pathname)
+    const prefix = l === 'es' ? '' : '/' + l
+    const next = prefix + base + location.search + location.hash
+    if (next !== location.pathname + location.search + location.hash) {
+      location.href = next
+    }
+  } catch {}
 }
 
 type Dict = Readonly<Record<string, string>>

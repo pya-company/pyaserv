@@ -157,14 +157,12 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
 
       // --- per-page wireup ---------------------------------------------------
       const initPage = () => {
-        // 1. Re-apply locale + theme + auth from storage to <html>. ClientRouter
-        //    swaps in the SSR'd <html lang="es"> for every new page; without
-        //    this the EN-locale user sees ES UI from /specialists/ onward.
+        // 1. Re-apply locale from URL path (/en/, /de/, /ru/ → en/de/ru, else
+        //    es). ClientRouter swaps in the SSR'd <html lang="es"> for every
+        //    new page, so we re-derive the correct locale from pathname here.
         try {
-          const stored = localStorage.getItem('pyaserv.locale')
-          const lang = (navigator.language || '').toLowerCase()
-          const detected = lang.startsWith('de') ? 'de' : lang.startsWith('ru') ? 'ru' : lang.startsWith('es') ? 'es' : lang.startsWith('gn') ? 'gn' : 'en'
-          const loc = isLoc(stored) ? stored : detected
+          const seg = location.pathname.split('/').filter(Boolean)[0]
+          const loc = isLoc(seg) ? seg : 'es'
           document.documentElement.lang = loc
           document.documentElement.dataset.loc = loc
         } catch {}
@@ -197,6 +195,25 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         const loc = getLocale()
         for (const b of document.querySelectorAll('.ps-lang-btn')) {
           b.setAttribute('aria-pressed', b.dataset.lang === loc ? 'true' : 'false')
+        }
+
+        // 5. Prefix every internal <a href="/..."> with the current locale
+        //    prefix when we're at /en, /de, /ru. Astro's fallbackType:'rewrite'
+        //    serves the same SSR HTML (with bare /links/) under every locale
+        //    path, so without this rewrite a click on /en/specialists/'s "Docs"
+        //    nav link would jump to /docs/ (ES). Skip the locale buttons —
+        //    those navigate cross-locale by design.
+        if (loc !== 'es') {
+          const prefix = '/' + loc
+          for (const a of document.querySelectorAll('a[href]')) {
+            const href = a.getAttribute('href') || ''
+            if (!href.startsWith('/')) continue
+            if (href.startsWith('/_')) continue
+            if (a.closest('.ps-lang-switch')) continue
+            // Already locale-prefixed?
+            if (/^\/(?:en|de|ru|gn)(?:\/|$)/.test(href)) continue
+            a.setAttribute('href', prefix + href)
+          }
         }
 
         // 5. Defensively close any flying-menu that may be left open across nav
@@ -546,26 +563,9 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       initPage()
       document.addEventListener('astro:after-swap', initPage)
 
-      // --- locale change without full reload --------------------
-      // Triggered by setLocale() in i18n.ts via custom event. Re-apply
-      // both data-i18n (labels, aria) AND data-l10n-* (rich content body)
-      // and update aria-pressed on the lang switcher buttons.
-      window.addEventListener('pyaserv:locale', (e) => {
-        const newLoc = e.detail?.locale
-        if (!newLoc) return
-        applyI18n(document)
-        applyContent(newLoc, document)
-        for (const b of document.querySelectorAll('.ps-lang-btn')) {
-          b.setAttribute('aria-pressed', b.dataset.lang === newLoc ? 'true' : 'false')
-        }
-        const titleKey = document.documentElement.dataset.titleKey
-        const descKey = document.documentElement.dataset.descKey
-        if (titleKey) document.title = `${t(titleKey)} · PyaServ`
-        if (descKey) {
-          const meta = document.querySelector('meta[name="description"]')
-          if (meta) meta.setAttribute('content', t(descKey))
-        }
-      })
+      // Note: locale changes trigger a full navigation via setLocale (URL
+      // is the source of truth — /en/foo, /de/foo, /ru/foo). No in-place
+      // re-render listener is needed.
     </script>
 
     <script>

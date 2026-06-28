@@ -1,48 +1,41 @@
 /*
- * E2E: the active locale (from localStorage) must survive ClientRouter swaps.
+ * E2E: locale survives in-app navigation. Architecture is path-based —
+ * /en/foo → en, /de/foo → de, etc. The "persistence" we test is:
+ * starting at /en/, every nav click stays under /en/, so html.lang stays 'en'.
  *
- * Current bug: on /, bootstrap.js sets <html lang="en"> from localStorage.
- * After navigation via ClientRouter to /specialists/, the new document's
- * SSR'd <html lang="es"> wins because bootstrap.js doesn't re-run on swap.
- * Result: half the page renders Spanish (CSS hides .lang="es" spans only
- * when html[lang="en"], so when html flips back to "es" everything ES shows).
- *
- * This test MUST be RED until S7.2 re-applies locale on astro:after-swap.
+ * The previous version of this test used localStorage to seed the locale.
+ * That's irrelevant now (we have no client-side locale store). Instead we
+ * navigate directly to the locale-prefixed URL.
  */
 import { expect, test } from '@playwright/test'
 
-test.describe('locale persistence', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      try { localStorage.setItem('pyaserv.locale', 'en') } catch {}
-    })
-  })
-
-  test('initial paint of / is English', async ({ page }) => {
-    await page.goto('/')
+test.describe('locale persistence (path-based)', () => {
+  test('initial paint of /en/ is English', async ({ page }) => {
+    await page.goto('/en/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
     await expect(page.getByRole('heading', { level: 1 })).toContainText(/Services in Paraguay/i)
   })
 
-  test('REGRESSION GUARD: navigation keeps lang=en', async ({ page }) => {
-    await page.goto('/')
+  test('REGRESSION GUARD: nav from /en/ keeps lang=en (links rewritten to /en/)', async ({ page }) => {
+    await page.goto('/en/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+    await page.waitForTimeout(800) // initPage rewrites internal hrefs
 
     await page.getByRole('link', { name: /browse specialists|i need a specialist/i }).first().click()
-    await expect(page).toHaveURL(/\/specialists\/$/)
-
+    await expect(page).toHaveURL(/\/en\/specialists\/$/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en', { timeout: 2000 })
-    // Visible UI chrome must be in English after the swap.
     await expect(page.getByRole('heading', { level: 1 })).toContainText(/Available|Specialists/i, { timeout: 2000 })
   })
 
-  test('REGRESSION GUARD: deep nav chain holds locale', async ({ page }) => {
-    await page.goto('/')
+  test('REGRESSION GUARD: deep nav chain inside /en/ holds locale', async ({ page }) => {
+    await page.goto('/en/')
+    await page.waitForTimeout(800)
     await page.getByRole('link', { name: /browse specialists|i need a specialist/i }).first().click()
-    await expect(page).toHaveURL(/\/specialists\/$/)
-    // Click the first specialist card → detail page.
+    await expect(page).toHaveURL(/\/en\/specialists\/$/)
+    await page.waitForTimeout(800)
     await page.locator('a.ps-card').first().click()
-    await expect(page).toHaveURL(/\/specialists\/[0-9a-z-]+\/$/)
+    // Card hrefs are also rewritten to include /en/ prefix
+    await expect(page).toHaveURL(/\/en\/specialists\/[0-9a-z-]+\/$/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
   })
 })

@@ -13,7 +13,7 @@ export function getStaticPaths() {
   return DOC_PAGES.map((p) => ({ params: { slug: p.slug }, props: { doc: p } }))
 }
 const { doc } = Astro.props
-const loc: Locale = 'es'
+const loc: Locale = (Astro.currentLocale ?? 'es') as Locale
 const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
 const content = getDocContent(loc, doc.slug)
 if (!content) throw new Error(`Missing doc content for ${doc.slug}`)

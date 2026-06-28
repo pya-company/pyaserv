@@ -9,7 +9,7 @@ import { tFor, LOCALES, type Locale } from '~/lib/i18n.ts'
 import { getAllLocales } from '~/lib/l10n-emit.ts'
 
 // SSR default = ES. Client `applyContent()` re-renders on locale change.
-const loc: Locale = 'es'
+const loc: Locale = (Astro.currentLocale ?? 'es') as Locale
 const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
 
 const title = tFor(loc, 'releases.page_title')

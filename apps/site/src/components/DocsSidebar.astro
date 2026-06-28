@@ -6,7 +6,7 @@ import { getAllLocales } from '~/lib/l10n-emit.ts'
 
 interface Props { currentSlug?: string }
 const { currentSlug } = Astro.props
-const loc: Locale = 'es'
+const loc: Locale = (Astro.currentLocale ?? 'es') as Locale
 const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
 
 const statusLabelMap = (status: string): Record<string, string> => {
