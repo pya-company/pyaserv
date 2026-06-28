@@ -44,6 +44,7 @@ me:
     barrio_placeholder: Villa Morra
     bio_placeholder: Расскажите об опыте, инструментах, районах выезда…
     saved: ✓ Профиль сохранён
+    geoloc_button: 'Использовать моё местоположение'
     geoloc:
       locating: Определяем местоположение…
       denied: Доступ к местоположению запрещён

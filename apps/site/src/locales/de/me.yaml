@@ -44,6 +44,7 @@ me:
     barrio_placeholder: Villa Morra
     bio_placeholder: Erzählen Sie von Ihrer Erfahrung, Werkzeugen, abgedeckten Gebieten…
     saved: ✓ Profil gespeichert
+    geoloc_button: 'Meinen Standort verwenden'
     geoloc:
       locating: Standort wird ermittelt…
       denied: Zugriff auf den Standort verweigert

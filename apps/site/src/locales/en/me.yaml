@@ -44,6 +44,7 @@ me:
     barrio_placeholder: Villa Morra
     bio_placeholder: Tell about your experience, tools, areas you cover…
     saved: ✓ Profile saved
+    geoloc_button: 'Use my location'
     geoloc:
       locating: Locating…
       denied: Location access denied

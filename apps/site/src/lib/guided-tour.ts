@@ -124,7 +124,12 @@ const renderStep = (): void => {
     }
     const rect = anchor.getBoundingClientRect()
     const inView = rect.top >= 0 && rect.bottom <= window.innerHeight
-    if (!inView) anchor.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // Instant scroll — smooth (300ms+) leaves the spotlight measuring
+    // pre-scroll geometry, so the cutout lands on empty space and the
+    // tooltip ends up off-screen. `auto` finishes synchronously, then
+    // the double-RAF gives the browser a chance to commit the layout
+    // before positionSpotlight re-reads the post-scroll rect.
+    if (!inView) anchor.scrollIntoView({ behavior: 'auto', block: 'center' })
     requestAnimationFrame(() => requestAnimationFrame(() => positionSpotlight(anchor, step)))
   }
   tryRender(0)

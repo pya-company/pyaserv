@@ -44,6 +44,7 @@ me:
     barrio_placeholder: Villa Morra
     bio_placeholder: Contales tu experiencia, herramientas, zonas que cubrís…
     saved: ✓ Perfil guardado
+    geoloc_button: 'Usar mi ubicación'
     geoloc:
       locating: Buscando ubicación…
       denied: Acceso a ubicación denegado
