@@ -124,7 +124,21 @@ html[data-demo-mode="1"] [data-nav-logout] { display: none !important; }
   margin: var(--ps-space-6) auto var(--ps-space-8);
   padding: 0 var(--ps-space-4);
   color: var(--ps-text);
+  /* Grid-child default `min-width: auto` would size to children's min-content
+     and overflow narrow viewports (was pushing /docs/<slug>/ to 420px on
+     375px mobile). Forcing min-width:0 lets the article shrink to its grid
+     track, then word-break inside <code> and long URLs handles the rest. */
+  min-width: 0;
 }
+.docpage code, .docpage pre {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.docpage pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.docpage a { overflow-wrap: anywhere; }
 .docpage__crumbs {
   font-size: 13px; color: var(--ps-text-muted); margin-bottom: var(--ps-space-4);
 }

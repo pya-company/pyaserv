@@ -21,3 +21,29 @@ demo:
   tour_t1_step6_body: Wo du am meisten arbeitest. Weitere Gebiete kannst du später hinzufügen.
   tour_t1_step7_title: Fertig!
   tour_t1_step7_body: Jeder Schritt erhöht deine Sichtbarkeit. Bei 100% schaltest du 7 Tage Boost und das "Master Profile"-Abzeichen frei!
+
+  # Auto-tours per page
+  tour_home_step1_title: "Willkommen bei PyaServ"
+  tour_home_step1_body: "Wir verbinden Fachleute mit Kunden in Paraguay. Keine Kontaktgebühren."
+  tour_home_step2_title: "Vier Sprachen, Sie wählen aus"
+  tour_home_step2_body: "Wechseln Sie jederzeit oben zwischen Spanisch, Englisch, Deutsch und Russisch."
+  tour_home_step3_title: "Sie sind im Demo-Modus"
+  tour_home_step3_body: "Sie sehen Beispieldaten. Tippen Sie auf „Demo verlassen\", wenn Sie loslegen möchten."
+  tour_specialists_step1_title: "Nach Stadtviertel oder Kategorie filtern"
+  tour_specialists_step1_body: "Finden Sie Fachleute in Ihrer Nähe. Asunción und Departamento Central — 40 Zonen."
+  tour_specialists_step2_title: "Tippen Sie eine Karte an, um das Profil zu öffnen"
+  tour_specialists_step2_body: "Jedes Profil zeigt Foto, Bio, Leistungen und Auszeichnungen. Kontakt direkt über WhatsApp."
+  tour_specialists_step3_title: "Sie sind im Demo-Modus"
+  tour_specialists_step3_body: "Die angezeigten Fachleute sind Beispiele. Verlassen Sie die Demo, wenn Sie echt suchen möchten."
+  tour_clients_step1_title: "Offene Anfragen nach Zone"
+  tour_clients_step1_body: "Diese Kunden suchen gerade jemanden. Filtern Sie nach Stadtviertel oder Kategorie."
+  tour_clients_step2_title: "Tippen Sie eine Anfrage an, um zu antworten"
+  tour_clients_step2_body: "Wenn es passt, schreiben Sie direkt. Keine Filter, keine Gebühr für Bewerbungen."
+  tour_clients_step3_title: "Sie sind im Demo-Modus"
+  tour_clients_step3_body: "Die angezeigten Anfragen sind Beispiele. Verlassen Sie die Demo, um echt zu antworten."
+  tour_profile_step1_title: "Öffentliches Profil zum Teilen"
+  tour_profile_step1_body: "So sehen Kunden Sie, wenn Sie Ihren PyaServ-Link per WhatsApp schicken."
+  tour_profile_step2_title: "Direkter Kontakt über WhatsApp"
+  tour_profile_step2_body: "Ein Tipp und der Kunde schreibt Sie an — ohne Zwischenschritte, ohne Formulare."
+  tour_profile_step3_title: "Leistungen, Bio und Auszeichnungen"
+  tour_profile_step3_body: "Alles, was Kunden brauchen, um sich zu entscheiden. Jeden Bereich passen Sie selbst an."

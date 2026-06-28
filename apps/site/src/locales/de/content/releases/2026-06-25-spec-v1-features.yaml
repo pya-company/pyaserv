@@ -1,50 +1,31 @@
-title: Spec v1 Features live — 13 Funktionen + components-lib + Demo v2
-tldr: Alle 13 Features von Spec v1 in Produktion + pure-stateless components-lib + Demo Mode v2 mit apiFetch-Interception.
+title: Die 13 Funktionen, die Sie brauchten — öffentliches Profil, Angebotsrechner, Demo und mehr
+tldr: Per WhatsApp teilbares Profil, Angebote mit PDF, ein leichtes Kunden-CRM, geführte Tour, hyperlokale Suche und ein Demo-Modus, um sich vor der Anmeldung umzusehen.
 sections:
   - kind: new
-    heading: Öffentliches Profil + 4 neue Endpoints
+    heading: Öffentliches Profil, bereit zum Teilen
     body: |
-      · `/p/<dein-slug>` mit Foto, Cover, Bio, Dienstleistungen, Abzeichen, Zeitplan, WhatsApp-CTA.
-      · API: `/v1/p/:slug` aggregiert Profil + Reviews + Abzeichen + Tier + Gebiete.
-      · Pretty URL via CF Pages `_redirects` Rewrite.
+      Jeder Fachmensch erhält den eigenen Link `/p/ihr-name` mit Foto, Titelbild, Biografie, Leistungen, Abzeichen, Öffnungszeiten und WhatsApp-Knopf. Sie fügen den Link in eine WhatsApp-Gruppe ein, und Kundinnen und Kunden sehen alles mit einer Berührung.
   - kind: new
-    heading: Schneller Kostenvoranschlag mit PDF
+    heading: Angebote mit PDF in einer Berührung
     body: |
-      · `/me/quotes/new` — Item-Editor, IVA-Toggle, jsPDF Client-side Download, WhatsApp-Share.
-      · Vorlagen pro Beruf (nächstes Mal: vorgeladene Bibliotheken).
+      Sie stellen das Angebot mit Posten + IVA zusammen, laden das PDF herunter und schicken es direkt per WhatsApp an die Kundschaft. Ohne an den Schreibtisch zurückzukehren.
   - kind: new
-    heading: Vollständige Gamification-Engine
+    heading: Steigen Sie beim Arbeiten im Rang auf
     body: |
-      · XP, 5 Tiers (Lehrling → Patron), 18 Abzeichen in 4 Kategorien, tägliche Serie mit Freezes.
-      · Tägliche (3) und wöchentliche (2) Quests mit Auto-Seed.
-      · HUD in `/me/` mit XP / 🔥 Serie / ⚡ Tier.
-      · Auto-XP-Grants bei Events: Antwort < 1h, Job abgeschlossen, Bewertung mit Foto.
+      XP für jeden abgeschlossenen Auftrag, Abzeichen für Meilensteine, eine tägliche Serie, die auch hält, wenn Sie sich einen Tag freinehmen. Fünf Stufen vom Lehrling bis zum Patron — die Kundschaft sieht es in Ihrem Profil.
   - kind: new
-    heading: Lite-CRM "Meine Kunden"
+    heading: Ihre Kundschaft, gemerkt
     body: |
-      · Auto-Erstellung von `client_record` bei Job-Abschluss.
-      · Bearbeitbare Notizen, Job-Zähler pro Kunde.
-      · Nächstes Mal: Wartungserinnerungen N Monate später.
+      Wenn Sie einen Auftrag abschließen, wird die Kundin oder der Kunde unter "Meine Kunden" gespeichert. Bearbeitbare Notizen, Auftragszähler. Demnächst: automatische Erinnerung, um Wartung anzubieten.
   - kind: new
-    heading: Onboarding-Tour T1
+    heading: Geführte Tour beim ersten Einstieg
     body: |
-      · Driver.js lazy-geladen, 7 geführte Schritte.
-      · Auto-Launch beim ersten `/me/`-Besuch wenn profile_complete_pct < 100.
-      · Persistiert in `user_tours_completed` Tabelle.
+      Wenn Sie Ihr Profil gerade erst erstellt haben, führen wir Sie Schritt für Schritt durch das, was noch fehlt — ohne Handbücher zu lesen. Die Tour schließt sich von selbst, sobald Sie alles kennen.
   - kind: new
-    heading: Hyperlocal SEO-Landings × 400
+    heading: 400 lokale Seiten, damit man Sie auf Google findet
     body: |
-      · `/servicios/<beruf>/<gebiet>/` — 10 Berufe × 40 Gebiete = 400 auto-generierte Seiten.
-      · Jede mit eindeutigem Title/Meta, FAQ, "Bist du ein Profi?"-CTA, Live-Fetch passender Specialists.
+      Wir erzeugen automatisch eine Seite pro Gewerk und Stadtviertel — "Klempner in Villa Morra", "Elektriker in Lambaré" — damit man Sie zuerst findet, wenn jemand auf Google sucht.
   - kind: new
-    heading: Demo Mode v2
+    heading: Demo-Modus — schauen Sie vor der Anmeldung
     body: |
-      · Jede Route + `?demo=1` = gleiche App mit Canned Data (keine Mock-Pages).
-      · apiFetch fängt Aufrufe via demoStub ab.
-      · 10 Safety-Charter-Mechanismen aktiv: oranges Banner, Body-Tint, html[data-demo-mode], Logged-out-Identität, Exit-Modal, 10-Min Idle-Timeout, kein Data-Import, Audit-Beacon.
-  - kind: new
-    heading: Components Library + Storybook lite
-    body: |
-      · `apps/site/src/components-lib/` — 19 pure stateless Funktionen (Atoms / Molecules / Organisms).
-      · `/components/` Liste mit Props-Panel + Locale-Switcher (i18n-Debugging).
-      · Demo Mode v2 nutzt dieselben Funktionen.
+      Fügen Sie `?demo=1` an einen beliebigen Link an, und Sie durchstöbern die ganze App mit Beispieldaten, ohne ein Konto anzulegen. Für den Moment, in dem Sie aus einer WhatsApp-Gruppe kommen und wissen wollen, worum es geht.

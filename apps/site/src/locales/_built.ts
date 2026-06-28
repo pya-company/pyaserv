@@ -71,6 +71,30 @@ export const DICTS = {
     "demo.tour_t1_step6_body": "Donde tenés más trabajo. Después podés agregar más zonas en la edición avanzada.",
     "demo.tour_t1_step7_title": "¡Listo!",
     "demo.tour_t1_step7_body": "Cada paso adicional sube tu visibilidad. ¡A 100% desbloqueás 7 días de Boost gratis y la insignia \"Perfil Maestro\"!",
+    "demo.tour_home_step1_title": "Bienvenido a PyaServ",
+    "demo.tour_home_step1_body": "Conectamos profesionales con clientes en Paraguay. Sin comisiones por contacto.",
+    "demo.tour_home_step2_title": "Cuatro idiomas, uno solo elegís",
+    "demo.tour_home_step2_body": "Cambiá entre español, inglés, alemán o ruso desde la barra superior cuando quieras.",
+    "demo.tour_home_step3_title": "Estás en modo demo",
+    "demo.tour_home_step3_body": "Estás navegando con datos de muestra. Tocá \"Salir del demo\" cuando quieras empezar de verdad.",
+    "demo.tour_specialists_step1_title": "Filtrá por barrio o categoría",
+    "demo.tour_specialists_step1_body": "Encontrá profesionales cerca tuyo. Asunción y Departamento Central — 40 zonas listas.",
+    "demo.tour_specialists_step2_title": "Tocá una tarjeta para ver el perfil",
+    "demo.tour_specialists_step2_body": "Cada profesional muestra foto, bio, servicios y badges. El contacto es directo por WhatsApp.",
+    "demo.tour_specialists_step3_title": "Estás en modo demo",
+    "demo.tour_specialists_step3_body": "Los profesionales que ves acá son de muestra. Salí del demo cuando quieras buscar de verdad.",
+    "demo.tour_clients_step1_title": "Pedidos abiertos por zona",
+    "demo.tour_clients_step1_body": "Acá ves los clientes que están buscando un profesional ahora mismo. Filtrá por barrio o categoría.",
+    "demo.tour_clients_step2_title": "Tocá un pedido para responder",
+    "demo.tour_clients_step2_body": "Si encaja con lo tuyo, escribís directo al cliente. Sin filtros, sin pagar para postularte.",
+    "demo.tour_clients_step3_title": "Estás en modo demo",
+    "demo.tour_clients_step3_body": "Los pedidos que ves son de muestra. Salí del demo cuando quieras responder de verdad.",
+    "demo.tour_profile_step1_title": "Perfil público listo para compartir",
+    "demo.tour_profile_step1_body": "Así te ven los clientes cuando les pasás tu link de PyaServ por WhatsApp.",
+    "demo.tour_profile_step2_title": "Contacto directo por WhatsApp",
+    "demo.tour_profile_step2_body": "Un toque y el cliente te escribe — sin pasos intermedios, sin formularios.",
+    "demo.tour_profile_step3_title": "Servicios, bio y badges",
+    "demo.tour_profile_step3_body": "Toda la información que necesita el cliente para decidirse. Personalizá cada sección desde tu panel.",
     "docs.page_title": "Documentación",
     "docs.page_intro": "Wiki de PyaServ. Cada feature tiene su sección con detalles, link a demo y a producción.",
     "docs.sidebar_aria": "Secciones de documentación",
@@ -428,6 +452,30 @@ export const DICTS = {
     "demo.tour_t1_step6_body": "Where you have most work. You can add more areas later in advanced edit.",
     "demo.tour_t1_step7_title": "Done!",
     "demo.tour_t1_step7_body": "Each step raises your visibility. At 100% you unlock 7 free Boost days and the \"Master Profile\" badge!",
+    "demo.tour_home_step1_title": "Welcome to PyaServ",
+    "demo.tour_home_step1_body": "We connect specialists with clients across Paraguay. No fees for getting in touch.",
+    "demo.tour_home_step2_title": "Four languages, you pick one",
+    "demo.tour_home_step2_body": "Switch between Spanish, English, German and Russian from the top bar whenever you like.",
+    "demo.tour_home_step3_title": "You are in demo mode",
+    "demo.tour_home_step3_body": "Everything you see is sample data. Tap \"Exit demo\" when you are ready for the real thing.",
+    "demo.tour_specialists_step1_title": "Filter by neighborhood or category",
+    "demo.tour_specialists_step1_body": "Find specialists near you. Asunción and Departamento Central — 40 zones ready.",
+    "demo.tour_specialists_step2_title": "Tap a card to open the profile",
+    "demo.tour_specialists_step2_body": "Each specialist shows photo, bio, services and badges. Contact is direct via WhatsApp.",
+    "demo.tour_specialists_step3_title": "You are in demo mode",
+    "demo.tour_specialists_step3_body": "The specialists you see are samples. Exit demo when you want to search for real.",
+    "demo.tour_clients_step1_title": "Open requests by zone",
+    "demo.tour_clients_step1_body": "These are clients looking for a specialist right now. Filter by neighborhood or category.",
+    "demo.tour_clients_step2_title": "Tap a request to reply",
+    "demo.tour_clients_step2_body": "If it matches what you do, message the client directly. No filters, no fee to apply.",
+    "demo.tour_clients_step3_title": "You are in demo mode",
+    "demo.tour_clients_step3_body": "The requests you see are samples. Exit demo when you want to reply for real.",
+    "demo.tour_profile_step1_title": "Public profile, ready to share",
+    "demo.tour_profile_step1_body": "This is what clients see when you send them your PyaServ link on WhatsApp.",
+    "demo.tour_profile_step2_title": "Direct contact via WhatsApp",
+    "demo.tour_profile_step2_body": "One tap and the client messages you — no middle steps, no forms.",
+    "demo.tour_profile_step3_title": "Services, bio and badges",
+    "demo.tour_profile_step3_body": "Everything a client needs to decide. Customize each section from your dashboard.",
     "docs.page_title": "Documentation",
     "docs.page_intro": "PyaServ wiki. Each feature has its section with details, demo link, and production link.",
     "docs.sidebar_aria": "Documentation sections",
@@ -785,6 +833,30 @@ export const DICTS = {
     "demo.tour_t1_step6_body": "Wo du am meisten arbeitest. Weitere Gebiete kannst du später hinzufügen.",
     "demo.tour_t1_step7_title": "Fertig!",
     "demo.tour_t1_step7_body": "Jeder Schritt erhöht deine Sichtbarkeit. Bei 100% schaltest du 7 Tage Boost und das \"Master Profile\"-Abzeichen frei!",
+    "demo.tour_home_step1_title": "Willkommen bei PyaServ",
+    "demo.tour_home_step1_body": "Wir verbinden Fachleute mit Kunden in Paraguay. Keine Kontaktgebühren.",
+    "demo.tour_home_step2_title": "Vier Sprachen, Sie wählen aus",
+    "demo.tour_home_step2_body": "Wechseln Sie jederzeit oben zwischen Spanisch, Englisch, Deutsch und Russisch.",
+    "demo.tour_home_step3_title": "Sie sind im Demo-Modus",
+    "demo.tour_home_step3_body": "Sie sehen Beispieldaten. Tippen Sie auf „Demo verlassen\", wenn Sie loslegen möchten.",
+    "demo.tour_specialists_step1_title": "Nach Stadtviertel oder Kategorie filtern",
+    "demo.tour_specialists_step1_body": "Finden Sie Fachleute in Ihrer Nähe. Asunción und Departamento Central — 40 Zonen.",
+    "demo.tour_specialists_step2_title": "Tippen Sie eine Karte an, um das Profil zu öffnen",
+    "demo.tour_specialists_step2_body": "Jedes Profil zeigt Foto, Bio, Leistungen und Auszeichnungen. Kontakt direkt über WhatsApp.",
+    "demo.tour_specialists_step3_title": "Sie sind im Demo-Modus",
+    "demo.tour_specialists_step3_body": "Die angezeigten Fachleute sind Beispiele. Verlassen Sie die Demo, wenn Sie echt suchen möchten.",
+    "demo.tour_clients_step1_title": "Offene Anfragen nach Zone",
+    "demo.tour_clients_step1_body": "Diese Kunden suchen gerade jemanden. Filtern Sie nach Stadtviertel oder Kategorie.",
+    "demo.tour_clients_step2_title": "Tippen Sie eine Anfrage an, um zu antworten",
+    "demo.tour_clients_step2_body": "Wenn es passt, schreiben Sie direkt. Keine Filter, keine Gebühr für Bewerbungen.",
+    "demo.tour_clients_step3_title": "Sie sind im Demo-Modus",
+    "demo.tour_clients_step3_body": "Die angezeigten Anfragen sind Beispiele. Verlassen Sie die Demo, um echt zu antworten.",
+    "demo.tour_profile_step1_title": "Öffentliches Profil zum Teilen",
+    "demo.tour_profile_step1_body": "So sehen Kunden Sie, wenn Sie Ihren PyaServ-Link per WhatsApp schicken.",
+    "demo.tour_profile_step2_title": "Direkter Kontakt über WhatsApp",
+    "demo.tour_profile_step2_body": "Ein Tipp und der Kunde schreibt Sie an — ohne Zwischenschritte, ohne Formulare.",
+    "demo.tour_profile_step3_title": "Leistungen, Bio und Auszeichnungen",
+    "demo.tour_profile_step3_body": "Alles, was Kunden brauchen, um sich zu entscheiden. Jeden Bereich passen Sie selbst an.",
     "docs.page_title": "Dokumentation",
     "docs.page_intro": "PyaServ-Wiki. Jedes Feature hat seinen Abschnitt mit Details, Demo-Link und Produktions-Link.",
     "docs.sidebar_aria": "Dokumentationsabschnitte",
@@ -1142,6 +1214,30 @@ export const DICTS = {
     "demo.tour_t1_step6_body": "Где у вас больше всего работы. Дополнительные районы добавите позже.",
     "demo.tour_t1_step7_title": "Готово!",
     "demo.tour_t1_step7_body": "Каждый шаг повышает вашу видимость. На 100% открываются 7 дней Boost и значок «Master Profile»!",
+    "demo.tour_home_step1_title": "Добро пожаловать в PyaServ",
+    "demo.tour_home_step1_body": "Связываем специалистов и клиентов по всему Парагваю. Без платы за контакты.",
+    "demo.tour_home_step2_title": "Четыре языка — выбирайте",
+    "demo.tour_home_step2_body": "Переключайтесь между испанским, английским, немецким и русским в верхней панели в любой момент.",
+    "demo.tour_home_step3_title": "Вы в демо-режиме",
+    "demo.tour_home_step3_body": "Вы видите тестовые данные. Нажмите «Выйти из демо», когда захотите начать по-настоящему.",
+    "demo.tour_specialists_step1_title": "Фильтр по району или категории",
+    "demo.tour_specialists_step1_body": "Найдите специалистов рядом. Асунсьон и Departamento Central — 40 зон на выбор.",
+    "demo.tour_specialists_step2_title": "Нажмите на карточку, чтобы открыть профиль",
+    "demo.tour_specialists_step2_body": "У каждого специалиста — фото, био, услуги и значки. Связь напрямую через WhatsApp.",
+    "demo.tour_specialists_step3_title": "Вы в демо-режиме",
+    "demo.tour_specialists_step3_body": "Видимые специалисты — тестовые. Выйдите из демо, когда захотите искать по-настоящему.",
+    "demo.tour_clients_step1_title": "Открытые заявки по районам",
+    "demo.tour_clients_step1_body": "Это клиенты, которые ищут специалиста прямо сейчас. Фильтруйте по району или категории.",
+    "demo.tour_clients_step2_title": "Нажмите на заявку, чтобы ответить",
+    "demo.tour_clients_step2_body": "Если подходит — пишите клиенту напрямую. Без фильтров и платы за отклик.",
+    "demo.tour_clients_step3_title": "Вы в демо-режиме",
+    "demo.tour_clients_step3_body": "Видимые заявки — тестовые. Выйдите из демо, когда захотите ответить по-настоящему.",
+    "demo.tour_profile_step1_title": "Публичный профиль готов к ссылке",
+    "demo.tour_profile_step1_body": "Так клиенты видят вас, когда вы отправляете ссылку на PyaServ через WhatsApp.",
+    "demo.tour_profile_step2_title": "Прямой контакт через WhatsApp",
+    "demo.tour_profile_step2_body": "Одно касание — и клиент пишет вам. Без промежуточных шагов, без форм.",
+    "demo.tour_profile_step3_title": "Услуги, био и значки",
+    "demo.tour_profile_step3_body": "Всё, что нужно клиенту для решения. Настройте каждый раздел из своего кабинета.",
     "docs.page_title": "Документация",
     "docs.page_intro": "Вики PyaServ. У каждой фичи свой раздел с деталями, ссылкой на демо и продакшен.",
     "docs.sidebar_aria": "Разделы документации",
@@ -1713,120 +1809,110 @@ export const CONTENT = {
     },
     "releases": {
       "2026-06-24-spec-v1-foundation": {
-        "title": "Spec v1 Foundation — schema + service areas + gamification base",
-        "tldr": "Base de datos lista para todas las features de spec v1. 4 migraciones aplicadas en prod D1.",
+        "title": "PyaServ abre las puertas — 40 zonas, gamification y guaraní",
+        "tldr": "Listamos profesionales por barrio de Asunción y Departamento Central. Sumás XP y badges por trabajar bien. Y sí, el guaraní también juega.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Migraciones",
-            "body": "· **0009** — extensions a `specialist_profiles` (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).\n· **0010** — tablas de gamification (user_game_state, xp_events, badges_catalog con 18 seeded, user_badges, quests).\n· **0011** — user_tours_completed + slug backfill para perfiles existentes.\n· **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.\n"
+            "heading": "Buscá por tu zona",
+            "body": "Elegí entre 40 zonas — los 25 barrios de Asunción más 15 distritos del Departamento Central. Filtrás los profesionales que están cerca tuyo, no los que están a una hora.\n"
           },
           {
             "kind": "new",
-            "heading": "Service areas canonical",
-            "body": "· 40 zonas seeded: 25 barrios de Asunción + 15 distritos de Departamento Central.\n· Tabla `service_areas` (canonical) + link `specialist_service_areas` (many-to-many, hasta 8 zonas por profesional).\n"
+            "heading": "Cubrís hasta 8 zonas",
+            "body": "Si trabajás como profesional, marcá hasta 8 zonas donde llegás. Los clientes te ven solo cuando buscan en una zona que cubrís — sin perder tiempo con pedidos que te quedan lejos.\n"
           },
           {
             "kind": "new",
-            "heading": "Sistema de gamification base",
-            "body": "· Event-sourced: cada XP grant es row inmutable en `xp_events`.\n· Materialización: `user_game_state` con projection denormalizada para lectura rápida del HUD.\n· 18 badges seeded en 4 categorías (tier · milestone · superlative · collection).\n"
+            "heading": "Subís de nivel a medida que trabajás",
+            "body": "Por cada trabajo terminado, cada review con foto, cada respuesta rápida — sumás XP. Cinco niveles para escalar: Aprendiz · Oficial · Maestro · Maestro Mayor · Patrón. El nivel se muestra en tu perfil público.\n"
           },
           {
             "kind": "new",
-            "heading": "Idioma guaraní (sparse)",
-            "body": "· Locale type extended a `'es' | 'en' | 'gn'`.\n· GN sparse dictionary, fallback a ES para keys faltantes.\n· Per-specialist: bio_gn, headline_gn opcionales.\n"
+            "heading": "18 badges para destacar",
+            "body": "Lográs medallas por hitos visibles para tus clientes: \"Respuesta rápida\", \"10 trabajos terminados\", \"Top de tu barrio\". Aparecen en tu perfil y te diferencian de la competencia.\n"
+          },
+          {
+            "kind": "new",
+            "heading": "También en guaraní",
+            "body": "Si querés, tu bio y headline pueden tener su versión en guaraní. Los clientes que prefieren guaraní te leen en su idioma. Opcional — escribilo solo si te suma.\n"
           }
         ]
       },
       "2026-06-25-spec-v1-features": {
-        "title": "Spec v1 features live — 13 funciones + components-lib + Demo v2",
-        "tldr": "Las 13 features de spec v1 en producción + components-lib pure-stateless + Demo Mode v2 con apiFetch interception.",
+        "title": "Las 13 funciones que necesitabas — perfil público, cotizador, demo y más",
+        "tldr": "Perfil compartible por WhatsApp, cotizaciones con PDF, lite-CRM de clientes, tour guiado, búsqueda hyperlocal y modo demo para mirar antes de registrarse.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Perfil público + 4 nuevos endpoints",
-            "body": "· `/p/<tu-slug>` con foto, portada, bio, servicios, badges, horario, WhatsApp CTA.\n· API: `/v1/p/:slug` agrega profile + reviews + badges + tier + areas.\n· Pretty URL via CF Pages `_redirects` rewrite.\n"
+            "heading": "Perfil público listo para compartir",
+            "body": "Cada profesional tiene su propio link `/p/tu-nombre` con foto, portada, bio, servicios, badges, horario y botón de WhatsApp. Pegás el link en un grupo de WhatsApp y los clientes ven todo en un toque.\n"
           },
           {
             "kind": "new",
-            "heading": "Cotizador rápido con PDF",
-            "body": "· `/me/quotes/new` — editor de items, IVA toggle, jsPDF descarga client-side, share por WhatsApp.\n· Templates por oficio (próximo: bibliotecas pre-cargadas).\n"
+            "heading": "Cotizador con PDF en un toque",
+            "body": "Armás la cotización con items + IVA, descargás el PDF y lo enviás directo al cliente por WhatsApp. Sin volver al escritorio.\n"
           },
           {
             "kind": "new",
-            "heading": "Gamification engine completo",
-            "body": "· XP, 5 tiers (Aprendiz → Patrón), 18 badges en 4 categorías, racha diaria con freezes.\n· Misiones diarias (3) y semanales (2) con auto-seed.\n· HUD en `/me/` con XP / 🔥 racha / ⚡ tier.\n· XP grants automáticos en eventos: respuesta < 1h, job completed, review con foto.\n"
+            "heading": "Subís de nivel mientras trabajás",
+            "body": "XP por cada trabajo terminado, badges por hitos, racha diaria que se mantiene incluso si te tomás un día. Cinco niveles desde Aprendiz hasta Patrón — el cliente lo ve en tu perfil.\n"
           },
           {
             "kind": "new",
-            "heading": "Lite-CRM \"Mis clientes\"",
-            "body": "· Auto-creación de `client_record` cuando se completa un trabajo.\n· Notas editables, contador de trabajos por cliente.\n· Próximo: recordatorios de mantenimiento N meses después.\n"
+            "heading": "Tus clientes recordados",
+            "body": "Cuando terminás un trabajo, el cliente queda guardado en \"Mis clientes\". Notas editables, contador de trabajos. Próximamente: recordatorio automático para ofrecer mantenimiento.\n"
           },
           {
             "kind": "new",
-            "heading": "Onboarding Tour T1",
-            "body": "· Driver.js lazy-loaded, 7 pasos guiados.\n· Auto-launch al primer ingreso a `/me/` si profile_complete_pct < 100.\n· Persistencia en tabla `user_tours_completed`.\n"
+            "heading": "Tour guiado al primer ingreso",
+            "body": "Si recién creás tu perfil, te llevamos paso a paso por lo que falta completar — sin leer manuales. El tour se cierra solo cuando ya conocés todo.\n"
           },
           {
             "kind": "new",
-            "heading": "Hyperlocal SEO landings × 400",
-            "body": "· `/servicios/<oficio>/<barrio>/` — 10 oficios × 40 zonas = 400 páginas auto-generadas.\n· Cada una con title/meta únicos, FAQ, CTA \"¿Sos profesional?\", live-fetch de specialists matching.\n"
+            "heading": "400 páginas locales para que te encuentren en Google",
+            "body": "Generamos automáticamente una página por oficio y barrio — \"Plomeros en Villa Morra\", \"Electricistas en Lambaré\" — para que cuando un cliente busque en Google, te encuentre primero.\n"
           },
           {
             "kind": "new",
-            "heading": "Demo Mode v2",
-            "body": "· Cualquier ruta + `?demo=1` = misma app con datos canned (sin pages mock).\n· apiFetch intercepta llamadas via demoStub.\n· 10 mechanisms del Safety Charter activos: banner naranja, body tint, html[data-demo-mode], identidad logged-out, exit modal, idle timeout 10min, no data import, audit beacon.\n"
-          },
-          {
-            "kind": "new",
-            "heading": "Components library + Storybook lite",
-            "body": "· `apps/site/src/components-lib/` — 19 funciones pure stateless (atoms / molecules / organisms).\n· `/components/` lista con props panel + locale switcher (debug i18n).\n· Demo Mode v2 reutiliza estas mismas funciones.\n"
+            "heading": "Modo demo — mirá antes de registrarte",
+            "body": "Sumá `?demo=1` a cualquier link y recorrés la app completa con datos de muestra, sin crear cuenta. Para cuando llegás desde un grupo de WhatsApp y querés ver de qué se trata.\n"
           }
         ]
       },
       "2026-06-26-i18n-yaml-docs-wiki": {
-        "title": "i18n YAML + 4 idiomas + docs wiki + releases full pages",
-        "tldr": "Strings movidas a YAML por idioma. 4 idiomas equal — ES, EN, DE, RU. Docs es ahora wiki con sidebar. Cada release tiene página propia con detalles.",
+        "title": "Cuatro idiomas, documentación nueva y demo más estable",
+        "tldr": "Español · Inglés · Alemán · Ruso, todos en el mismo nivel. Documentación como wiki con sidebar. Cada release tiene su página completa. Demo mode arreglado y más persistente.",
         "sections": [
           {
             "kind": "new",
-            "heading": "i18n basado en YAML",
-            "body": "· Cada string vive en `apps/site/src/locales/<lang>/<ns>.yaml` — un archivo por namespace.\n· Drop un YAML, ejecutá `bun run i18n:build`, listo. Cero hardcoded strings en código nuevo.\n· **309 keys** en ES + EN con paridad obligatoria (unit test `i18n.test.ts`), 97 en DE/RU bootstrap, GN sparse.\n· Cadena de fallback: locale → EN → ES → key (last-ditch). EN canonical.\n· API `t(key)` igual que antes — sin breaking changes en callsites.\n"
+            "heading": "Cuatro idiomas — todos en pie de igualdad",
+            "body": "Cambiá entre español, inglés, alemán o ruso desde el switcher en la barra superior. Tu elección se recuerda entre páginas y al volver. Pensado para la comunidad expat en Paraguay además de los locales.\n"
           },
           {
             "kind": "new",
-            "heading": "Cuatro idiomas equal — ES / EN / DE / RU",
-            "body": "· Auto-detect del navegador sin sesgo al español: `de` → DE, `ru` → RU, `es` → ES, fallback EN.\n· Cuatro botones en el switcher de idioma del topbar y flying-menu (antes solo 2).\n· Aria-labels traducidas en cada idioma para el screen reader del usuario.\n· Spec §17 (multi-lang strategy) — target inicial: comunidades expat en Paraguay (alemana, inglesa, rusa) + local.\n"
+            "heading": "Detección automática del idioma del navegador",
+            "body": "Si llegás con el navegador en alemán o ruso, abrís la app ya en tu idioma. Sin pasos manuales. Podés cambiarlo cuando quieras desde el switcher.\n"
           },
           {
             "kind": "new",
             "heading": "Documentación como wiki",
-            "body": "· `/docs/` ahora es vista wiki con sidebar de navegación a la izquierda (no más cards).\n· Categorías: Perfil & visibilidad · Gamification · Herramientas · Sistema · Roadmap.\n· Cada feature mantiene su página propia `/docs/<slug>/`.\n· Buscador de docs viene con Pagefind en próximo release.\n"
+            "body": "`/docs/` ahora es una wiki con sidebar de navegación a la izquierda. Categorías: Perfil & visibilidad · Gamification · Herramientas · Sistema · Roadmap. Encontrás lo que buscás más rápido que antes.\n"
           },
           {
             "kind": "new",
-            "heading": "Releases — páginas completas",
-            "body": "· `/releases/` ahora muestra cards completas con todo el contenido (no mini-cards).\n· Cada release tiene su URL propia `/releases/<slug>/` — link compartible, indexable.\n· Soporte para secciones tipadas: Nuevo / Mejorado / Arreglado / Próximamente.\n· Slots para GIFs por sección (próximamente: pipeline Playwright→ffmpeg para auto-recordings).\n"
+            "heading": "Cada release con su propia página",
+            "body": "Cada novedad tiene su propio link compartible — copiás `/releases/<nombre>/` y lo mandás por WhatsApp para mostrar exactamente qué cambió. Indexado en Google.\n"
           },
           {
             "kind": "fixed",
-            "heading": "Demo banner stuck bug + tests",
-            "body": "· `.ps-demo-banner { display: flex }` sobrescribía el UA `[hidden]{display:none}`, dejando el banner visible siempre.\n· Fix: `.ps-demo-banner[hidden] { display: none !important }`.\n· Suite `tests/e2e/demo-mode.common.spec.ts` — **9 scenarios × 2 viewports = 18 tests**, todos passing.\n· Sticky in-demo navigation: links a `/me/* /p/* /specialists/* /clients/*` auto-reciben `?demo=1`; los demás cortan demo.\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Botones — focus-visible unificado",
-            "body": "· Una sola regla CSS cubre `.cl-btn, .ps-lang-btn, .ps-theme-btn, .ps-tab, .gt-btn, .ps-demo-banner__exit` con `outline: 2px solid var(--ps-acc); outline-offset: 2px`.\n· Hover separado del focus-visible (antes mismo selector — accesibilidad pobre).\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Dark theme en componentes nuevos",
-            "body": "· Todos los `cl-*` (Button, Card, BadgePill, ProfileHeader, etc.) ahora usan tokens `--ps-*` de `global.css` en vez de colores hardcoded.\n· Demo banner y guided-tour respetan el tema activo.\n"
+            "heading": "Demo mode — banner que sí se cierra",
+            "body": "El botón \"Salir del demo\" ahora funciona. Mientras navegás en modo demo, los links a las páginas que mantienen el demo lo conservan automáticamente.\n"
           },
           {
             "kind": "next",
-            "heading": "Próximo",
-            "body": "· Pagefind search en /docs/ + /releases/.\n· Email digest suscripción mensual.\n· In-app toast cuando hay release nuevo desde la última visita.\n· Recording pipeline: Playwright → ffmpeg → WebP GIFs auto-embedded en release notes.\n"
+            "heading": "Próximamente",
+            "body": "Buscador en la documentación. Aviso cuando hay novedades desde tu última visita. Grabaciones cortas embebidas en las release notes para ver las funciones nuevas en acción.\n"
           }
         ]
       }
@@ -1939,120 +2025,110 @@ export const CONTENT = {
     },
     "releases": {
       "2026-06-24-spec-v1-foundation": {
-        "title": "Spec v1 Foundation — schema + service areas + gamification base",
-        "tldr": "Database ready for all spec v1 features. 4 migrations applied to prod D1.",
+        "title": "PyaServ opens its doors — 40 areas, gamification, and Guarani",
+        "tldr": "Browse pros by neighborhood across Asunción and Departamento Central. Earn XP and badges for doing good work. And yes, Guarani is part of it too.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Migrations",
-            "body": "· **0009** — `specialist_profiles` extensions (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).\n· **0010** — gamification tables (user_game_state, xp_events, badges_catalog with 18 seeded, user_badges, quests).\n· **0011** — user_tours_completed + slug backfill for existing profiles.\n· **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.\n"
+            "heading": "Search by your area",
+            "body": "Pick from 40 areas — the 25 neighborhoods of Asunción plus 15 districts of Departamento Central. Filter for pros who are nearby, not an hour away.\n"
           },
           {
             "kind": "new",
-            "heading": "Canonical service areas",
-            "body": "· 40 areas seeded: 25 Asunción neighborhoods + 15 Departamento Central districts.\n· `service_areas` table (canonical) + `specialist_service_areas` link (many-to-many, up to 8 areas per professional).\n"
+            "heading": "Cover up to 8 areas",
+            "body": "If you work as a pro, mark up to 8 areas you serve. Clients only see you when they search inside an area you cover — no time wasted on jobs that are too far.\n"
           },
           {
             "kind": "new",
-            "heading": "Gamification base system",
-            "body": "· Event-sourced: every XP grant is an immutable row in `xp_events`.\n· Materialization: `user_game_state` with denormalized projection for fast HUD reads.\n· 18 badges seeded in 4 categories (tier · milestone · superlative · collection).\n"
+            "heading": "Level up as you work",
+            "body": "Every finished job, every review with a photo, every quick reply — you earn XP. Five levels to climb: apprentice · journeyman · master · grand master · patron. Your level shows on your public profile.\n"
           },
           {
             "kind": "new",
-            "heading": "Guarani language (sparse)",
-            "body": "· Locale type extended to `'es' | 'en' | 'gn'`.\n· GN sparse dictionary, ES fallback for missing keys.\n· Per-specialist: bio_gn, headline_gn optional.\n"
+            "heading": "18 badges to stand out",
+            "body": "Earn medals for milestones your clients can see: \"Quick reply\", \"10 jobs completed\", \"Top of your neighborhood\". They show on your profile and set you apart from the competition.\n"
+          },
+          {
+            "kind": "new",
+            "heading": "Also in Guarani",
+            "body": "If you want, your bio and headline can have a Guarani version. Clients who prefer Guarani read you in their language. Optional — only fill it in if it helps you.\n"
           }
         ]
       },
       "2026-06-25-spec-v1-features": {
-        "title": "Spec v1 features live — 13 features + components-lib + Demo v2",
-        "tldr": "All 13 features of spec v1 in production + pure-stateless components-lib + Demo Mode v2 with apiFetch interception.",
+        "title": "The 13 features you needed — public profile, quoter, demo, and more",
+        "tldr": "A WhatsApp-shareable profile, quotes with PDF, a lite client CRM, a guided tour, hyperlocal search, and a demo mode to look around before signing up.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Public profile + 4 new endpoints",
-            "body": "· `/p/<your-slug>` with photo, cover, bio, services, badges, schedule, WhatsApp CTA.\n· API: `/v1/p/:slug` aggregates profile + reviews + badges + tier + areas.\n· Pretty URL via CF Pages `_redirects` rewrite.\n"
+            "heading": "Public profile, ready to share",
+            "body": "Every pro gets their own link at `/p/your-name` with photo, cover, bio, services, badges, schedule, and a WhatsApp button. Drop the link in a WhatsApp group and clients see everything in one tap.\n"
           },
           {
             "kind": "new",
-            "heading": "Quick quote builder with PDF",
-            "body": "· `/me/quotes/new` — item editor, IVA toggle, jsPDF client-side download, WhatsApp share.\n· Per-trade templates (next: pre-loaded libraries).\n"
+            "heading": "One-tap quotes with PDF",
+            "body": "Build the quote with items + IVA, download the PDF, and send it straight to the client over WhatsApp. No need to go back to a desktop.\n"
           },
           {
             "kind": "new",
-            "heading": "Full gamification engine",
-            "body": "· XP, 5 tiers (Apprentice → Patron), 18 badges in 4 categories, daily streak with freezes.\n· Daily (3) and weekly (2) quests with auto-seed.\n· HUD on `/me/` with XP / 🔥 streak / ⚡ tier.\n· Auto XP grants on events: response < 1h, job completed, review with photo.\n"
+            "heading": "Level up while you work",
+            "body": "XP for every job done, badges for milestones, a daily streak that holds even if you take a day off. Five levels from apprentice to patron — the client sees it on your profile.\n"
           },
           {
             "kind": "new",
-            "heading": "Lite-CRM \"My clients\"",
-            "body": "· Auto-create `client_record` when a job is completed.\n· Editable notes, job count per client.\n· Next: maintenance reminders N months later.\n"
+            "heading": "Your clients, remembered",
+            "body": "When you finish a job, the client gets saved in \"My clients\". Editable notes, job counter. Coming soon: automatic reminders to offer maintenance.\n"
           },
           {
             "kind": "new",
-            "heading": "Onboarding Tour T1",
-            "body": "· Driver.js lazy-loaded, 7 guided steps.\n· Auto-launch on first `/me/` visit if profile_complete_pct < 100.\n· Persisted in `user_tours_completed` table.\n"
+            "heading": "Guided tour on first sign-in",
+            "body": "If you've just created your profile, we walk you through what's left to fill in step by step — no manuals to read. The tour closes itself once you've seen everything.\n"
           },
           {
             "kind": "new",
-            "heading": "Hyperlocal SEO landings × 400",
-            "body": "· `/servicios/<trade>/<area>/` — 10 trades × 40 areas = 400 auto-generated pages.\n· Each with unique title/meta, FAQ, \"Are you a professional?\" CTA, live-fetch of matching specialists.\n"
+            "heading": "400 local pages so Google finds you",
+            "body": "We automatically generate one page per trade and neighborhood — \"Plumbers in Villa Morra\", \"Electricians in Lambaré\" — so when a client searches on Google, they find you first.\n"
           },
           {
             "kind": "new",
-            "heading": "Demo Mode v2",
-            "body": "· Any route + `?demo=1` = same app with canned data (no mock pages).\n· apiFetch intercepts calls via demoStub.\n· 10 Safety Charter mechanisms active: orange banner, body tint, html[data-demo-mode], logged-out identity, exit modal, 10-min idle timeout, no data import, audit beacon.\n"
-          },
-          {
-            "kind": "new",
-            "heading": "Components library + Storybook lite",
-            "body": "· `apps/site/src/components-lib/` — 19 pure stateless functions (atoms / molecules / organisms).\n· `/components/` list with props panel + locale switcher (i18n debugging).\n· Demo Mode v2 reuses these same functions.\n"
+            "heading": "Demo mode — look before you sign up",
+            "body": "Add `?demo=1` to any link and you can walk through the whole app with sample data, no account needed. For when you land from a WhatsApp group and want to see what it's about.\n"
           }
         ]
       },
       "2026-06-26-i18n-yaml-docs-wiki": {
-        "title": "i18n YAML + 4 languages + docs wiki + full release pages",
-        "tldr": "Strings moved to per-locale YAML. 4 first-class languages — ES, EN, DE, RU. Docs is now a wiki with sidebar. Each release has its own URL with full details.",
+        "title": "Four languages, new documentation, and a more stable demo",
+        "tldr": "Spanish · English · German · Russian, all on equal footing. Documentation as a wiki with a sidebar. Every release has its own full page. Demo mode fixed and stickier.",
         "sections": [
           {
             "kind": "new",
-            "heading": "YAML-based i18n",
-            "body": "· Every string lives in `apps/site/src/locales/<lang>/<ns>.yaml` — one file per namespace.\n· Drop a YAML, run `bun run i18n:build`, ship. Zero hardcoded strings in new code.\n· **309 keys** in ES + EN with mandatory parity (`i18n.test.ts` unit test), 97 in DE/RU bootstrap, GN sparse.\n· Fallback chain: locale → EN → ES → key (last-ditch). EN is canonical.\n· `t(key)` API unchanged — no breaking changes for existing callsites.\n"
+            "heading": "Four languages — all on equal footing",
+            "body": "Switch between Spanish, English, German, and Russian from the switcher in the top bar. Your choice is remembered across pages and when you come back. Built for the expat community in Paraguay as well as locals.\n"
           },
           {
             "kind": "new",
-            "heading": "Four first-class languages — ES / EN / DE / RU",
-            "body": "· Browser auto-detect without Spanish bias: `de` → DE, `ru` → RU, `es` → ES, fallback EN.\n· Four buttons in the topbar + flying-menu lang switcher (was 2).\n· Aria-labels translated per language for screen readers.\n· Spec §17 (multi-lang strategy) — initial target: expat communities in Paraguay (German, English, Russian) + local.\n"
+            "heading": "Automatic browser language detection",
+            "body": "If you arrive with your browser set to German or Russian, the app opens in your language. No manual steps. You can change it any time from the switcher.\n"
           },
           {
             "kind": "new",
-            "heading": "Documentation as wiki",
-            "body": "· `/docs/` is now a wiki layout with sidebar nav on the left (no more cards).\n· Categories: Profile & visibility · Gamification · Tools · System · Roadmap.\n· Each feature keeps its own page `/docs/<slug>/`.\n· Docs search via Pagefind ships next.\n"
+            "heading": "Documentation as a wiki",
+            "body": "`/docs/` is now a wiki with a navigation sidebar on the left. Categories: Profile & visibility · Gamification · Tools · System · Roadmap. You find what you're looking for faster than before.\n"
           },
           {
             "kind": "new",
-            "heading": "Releases — full pages",
-            "body": "· `/releases/` now shows full content cards (not mini-cards).\n· Each release has its own URL `/releases/<slug>/` — shareable, indexable.\n· Typed sections: New / Improved / Fixed / Coming soon.\n· Per-section GIF slots ready (Playwright→ffmpeg pipeline next).\n"
+            "heading": "Every release on its own page",
+            "body": "Every update has its own shareable link — copy `/releases/<name>/` and send it over WhatsApp to show exactly what changed. Indexed on Google.\n"
           },
           {
             "kind": "fixed",
-            "heading": "Demo banner stuck bug + tests",
-            "body": "· `.ps-demo-banner { display: flex }` overrode the UA `[hidden]{display:none}`, leaving the banner visible always.\n· Fix: `.ps-demo-banner[hidden] { display: none !important }`.\n· Suite `tests/e2e/demo-mode.common.spec.ts` — **9 scenarios × 2 viewports = 18 tests**, all passing.\n· Sticky in-demo nav: links to `/me/* /p/* /specialists/* /clients/*` get `?demo=1` auto-appended; others exit demo.\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Buttons — unified focus-visible",
-            "body": "· One CSS rule covers `.cl-btn, .ps-lang-btn, .ps-theme-btn, .ps-tab, .gt-btn, .ps-demo-banner__exit` with `outline: 2px solid var(--ps-acc); outline-offset: 2px`.\n· Hover separated from focus-visible (previously conflated — bad a11y).\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Dark theme in new components",
-            "body": "· All `cl-*` (Button, Card, BadgePill, ProfileHeader, etc.) now use `--ps-*` tokens from `global.css` instead of hardcoded colors.\n· Demo banner and guided-tour respect the active theme.\n"
+            "heading": "Demo mode — banner that actually closes",
+            "body": "The \"Exit demo\" button now works. While you browse in demo mode, links to pages that keep the demo preserve it automatically.\n"
           },
           {
             "kind": "next",
             "heading": "Coming soon",
-            "body": "· Pagefind search across /docs/ + /releases/.\n· Monthly email digest subscription.\n· In-app toast when a new release ships since last visit.\n· Recording pipeline: Playwright → ffmpeg → WebP auto-embedded in release notes.\n"
+            "body": "Search inside the documentation. A heads-up when there are updates since your last visit. Short embedded recordings in the release notes to see new features in action.\n"
           }
         ]
       }
@@ -2062,120 +2138,110 @@ export const CONTENT = {
     "docs": {},
     "releases": {
       "2026-06-24-spec-v1-foundation": {
-        "title": "Spec v1 Foundation — Schema + Service Areas + Gamification-Basis",
-        "tldr": "Datenbank bereit für alle Spec-v1-Features. 4 Migrationen in Prod D1 angewendet.",
+        "title": "PyaServ öffnet seine Türen — 40 Zonen, Gamification und Guaraní",
+        "tldr": "Wir listen Fachleute nach Stadtviertel in Asunción und Departamento Central. Sie sammeln XP und Abzeichen für gute Arbeit. Und ja, Guaraní spielt ebenfalls mit.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Migrationen",
-            "body": "· **0009** — `specialist_profiles` Erweiterungen (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).\n· **0010** — Gamification-Tabellen (user_game_state, xp_events, badges_catalog mit 18 seeded, user_badges, quests).\n· **0011** — user_tours_completed + slug-Backfill für bestehende Profile.\n· **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.\n"
+            "heading": "Suchen Sie nach Ihrer Zone",
+            "body": "Wählen Sie aus 40 Zonen — den 25 Stadtvierteln von Asunción und 15 Distrikten des Departamento Central. So filtern Sie Fachleute in Ihrer Nähe heraus, nicht solche, die eine Stunde entfernt sind.\n"
           },
           {
             "kind": "new",
-            "heading": "Kanonische Service Areas",
-            "body": "· 40 Gebiete seeded: 25 Asunción-Viertel + 15 Departamento-Central-Distrikte.\n· `service_areas` Tabelle (kanonisch) + `specialist_service_areas` Link (many-to-many, bis zu 8 Gebiete pro Profi).\n"
+            "heading": "Bis zu 8 Zonen abdecken",
+            "body": "Wenn Sie als Fachmann oder Fachfrau arbeiten, markieren Sie bis zu 8 Zonen, die Sie bedienen. Kundinnen und Kunden sehen Sie nur dann, wenn sie in einer Ihrer Zonen suchen — keine verschwendete Zeit mit Aufträgen, die zu weit weg liegen.\n"
           },
           {
             "kind": "new",
-            "heading": "Gamification-Basissystem",
-            "body": "· Event-sourced: jeder XP-Grant ist eine unveränderliche Zeile in `xp_events`.\n· Materialisierung: `user_game_state` mit denormalisierter Projektion für schnelle HUD-Reads.\n· 18 Abzeichen seeded in 4 Kategorien (tier · milestone · superlative · collection).\n"
+            "heading": "Steigen Sie beim Arbeiten im Rang auf",
+            "body": "Für jeden abgeschlossenen Auftrag, jede Bewertung mit Foto, jede schnelle Antwort sammeln Sie XP. Fünf Stufen zum Aufstieg: Lehrling · Geselle · Meister · Großmeister · Patron. Ihre Stufe erscheint in Ihrem öffentlichen Profil.\n"
           },
           {
             "kind": "new",
-            "heading": "Guarani-Sprache (sparse)",
-            "body": "· Locale-Typ erweitert auf `'es' | 'en' | 'gn'`.\n· GN spärliches Wörterbuch, ES-Fallback für fehlende Keys.\n· Pro Specialist: bio_gn, headline_gn optional.\n"
+            "heading": "18 Abzeichen, um aufzufallen",
+            "body": "Verdienen Sie Medaillen für sichtbare Meilensteine: \"Schnelle Antwort\", \"10 Aufträge abgeschlossen\", \"Top in Ihrem Stadtviertel\". Sie erscheinen in Ihrem Profil und heben Sie von der Konkurrenz ab.\n"
+          },
+          {
+            "kind": "new",
+            "heading": "Auch auf Guaraní",
+            "body": "Auf Wunsch können Ihre Biografie und Überschrift eine Guaraní-Version erhalten. Kundinnen und Kunden, die Guaraní bevorzugen, lesen Sie in ihrer Sprache. Optional — füllen Sie es nur aus, wenn es Ihnen etwas bringt.\n"
           }
         ]
       },
       "2026-06-25-spec-v1-features": {
-        "title": "Spec v1 Features live — 13 Funktionen + components-lib + Demo v2",
-        "tldr": "Alle 13 Features von Spec v1 in Produktion + pure-stateless components-lib + Demo Mode v2 mit apiFetch-Interception.",
+        "title": "Die 13 Funktionen, die Sie brauchten — öffentliches Profil, Angebotsrechner, Demo und mehr",
+        "tldr": "Per WhatsApp teilbares Profil, Angebote mit PDF, ein leichtes Kunden-CRM, geführte Tour, hyperlokale Suche und ein Demo-Modus, um sich vor der Anmeldung umzusehen.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Öffentliches Profil + 4 neue Endpoints",
-            "body": "· `/p/<dein-slug>` mit Foto, Cover, Bio, Dienstleistungen, Abzeichen, Zeitplan, WhatsApp-CTA.\n· API: `/v1/p/:slug` aggregiert Profil + Reviews + Abzeichen + Tier + Gebiete.\n· Pretty URL via CF Pages `_redirects` Rewrite.\n"
+            "heading": "Öffentliches Profil, bereit zum Teilen",
+            "body": "Jeder Fachmensch erhält den eigenen Link `/p/ihr-name` mit Foto, Titelbild, Biografie, Leistungen, Abzeichen, Öffnungszeiten und WhatsApp-Knopf. Sie fügen den Link in eine WhatsApp-Gruppe ein, und Kundinnen und Kunden sehen alles mit einer Berührung.\n"
           },
           {
             "kind": "new",
-            "heading": "Schneller Kostenvoranschlag mit PDF",
-            "body": "· `/me/quotes/new` — Item-Editor, IVA-Toggle, jsPDF Client-side Download, WhatsApp-Share.\n· Vorlagen pro Beruf (nächstes Mal: vorgeladene Bibliotheken).\n"
+            "heading": "Angebote mit PDF in einer Berührung",
+            "body": "Sie stellen das Angebot mit Posten + IVA zusammen, laden das PDF herunter und schicken es direkt per WhatsApp an die Kundschaft. Ohne an den Schreibtisch zurückzukehren.\n"
           },
           {
             "kind": "new",
-            "heading": "Vollständige Gamification-Engine",
-            "body": "· XP, 5 Tiers (Lehrling → Patron), 18 Abzeichen in 4 Kategorien, tägliche Serie mit Freezes.\n· Tägliche (3) und wöchentliche (2) Quests mit Auto-Seed.\n· HUD in `/me/` mit XP / 🔥 Serie / ⚡ Tier.\n· Auto-XP-Grants bei Events: Antwort < 1h, Job abgeschlossen, Bewertung mit Foto.\n"
+            "heading": "Steigen Sie beim Arbeiten im Rang auf",
+            "body": "XP für jeden abgeschlossenen Auftrag, Abzeichen für Meilensteine, eine tägliche Serie, die auch hält, wenn Sie sich einen Tag freinehmen. Fünf Stufen vom Lehrling bis zum Patron — die Kundschaft sieht es in Ihrem Profil.\n"
           },
           {
             "kind": "new",
-            "heading": "Lite-CRM \"Meine Kunden\"",
-            "body": "· Auto-Erstellung von `client_record` bei Job-Abschluss.\n· Bearbeitbare Notizen, Job-Zähler pro Kunde.\n· Nächstes Mal: Wartungserinnerungen N Monate später.\n"
+            "heading": "Ihre Kundschaft, gemerkt",
+            "body": "Wenn Sie einen Auftrag abschließen, wird die Kundin oder der Kunde unter \"Meine Kunden\" gespeichert. Bearbeitbare Notizen, Auftragszähler. Demnächst: automatische Erinnerung, um Wartung anzubieten.\n"
           },
           {
             "kind": "new",
-            "heading": "Onboarding-Tour T1",
-            "body": "· Driver.js lazy-geladen, 7 geführte Schritte.\n· Auto-Launch beim ersten `/me/`-Besuch wenn profile_complete_pct < 100.\n· Persistiert in `user_tours_completed` Tabelle.\n"
+            "heading": "Geführte Tour beim ersten Einstieg",
+            "body": "Wenn Sie Ihr Profil gerade erst erstellt haben, führen wir Sie Schritt für Schritt durch das, was noch fehlt — ohne Handbücher zu lesen. Die Tour schließt sich von selbst, sobald Sie alles kennen.\n"
           },
           {
             "kind": "new",
-            "heading": "Hyperlocal SEO-Landings × 400",
-            "body": "· `/servicios/<beruf>/<gebiet>/` — 10 Berufe × 40 Gebiete = 400 auto-generierte Seiten.\n· Jede mit eindeutigem Title/Meta, FAQ, \"Bist du ein Profi?\"-CTA, Live-Fetch passender Specialists.\n"
+            "heading": "400 lokale Seiten, damit man Sie auf Google findet",
+            "body": "Wir erzeugen automatisch eine Seite pro Gewerk und Stadtviertel — \"Klempner in Villa Morra\", \"Elektriker in Lambaré\" — damit man Sie zuerst findet, wenn jemand auf Google sucht.\n"
           },
           {
             "kind": "new",
-            "heading": "Demo Mode v2",
-            "body": "· Jede Route + `?demo=1` = gleiche App mit Canned Data (keine Mock-Pages).\n· apiFetch fängt Aufrufe via demoStub ab.\n· 10 Safety-Charter-Mechanismen aktiv: oranges Banner, Body-Tint, html[data-demo-mode], Logged-out-Identität, Exit-Modal, 10-Min Idle-Timeout, kein Data-Import, Audit-Beacon.\n"
-          },
-          {
-            "kind": "new",
-            "heading": "Components Library + Storybook lite",
-            "body": "· `apps/site/src/components-lib/` — 19 pure stateless Funktionen (Atoms / Molecules / Organisms).\n· `/components/` Liste mit Props-Panel + Locale-Switcher (i18n-Debugging).\n· Demo Mode v2 nutzt dieselben Funktionen.\n"
+            "heading": "Demo-Modus — schauen Sie vor der Anmeldung",
+            "body": "Fügen Sie `?demo=1` an einen beliebigen Link an, und Sie durchstöbern die ganze App mit Beispieldaten, ohne ein Konto anzulegen. Für den Moment, in dem Sie aus einer WhatsApp-Gruppe kommen und wissen wollen, worum es geht.\n"
           }
         ]
       },
       "2026-06-26-i18n-yaml-docs-wiki": {
-        "title": "i18n YAML + 4 Sprachen + Docs Wiki + vollständige Release-Seiten",
-        "tldr": "Strings in per-Sprache YAML verschoben. 4 gleichrangige Sprachen — ES, EN, DE, RU. Docs ist jetzt ein Wiki mit Sidebar. Jedes Release hat seine eigene URL mit allen Details.",
+        "title": "Vier Sprachen, neue Dokumentation und eine stabilere Demo",
+        "tldr": "Spanisch · Englisch · Deutsch · Russisch, alle auf gleicher Augenhöhe. Dokumentation als Wiki mit Seitenleiste. Jede Veröffentlichung hat ihre eigene vollständige Seite. Demo-Modus repariert und beständiger.",
         "sections": [
           {
             "kind": "new",
-            "heading": "YAML-basiertes i18n",
-            "body": "· Jede Zeichenkette lebt in `apps/site/src/locales/<lang>/<ns>.yaml` — eine Datei pro Namespace.\n· YAML ablegen, `bun run i18n:build` ausführen, ausliefern. Null hardcoded Strings in neuem Code.\n· **309 Keys** in ES + EN mit verpflichtender Parität (`i18n.test.ts` Unit-Test), 97 in DE/RU Bootstrap, GN spärlich.\n· Fallback-Kette: Locale → EN → ES → Key (letztes Mittel). EN kanonisch.\n· `t(key)` API unverändert — keine Breaking Changes an Callsites.\n"
+            "heading": "Vier Sprachen — alle gleichberechtigt",
+            "body": "Wechseln Sie zwischen Spanisch, Englisch, Deutsch und Russisch über den Umschalter in der oberen Leiste. Ihre Wahl wird zwischen Seiten und bei Ihrer Rückkehr gemerkt. Gedacht für die Expat-Gemeinschaft in Paraguay und ebenso für Einheimische.\n"
           },
           {
             "kind": "new",
-            "heading": "Vier gleichrangige Sprachen — ES / EN / DE / RU",
-            "body": "· Browser-Autodetect ohne spanischen Bias: `de` → DE, `ru` → RU, `es` → ES, Fallback EN.\n· Vier Buttons im Topbar + flying-menu Sprachschalter (vorher 2).\n· Aria-Labels pro Sprache übersetzt für Screenreader.\n· Spec §17 (Multi-Sprach-Strategie) — initiales Ziel: Expat-Communities in Paraguay (deutsch, englisch, russisch) + lokal.\n"
+            "heading": "Automatische Erkennung der Browsersprache",
+            "body": "Wenn Sie mit einem Browser auf Deutsch oder Russisch ankommen, öffnet sich die App bereits in Ihrer Sprache. Keine manuellen Schritte. Sie können jederzeit über den Umschalter wechseln.\n"
           },
           {
             "kind": "new",
             "heading": "Dokumentation als Wiki",
-            "body": "· `/docs/` ist jetzt eine Wiki-Ansicht mit Sidebar-Navigation links (keine Cards mehr).\n· Kategorien: Profil & Sichtbarkeit · Gamification · Werkzeuge · System · Roadmap.\n· Jedes Feature hat seine eigene Seite `/docs/<slug>/`.\n· Docs-Suche via Pagefind im nächsten Release.\n"
+            "body": "`/docs/` ist jetzt ein Wiki mit Navigationsseitenleiste auf der linken Seite. Kategorien: Profil & Sichtbarkeit · Gamification · Werkzeuge · System · Roadmap. Sie finden, was Sie suchen, schneller als zuvor.\n"
           },
           {
             "kind": "new",
-            "heading": "Releases — vollständige Seiten",
-            "body": "· `/releases/` zeigt jetzt vollständige Content-Cards (keine Mini-Cards).\n· Jedes Release hat seine eigene URL `/releases/<slug>/` — teilbar, indexierbar.\n· Typisierte Abschnitte: Neu / Verbessert / Behoben / Demnächst.\n· Pro-Sektion GIF-Slots bereit (Playwright→ffmpeg Pipeline kommt).\n"
+            "heading": "Jede Veröffentlichung auf ihrer eigenen Seite",
+            "body": "Jede Neuerung hat ihren eigenen teilbaren Link — kopieren Sie `/releases/<name>/` und senden Sie ihn per WhatsApp, um genau zu zeigen, was sich geändert hat. In Google indexiert.\n"
           },
           {
             "kind": "fixed",
-            "heading": "Demo-Banner stuck Bug + Tests",
-            "body": "· `.ps-demo-banner { display: flex }` überschrieb das UA `[hidden]{display:none}`, das Banner blieb immer sichtbar.\n· Fix: `.ps-demo-banner[hidden] { display: none !important }`.\n· Suite `tests/e2e/demo-mode.common.spec.ts` — **9 Szenarien × 2 Viewports = 18 Tests**, alle bestanden.\n· Sticky in-demo Navigation: Links zu `/me/* /p/* /specialists/* /clients/*` bekommen `?demo=1` auto-angefügt; andere verlassen Demo.\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Buttons — vereinheitlichtes focus-visible",
-            "body": "· Eine CSS-Regel deckt `.cl-btn, .ps-lang-btn, .ps-theme-btn, .ps-tab, .gt-btn, .ps-demo-banner__exit` ab mit `outline: 2px solid var(--ps-acc); outline-offset: 2px`.\n· Hover getrennt von focus-visible (vorher gleicher Selektor — schlechte Barrierefreiheit).\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Dark-Theme in neuen Komponenten",
-            "body": "· Alle `cl-*` (Button, Card, BadgePill, ProfileHeader usw.) nutzen jetzt `--ps-*` Tokens aus `global.css` statt hardcoded Farben.\n· Demo-Banner und Guided-Tour respektieren das aktive Theme.\n"
+            "heading": "Demo-Modus — Banner, das sich tatsächlich schließt",
+            "body": "Der Knopf \"Demo verlassen\" funktioniert jetzt. Während Sie im Demo-Modus unterwegs sind, behalten Links zu Seiten, die den Demo-Modus erhalten, ihn automatisch bei.\n"
           },
           {
             "kind": "next",
             "heading": "Demnächst",
-            "body": "· Pagefind-Suche in /docs/ + /releases/.\n· Monatliches E-Mail-Digest-Abonnement.\n· In-App-Toast bei neuem Release seit letztem Besuch.\n· Recording-Pipeline: Playwright → ffmpeg → WebP auto-eingebettet in Release-Notes.\n"
+            "body": "Suche in der Dokumentation. Hinweis, wenn es seit Ihrem letzten Besuch Neuigkeiten gibt. Kurze eingebettete Aufnahmen in den Release-Notes, um neue Funktionen in Aktion zu sehen.\n"
           }
         ]
       }
@@ -2185,120 +2251,110 @@ export const CONTENT = {
     "docs": {},
     "releases": {
       "2026-06-24-spec-v1-foundation": {
-        "title": "Spec v1 Foundation — схема + service areas + база геймификации",
-        "tldr": "База данных готова для всех фич spec v1. 4 миграции применены к prod D1.",
+        "title": "PyaServ открывает двери — 40 зон, геймификация и гуарани",
+        "tldr": "Подбираем мастеров по районам Асунсьона и Departamento Central. Зарабатываете XP и значки за хорошую работу. И да, гуарани здесь тоже в деле.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Миграции",
-            "body": "· **0009** — extensions `specialist_profiles` (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).\n· **0010** — таблицы геймификации (user_game_state, xp_events, badges_catalog с 18 seeded, user_badges, quests).\n· **0011** — user_tours_completed + slug backfill для существующих профилей.\n· **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.\n"
+            "heading": "Ищите по своему району",
+            "body": "Выбирайте из 40 зон — 25 районов Асунсьона плюс 15 округов Departamento Central. Фильтруете мастеров, которые рядом с вами, а не в часе езды.\n"
           },
           {
             "kind": "new",
-            "heading": "Canonical service areas",
-            "body": "· 40 зон seeded: 25 районов Asunción + 15 distritos Departamento Central.\n· Таблица `service_areas` (canonical) + link `specialist_service_areas` (many-to-many, до 8 зон на профи).\n"
+            "heading": "Покрывайте до 8 зон",
+            "body": "Если вы работаете как мастер, отметьте до 8 зон, куда выезжаете. Клиенты видят вас только тогда, когда ищут в зоне, которую вы покрываете, — никакой потери времени на заказы, до которых далеко.\n"
           },
           {
             "kind": "new",
-            "heading": "Базовая система геймификации",
-            "body": "· Event-sourced: каждый XP grant — неизменяемая row в `xp_events`.\n· Materialization: `user_game_state` с денормализованной projection для быстрых HUD reads.\n· 18 badges seeded в 4 категориях (tier · milestone · superlative · collection).\n"
+            "heading": "Растёте в уровне, пока работаете",
+            "body": "За каждый завершённый заказ, каждый отзыв с фото, каждый быстрый ответ — вы набираете XP. Пять уровней роста: подмастерье · специалист · мастер · главный мастер · патрон. Уровень показан в вашем публичном профиле.\n"
           },
           {
             "kind": "new",
-            "heading": "Гуарани (sparse)",
-            "body": "· Locale type расширен до `'es' | 'en' | 'gn'`.\n· GN sparse dictionary, ES fallback для отсутствующих keys.\n· Per-specialist: bio_gn, headline_gn опционально.\n"
+            "heading": "18 значков, чтобы выделиться",
+            "body": "Получаете медали за заметные вехи: \"Быстрый ответ\", \"10 завершённых заказов\", \"Топ в вашем районе\". Они появляются в профиле и отличают вас от конкурентов.\n"
+          },
+          {
+            "kind": "new",
+            "heading": "Также на гуарани",
+            "body": "По желанию у вашей биографии и заголовка может быть версия на гуарани. Клиенты, которые предпочитают гуарани, читают вас на своём языке. Опционально — заполняйте, только если это вам в плюс.\n"
           }
         ]
       },
       "2026-06-25-spec-v1-features": {
-        "title": "Spec v1 фичи в работе — 13 функций + components-lib + Demo v2",
-        "tldr": "Все 13 фич spec v1 в продакшене + pure-stateless components-lib + Demo Mode v2 с apiFetch interception.",
+        "title": "13 функций, которых вам не хватало — публичный профиль, калькулятор смет, демо и не только",
+        "tldr": "Профиль, которым удобно делиться в WhatsApp, сметы с PDF, лёгкий CRM клиентов, обзорный тур, гиперлокальный поиск и демо-режим, чтобы посмотреть до регистрации.",
         "sections": [
           {
             "kind": "new",
-            "heading": "Публичный профиль + 4 новых endpoint'а",
-            "body": "· `/p/<твой-slug>` с фото, обложкой, био, услугами, бейджами, расписанием, WhatsApp CTA.\n· API: `/v1/p/:slug` агрегирует profile + reviews + badges + tier + areas.\n· Pretty URL через CF Pages `_redirects` rewrite.\n"
+            "heading": "Публичный профиль, готовый к шарингу",
+            "body": "У каждого мастера есть свой адрес `/p/ваше-имя` с фото, обложкой, био, услугами, значками, расписанием и кнопкой WhatsApp. Вставляете ссылку в группу WhatsApp — и клиент видит всё одним касанием.\n"
           },
           {
             "kind": "new",
-            "heading": "Быстрый калькулятор смет с PDF",
-            "body": "· `/me/quotes/new` — редактор позиций, IVA toggle, jsPDF client-side скачивание, шаринг через WhatsApp.\n· Шаблоны по профессиям (далее: предзагруженные библиотеки).\n"
+            "heading": "Калькулятор смет с PDF в одно касание",
+            "body": "Собираете смету с позициями и IVA, скачиваете PDF и отправляете клиенту прямо в WhatsApp. Без возврата за компьютер.\n"
           },
           {
             "kind": "new",
-            "heading": "Полный gamification engine",
-            "body": "· XP, 5 tiers (Ученик → Патрон), 18 бейджей в 4 категориях, ежедневная streak с freezes.\n· Ежедневные (3) и недельные (2) квесты с auto-seed.\n· HUD в `/me/` с XP / 🔥 streak / ⚡ tier.\n· Auto-XP grants на события: ответ < 1ч, job completed, review с фото.\n"
+            "heading": "Растёте в уровне, пока работаете",
+            "body": "XP за каждый завершённый заказ, значки за вехи, ежедневный стрик, который держится, даже если вы взяли выходной. Пять уровней — от подмастерья до патрона. Клиент видит уровень в вашем профиле.\n"
           },
           {
             "kind": "new",
-            "heading": "Lite-CRM \"Мои клиенты\"",
-            "body": "· Auto-создание `client_record` при завершении работы.\n· Редактируемые заметки, счётчик работ на клиента.\n· Далее: напоминания о сервисе через N месяцев.\n"
+            "heading": "Ваши клиенты под рукой",
+            "body": "Когда вы завершаете заказ, клиент сохраняется в \"Мои клиенты\". Заметки, которые можно править, счётчик заказов. Скоро: автоматическое напоминание, чтобы предложить обслуживание.\n"
           },
           {
             "kind": "new",
-            "heading": "Onboarding Tour T1",
-            "body": "· Driver.js lazy-loaded, 7 направленных шагов.\n· Auto-запуск при первом визите `/me/` если profile_complete_pct < 100.\n· Persist в таблице `user_tours_completed`.\n"
+            "heading": "Обзорный тур при первом входе",
+            "body": "Если вы только что создали профиль, мы проводим вас шаг за шагом по тому, что осталось заполнить, — без чтения инструкций. Тур закрывается сам, когда вы уже всё освоили.\n"
           },
           {
             "kind": "new",
-            "heading": "Hyperlocal SEO landings × 400",
-            "body": "· `/servicios/<профессия>/<район>/` — 10 профессий × 40 районов = 400 авто-генерируемых страниц.\n· У каждой уникальный title/meta, FAQ, CTA «Ты профессионал?», live-fetch matching specialists.\n"
+            "heading": "400 локальных страниц, чтобы вас находили в Google",
+            "body": "Автоматически генерируем по странице на каждую специальность и район — \"Сантехники в Villa Morra\", \"Электрики в Lambaré\", — чтобы при поиске в Google клиент находил вас первым.\n"
           },
           {
             "kind": "new",
-            "heading": "Demo Mode v2",
-            "body": "· Любая страница + `?demo=1` = то же приложение с canned data (без mock pages).\n· apiFetch перехватывает вызовы через demoStub.\n· 10 механизмов Safety Charter активны: оранжевый баннер, body tint, html[data-demo-mode], logged-out identity, exit modal, 10-min idle timeout, no data import, audit beacon.\n"
-          },
-          {
-            "kind": "new",
-            "heading": "Components library + Storybook lite",
-            "body": "· `apps/site/src/components-lib/` — 19 pure stateless функций (atoms / molecules / organisms).\n· `/components/` список с props panel + locale switcher (i18n debugging).\n· Demo Mode v2 reuses те же функции.\n"
+            "heading": "Демо-режим — смотрите до регистрации",
+            "body": "Добавьте `?demo=1` к любой ссылке и пройдите всё приложение с образцами данных, без регистрации. На случай, когда вы пришли из группы WhatsApp и хотите понять, о чём речь.\n"
           }
         ]
       },
       "2026-06-26-i18n-yaml-docs-wiki": {
-        "title": "i18n YAML + 4 языка + docs-вики + полные страницы релизов",
-        "tldr": "Строки вынесены в YAML по локалям. 4 равноправных языка — ES, EN, DE, RU. Docs — теперь вики с боковым меню. У каждого релиза свой URL с полными деталями.",
+        "title": "Четыре языка, новая документация и более стабильное демо",
+        "tldr": "Испанский · английский · немецкий · русский, все на равных. Документация в виде вики с боковой панелью. У каждого релиза своя полноценная страница. Демо-режим починен и держится лучше.",
         "sections": [
           {
             "kind": "new",
-            "heading": "i18n на основе YAML",
-            "body": "· Каждая строка живёт в `apps/site/src/locales/<lang>/<ns>.yaml` — один файл на namespace.\n· Бросаешь YAML, запускаешь `bun run i18n:build`, деплоишь. Ноль хардкоженых строк в новом коде.\n· **309 ключей** в ES + EN с обязательным паритетом (`i18n.test.ts` юнит-тест), 97 в DE/RU bootstrap, GN sparse.\n· Цепочка fallback: locale → EN → ES → key (last-ditch). EN — canonical.\n· API `t(key)` без изменений — никаких breaking changes в callsites.\n"
+            "heading": "Четыре языка — все на равных",
+            "body": "Переключайтесь между испанским, английским, немецким и русским из переключателя в верхней панели. Ваш выбор запоминается между страницами и при возврате. Сделано для экспат-сообщества в Парагвае, не только для местных.\n"
           },
           {
             "kind": "new",
-            "heading": "Четыре равноправных языка — ES / EN / DE / RU",
-            "body": "· Auto-detect браузера без испанского bias: `de` → DE, `ru` → RU, `es` → ES, fallback EN.\n· Четыре кнопки в lang-switcher топбара и flying-menu (было 2).\n· Aria-labels переведены на каждый язык для скрин-ридеров.\n· Spec §17 (multi-lang strategy) — начальный таргет: expat-сообщества в Парагвае (немецкое, английское, русское) + локальное.\n"
+            "heading": "Автоматическое определение языка браузера",
+            "body": "Если вы заходите с браузером на немецком или русском, приложение открывается уже на вашем языке. Никаких ручных шагов. Поменять можно в любой момент через переключатель.\n"
           },
           {
             "kind": "new",
             "heading": "Документация как вики",
-            "body": "· `/docs/` — теперь вики-вид с sidebar-навигацией слева (никаких карточек).\n· Категории: Профиль и видимость · Геймификация · Инструменты · Система · Roadmap.\n· У каждой фичи своя страница `/docs/<slug>/`.\n· Поиск по docs через Pagefind — в следующем релизе.\n"
+            "body": "`/docs/` теперь — вики с боковой навигацией слева. Категории: Профиль и видимость · Геймификация · Инструменты · Система · Дорожная карта. Находите нужное быстрее, чем раньше.\n"
           },
           {
             "kind": "new",
-            "heading": "Релизы — полные страницы",
-            "body": "· `/releases/` теперь показывает полные карточки с контентом (не мини).\n· У каждого релиза свой URL `/releases/<slug>/` — шарится, индексируется.\n· Типизированные секции: Новое / Улучшено / Исправлено / Скоро.\n· Слоты для GIF на секцию (Playwright→ffmpeg pipeline скоро).\n"
+            "heading": "У каждого релиза своя страница",
+            "body": "У каждой новинки своя ссылка, которой можно поделиться, — копируете `/releases/<имя>/` и отправляете в WhatsApp, чтобы точно показать, что изменилось. Индексируется в Google.\n"
           },
           {
             "kind": "fixed",
-            "heading": "Demo-баннер вечный bug + тесты",
-            "body": "· `.ps-demo-banner { display: flex }` перебивало UA `[hidden]{display:none}`, баннер оставался видимым всегда.\n· Fix: `.ps-demo-banner[hidden] { display: none !important }`.\n· Suite `tests/e2e/demo-mode.common.spec.ts` — **9 сценариев × 2 viewport = 18 тестов**, все прошли.\n· Sticky in-demo навигация: ссылки на `/me/* /p/* /specialists/* /clients/*` auto-получают `?demo=1`; остальные — выход из демо.\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Кнопки — унифицированный focus-visible",
-            "body": "· Одно CSS-правило покрывает `.cl-btn, .ps-lang-btn, .ps-theme-btn, .ps-tab, .gt-btn, .ps-demo-banner__exit` с `outline: 2px solid var(--ps-acc); outline-offset: 2px`.\n· Hover отделён от focus-visible (раньше тот же селектор — плохая доступность).\n"
-          },
-          {
-            "kind": "fixed",
-            "heading": "Dark theme в новых компонентах",
-            "body": "· Все `cl-*` (Button, Card, BadgePill, ProfileHeader, и т.д.) теперь используют `--ps-*` токены из `global.css` вместо хардкоженых цветов.\n· Demo banner и guided-tour respect активную тему.\n"
+            "heading": "Демо-режим — баннер, который действительно закрывается",
+            "body": "Кнопка \"Выйти из демо\" теперь работает. Пока вы ходите в демо-режиме, ссылки на страницы, поддерживающие демо, сохраняют его автоматически.\n"
           },
           {
             "kind": "next",
             "heading": "Скоро",
-            "body": "· Pagefind search в /docs/ + /releases/.\n· Ежемесячный email-digest подписка.\n· In-app toast при новом релизе с последнего визита.\n· Recording pipeline: Playwright → ffmpeg → WebP auto-embedded в release notes.\n"
+            "body": "Поиск по документации. Уведомление о новостях с момента вашего последнего визита. Короткие встроенные записи в релиз-ноутах, чтобы увидеть новые функции в деле.\n"
           }
         ]
       }

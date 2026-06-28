@@ -1,27 +1,23 @@
-title: Spec v1 Foundation — schema + service areas + gamification base
-tldr: Base de datos lista para todas las features de spec v1. 4 migraciones aplicadas en prod D1.
+title: PyaServ abre las puertas — 40 zonas, gamification y guaraní
+tldr: Listamos profesionales por barrio de Asunción y Departamento Central. Sumás XP y badges por trabajar bien. Y sí, el guaraní también juega.
 sections:
   - kind: new
-    heading: Migraciones
+    heading: Buscá por tu zona
     body: |
-      · **0009** — extensions a `specialist_profiles` (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).
-      · **0010** — tablas de gamification (user_game_state, xp_events, badges_catalog con 18 seeded, user_badges, quests).
-      · **0011** — user_tours_completed + slug backfill para perfiles existentes.
-      · **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.
+      Elegí entre 40 zonas — los 25 barrios de Asunción más 15 distritos del Departamento Central. Filtrás los profesionales que están cerca tuyo, no los que están a una hora.
   - kind: new
-    heading: Service areas canonical
+    heading: Cubrís hasta 8 zonas
     body: |
-      · 40 zonas seeded: 25 barrios de Asunción + 15 distritos de Departamento Central.
-      · Tabla `service_areas` (canonical) + link `specialist_service_areas` (many-to-many, hasta 8 zonas por profesional).
+      Si trabajás como profesional, marcá hasta 8 zonas donde llegás. Los clientes te ven solo cuando buscan en una zona que cubrís — sin perder tiempo con pedidos que te quedan lejos.
   - kind: new
-    heading: Sistema de gamification base
+    heading: Subís de nivel a medida que trabajás
     body: |
-      · Event-sourced: cada XP grant es row inmutable en `xp_events`.
-      · Materialización: `user_game_state` con projection denormalizada para lectura rápida del HUD.
-      · 18 badges seeded en 4 categorías (tier · milestone · superlative · collection).
+      Por cada trabajo terminado, cada review con foto, cada respuesta rápida — sumás XP. Cinco niveles para escalar: Aprendiz · Oficial · Maestro · Maestro Mayor · Patrón. El nivel se muestra en tu perfil público.
   - kind: new
-    heading: Idioma guaraní (sparse)
+    heading: 18 badges para destacar
     body: |
-      · Locale type extended a `'es' | 'en' | 'gn'`.
-      · GN sparse dictionary, fallback a ES para keys faltantes.
-      · Per-specialist: bio_gn, headline_gn opcionales.
+      Lográs medallas por hitos visibles para tus clientes: "Respuesta rápida", "10 trabajos terminados", "Top de tu barrio". Aparecen en tu perfil y te diferencian de la competencia.
+  - kind: new
+    heading: También en guaraní
+    body: |
+      Si querés, tu bio y headline pueden tener su versión en guaraní. Los clientes que prefieren guaraní te leen en su idioma. Opcional — escribilo solo si te suma.

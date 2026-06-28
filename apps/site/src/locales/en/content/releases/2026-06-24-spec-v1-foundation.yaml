@@ -1,27 +1,23 @@
-title: Spec v1 Foundation — schema + service areas + gamification base
-tldr: Database ready for all spec v1 features. 4 migrations applied to prod D1.
+title: PyaServ opens its doors — 40 areas, gamification, and Guarani
+tldr: Browse pros by neighborhood across Asunción and Departamento Central. Earn XP and badges for doing good work. And yes, Guarani is part of it too.
 sections:
   - kind: new
-    heading: Migrations
+    heading: Search by your area
     body: |
-      · **0009** — `specialist_profiles` extensions (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).
-      · **0010** — gamification tables (user_game_state, xp_events, badges_catalog with 18 seeded, user_badges, quests).
-      · **0011** — user_tours_completed + slug backfill for existing profiles.
-      · **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.
+      Pick from 40 areas — the 25 neighborhoods of Asunción plus 15 districts of Departamento Central. Filter for pros who are nearby, not an hour away.
   - kind: new
-    heading: Canonical service areas
+    heading: Cover up to 8 areas
     body: |
-      · 40 areas seeded: 25 Asunción neighborhoods + 15 Departamento Central districts.
-      · `service_areas` table (canonical) + `specialist_service_areas` link (many-to-many, up to 8 areas per professional).
+      If you work as a pro, mark up to 8 areas you serve. Clients only see you when they search inside an area you cover — no time wasted on jobs that are too far.
   - kind: new
-    heading: Gamification base system
+    heading: Level up as you work
     body: |
-      · Event-sourced: every XP grant is an immutable row in `xp_events`.
-      · Materialization: `user_game_state` with denormalized projection for fast HUD reads.
-      · 18 badges seeded in 4 categories (tier · milestone · superlative · collection).
+      Every finished job, every review with a photo, every quick reply — you earn XP. Five levels to climb: apprentice · journeyman · master · grand master · patron. Your level shows on your public profile.
   - kind: new
-    heading: Guarani language (sparse)
+    heading: 18 badges to stand out
     body: |
-      · Locale type extended to `'es' | 'en' | 'gn'`.
-      · GN sparse dictionary, ES fallback for missing keys.
-      · Per-specialist: bio_gn, headline_gn optional.
+      Earn medals for milestones your clients can see: "Quick reply", "10 jobs completed", "Top of your neighborhood". They show on your profile and set you apart from the competition.
+  - kind: new
+    heading: Also in Guarani
+    body: |
+      If you want, your bio and headline can have a Guarani version. Clients who prefer Guarani read you in their language. Optional — only fill it in if it helps you.

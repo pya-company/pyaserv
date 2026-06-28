@@ -21,3 +21,29 @@ demo:
   tour_t1_step6_body: Where you have most work. You can add more areas later in advanced edit.
   tour_t1_step7_title: Done!
   tour_t1_step7_body: Each step raises your visibility. At 100% you unlock 7 free Boost days and the "Master Profile" badge!
+
+  # Auto-tours per page
+  tour_home_step1_title: "Welcome to PyaServ"
+  tour_home_step1_body: "We connect specialists with clients across Paraguay. No fees for getting in touch."
+  tour_home_step2_title: "Four languages, you pick one"
+  tour_home_step2_body: "Switch between Spanish, English, German and Russian from the top bar whenever you like."
+  tour_home_step3_title: "You are in demo mode"
+  tour_home_step3_body: "Everything you see is sample data. Tap \"Exit demo\" when you are ready for the real thing."
+  tour_specialists_step1_title: "Filter by neighborhood or category"
+  tour_specialists_step1_body: "Find specialists near you. Asunción and Departamento Central — 40 zones ready."
+  tour_specialists_step2_title: "Tap a card to open the profile"
+  tour_specialists_step2_body: "Each specialist shows photo, bio, services and badges. Contact is direct via WhatsApp."
+  tour_specialists_step3_title: "You are in demo mode"
+  tour_specialists_step3_body: "The specialists you see are samples. Exit demo when you want to search for real."
+  tour_clients_step1_title: "Open requests by zone"
+  tour_clients_step1_body: "These are clients looking for a specialist right now. Filter by neighborhood or category."
+  tour_clients_step2_title: "Tap a request to reply"
+  tour_clients_step2_body: "If it matches what you do, message the client directly. No filters, no fee to apply."
+  tour_clients_step3_title: "You are in demo mode"
+  tour_clients_step3_body: "The requests you see are samples. Exit demo when you want to reply for real."
+  tour_profile_step1_title: "Public profile, ready to share"
+  tour_profile_step1_body: "This is what clients see when you send them your PyaServ link on WhatsApp."
+  tour_profile_step2_title: "Direct contact via WhatsApp"
+  tour_profile_step2_body: "One tap and the client messages you — no middle steps, no forms."
+  tour_profile_step3_title: "Services, bio and badges"
+  tour_profile_step3_body: "Everything a client needs to decide. Customize each section from your dashboard."

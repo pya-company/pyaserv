@@ -1,50 +1,31 @@
-title: Spec v1 фичи в работе — 13 функций + components-lib + Demo v2
-tldr: Все 13 фич spec v1 в продакшене + pure-stateless components-lib + Demo Mode v2 с apiFetch interception.
+title: 13 функций, которых вам не хватало — публичный профиль, калькулятор смет, демо и не только
+tldr: Профиль, которым удобно делиться в WhatsApp, сметы с PDF, лёгкий CRM клиентов, обзорный тур, гиперлокальный поиск и демо-режим, чтобы посмотреть до регистрации.
 sections:
   - kind: new
-    heading: Публичный профиль + 4 новых endpoint'а
+    heading: Публичный профиль, готовый к шарингу
     body: |
-      · `/p/<твой-slug>` с фото, обложкой, био, услугами, бейджами, расписанием, WhatsApp CTA.
-      · API: `/v1/p/:slug` агрегирует profile + reviews + badges + tier + areas.
-      · Pretty URL через CF Pages `_redirects` rewrite.
+      У каждого мастера есть свой адрес `/p/ваше-имя` с фото, обложкой, био, услугами, значками, расписанием и кнопкой WhatsApp. Вставляете ссылку в группу WhatsApp — и клиент видит всё одним касанием.
   - kind: new
-    heading: Быстрый калькулятор смет с PDF
+    heading: Калькулятор смет с PDF в одно касание
     body: |
-      · `/me/quotes/new` — редактор позиций, IVA toggle, jsPDF client-side скачивание, шаринг через WhatsApp.
-      · Шаблоны по профессиям (далее: предзагруженные библиотеки).
+      Собираете смету с позициями и IVA, скачиваете PDF и отправляете клиенту прямо в WhatsApp. Без возврата за компьютер.
   - kind: new
-    heading: Полный gamification engine
+    heading: Растёте в уровне, пока работаете
     body: |
-      · XP, 5 tiers (Ученик → Патрон), 18 бейджей в 4 категориях, ежедневная streak с freezes.
-      · Ежедневные (3) и недельные (2) квесты с auto-seed.
-      · HUD в `/me/` с XP / 🔥 streak / ⚡ tier.
-      · Auto-XP grants на события: ответ < 1ч, job completed, review с фото.
+      XP за каждый завершённый заказ, значки за вехи, ежедневный стрик, который держится, даже если вы взяли выходной. Пять уровней — от подмастерья до патрона. Клиент видит уровень в вашем профиле.
   - kind: new
-    heading: Lite-CRM "Мои клиенты"
+    heading: Ваши клиенты под рукой
     body: |
-      · Auto-создание `client_record` при завершении работы.
-      · Редактируемые заметки, счётчик работ на клиента.
-      · Далее: напоминания о сервисе через N месяцев.
+      Когда вы завершаете заказ, клиент сохраняется в "Мои клиенты". Заметки, которые можно править, счётчик заказов. Скоро: автоматическое напоминание, чтобы предложить обслуживание.
   - kind: new
-    heading: Onboarding Tour T1
+    heading: Обзорный тур при первом входе
     body: |
-      · Driver.js lazy-loaded, 7 направленных шагов.
-      · Auto-запуск при первом визите `/me/` если profile_complete_pct < 100.
-      · Persist в таблице `user_tours_completed`.
+      Если вы только что создали профиль, мы проводим вас шаг за шагом по тому, что осталось заполнить, — без чтения инструкций. Тур закрывается сам, когда вы уже всё освоили.
   - kind: new
-    heading: Hyperlocal SEO landings × 400
+    heading: 400 локальных страниц, чтобы вас находили в Google
     body: |
-      · `/servicios/<профессия>/<район>/` — 10 профессий × 40 районов = 400 авто-генерируемых страниц.
-      · У каждой уникальный title/meta, FAQ, CTA «Ты профессионал?», live-fetch matching specialists.
+      Автоматически генерируем по странице на каждую специальность и район — "Сантехники в Villa Morra", "Электрики в Lambaré", — чтобы при поиске в Google клиент находил вас первым.
   - kind: new
-    heading: Demo Mode v2
+    heading: Демо-режим — смотрите до регистрации
     body: |
-      · Любая страница + `?demo=1` = то же приложение с canned data (без mock pages).
-      · apiFetch перехватывает вызовы через demoStub.
-      · 10 механизмов Safety Charter активны: оранжевый баннер, body tint, html[data-demo-mode], logged-out identity, exit modal, 10-min idle timeout, no data import, audit beacon.
-  - kind: new
-    heading: Components library + Storybook lite
-    body: |
-      · `apps/site/src/components-lib/` — 19 pure stateless функций (atoms / molecules / organisms).
-      · `/components/` список с props panel + locale switcher (i18n debugging).
-      · Demo Mode v2 reuses те же функции.
+      Добавьте `?demo=1` к любой ссылке и пройдите всё приложение с образцами данных, без регистрации. На случай, когда вы пришли из группы WhatsApp и хотите понять, о чём речь.

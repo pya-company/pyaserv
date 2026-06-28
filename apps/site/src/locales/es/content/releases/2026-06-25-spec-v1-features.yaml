@@ -1,50 +1,31 @@
-title: Spec v1 features live — 13 funciones + components-lib + Demo v2
-tldr: Las 13 features de spec v1 en producción + components-lib pure-stateless + Demo Mode v2 con apiFetch interception.
+title: Las 13 funciones que necesitabas — perfil público, cotizador, demo y más
+tldr: Perfil compartible por WhatsApp, cotizaciones con PDF, lite-CRM de clientes, tour guiado, búsqueda hyperlocal y modo demo para mirar antes de registrarse.
 sections:
   - kind: new
-    heading: Perfil público + 4 nuevos endpoints
+    heading: Perfil público listo para compartir
     body: |
-      · `/p/<tu-slug>` con foto, portada, bio, servicios, badges, horario, WhatsApp CTA.
-      · API: `/v1/p/:slug` agrega profile + reviews + badges + tier + areas.
-      · Pretty URL via CF Pages `_redirects` rewrite.
+      Cada profesional tiene su propio link `/p/tu-nombre` con foto, portada, bio, servicios, badges, horario y botón de WhatsApp. Pegás el link en un grupo de WhatsApp y los clientes ven todo en un toque.
   - kind: new
-    heading: Cotizador rápido con PDF
+    heading: Cotizador con PDF en un toque
     body: |
-      · `/me/quotes/new` — editor de items, IVA toggle, jsPDF descarga client-side, share por WhatsApp.
-      · Templates por oficio (próximo: bibliotecas pre-cargadas).
+      Armás la cotización con items + IVA, descargás el PDF y lo enviás directo al cliente por WhatsApp. Sin volver al escritorio.
   - kind: new
-    heading: Gamification engine completo
+    heading: Subís de nivel mientras trabajás
     body: |
-      · XP, 5 tiers (Aprendiz → Patrón), 18 badges en 4 categorías, racha diaria con freezes.
-      · Misiones diarias (3) y semanales (2) con auto-seed.
-      · HUD en `/me/` con XP / 🔥 racha / ⚡ tier.
-      · XP grants automáticos en eventos: respuesta < 1h, job completed, review con foto.
+      XP por cada trabajo terminado, badges por hitos, racha diaria que se mantiene incluso si te tomás un día. Cinco niveles desde Aprendiz hasta Patrón — el cliente lo ve en tu perfil.
   - kind: new
-    heading: Lite-CRM "Mis clientes"
+    heading: Tus clientes recordados
     body: |
-      · Auto-creación de `client_record` cuando se completa un trabajo.
-      · Notas editables, contador de trabajos por cliente.
-      · Próximo: recordatorios de mantenimiento N meses después.
+      Cuando terminás un trabajo, el cliente queda guardado en "Mis clientes". Notas editables, contador de trabajos. Próximamente: recordatorio automático para ofrecer mantenimiento.
   - kind: new
-    heading: Onboarding Tour T1
+    heading: Tour guiado al primer ingreso
     body: |
-      · Driver.js lazy-loaded, 7 pasos guiados.
-      · Auto-launch al primer ingreso a `/me/` si profile_complete_pct < 100.
-      · Persistencia en tabla `user_tours_completed`.
+      Si recién creás tu perfil, te llevamos paso a paso por lo que falta completar — sin leer manuales. El tour se cierra solo cuando ya conocés todo.
   - kind: new
-    heading: Hyperlocal SEO landings × 400
+    heading: 400 páginas locales para que te encuentren en Google
     body: |
-      · `/servicios/<oficio>/<barrio>/` — 10 oficios × 40 zonas = 400 páginas auto-generadas.
-      · Cada una con title/meta únicos, FAQ, CTA "¿Sos profesional?", live-fetch de specialists matching.
+      Generamos automáticamente una página por oficio y barrio — "Plomeros en Villa Morra", "Electricistas en Lambaré" — para que cuando un cliente busque en Google, te encuentre primero.
   - kind: new
-    heading: Demo Mode v2
+    heading: Modo demo — mirá antes de registrarte
     body: |
-      · Cualquier ruta + `?demo=1` = misma app con datos canned (sin pages mock).
-      · apiFetch intercepta llamadas via demoStub.
-      · 10 mechanisms del Safety Charter activos: banner naranja, body tint, html[data-demo-mode], identidad logged-out, exit modal, idle timeout 10min, no data import, audit beacon.
-  - kind: new
-    heading: Components library + Storybook lite
-    body: |
-      · `apps/site/src/components-lib/` — 19 funciones pure stateless (atoms / molecules / organisms).
-      · `/components/` lista con props panel + locale switcher (debug i18n).
-      · Demo Mode v2 reutiliza estas mismas funciones.
+      Sumá `?demo=1` a cualquier link y recorrés la app completa con datos de muestra, sin crear cuenta. Para cuando llegás desde un grupo de WhatsApp y querés ver de qué se trata.

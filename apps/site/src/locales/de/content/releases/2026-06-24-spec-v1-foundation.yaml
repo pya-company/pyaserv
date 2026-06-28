@@ -1,27 +1,23 @@
-title: Spec v1 Foundation — Schema + Service Areas + Gamification-Basis
-tldr: Datenbank bereit für alle Spec-v1-Features. 4 Migrationen in Prod D1 angewendet.
+title: PyaServ öffnet seine Türen — 40 Zonen, Gamification und Guaraní
+tldr: Wir listen Fachleute nach Stadtviertel in Asunción und Departamento Central. Sie sammeln XP und Abzeichen für gute Arbeit. Und ja, Guaraní spielt ebenfalls mit.
 sections:
   - kind: new
-    heading: Migrationen
+    heading: Suchen Sie nach Ihrer Zone
     body: |
-      · **0009** — `specialist_profiles` Erweiterungen (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).
-      · **0010** — Gamification-Tabellen (user_game_state, xp_events, badges_catalog mit 18 seeded, user_badges, quests).
-      · **0011** — user_tours_completed + slug-Backfill für bestehende Profile.
-      · **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.
+      Wählen Sie aus 40 Zonen — den 25 Stadtvierteln von Asunción und 15 Distrikten des Departamento Central. So filtern Sie Fachleute in Ihrer Nähe heraus, nicht solche, die eine Stunde entfernt sind.
   - kind: new
-    heading: Kanonische Service Areas
+    heading: Bis zu 8 Zonen abdecken
     body: |
-      · 40 Gebiete seeded: 25 Asunción-Viertel + 15 Departamento-Central-Distrikte.
-      · `service_areas` Tabelle (kanonisch) + `specialist_service_areas` Link (many-to-many, bis zu 8 Gebiete pro Profi).
+      Wenn Sie als Fachmann oder Fachfrau arbeiten, markieren Sie bis zu 8 Zonen, die Sie bedienen. Kundinnen und Kunden sehen Sie nur dann, wenn sie in einer Ihrer Zonen suchen — keine verschwendete Zeit mit Aufträgen, die zu weit weg liegen.
   - kind: new
-    heading: Gamification-Basissystem
+    heading: Steigen Sie beim Arbeiten im Rang auf
     body: |
-      · Event-sourced: jeder XP-Grant ist eine unveränderliche Zeile in `xp_events`.
-      · Materialisierung: `user_game_state` mit denormalisierter Projektion für schnelle HUD-Reads.
-      · 18 Abzeichen seeded in 4 Kategorien (tier · milestone · superlative · collection).
+      Für jeden abgeschlossenen Auftrag, jede Bewertung mit Foto, jede schnelle Antwort sammeln Sie XP. Fünf Stufen zum Aufstieg: Lehrling · Geselle · Meister · Großmeister · Patron. Ihre Stufe erscheint in Ihrem öffentlichen Profil.
   - kind: new
-    heading: Guarani-Sprache (sparse)
+    heading: 18 Abzeichen, um aufzufallen
     body: |
-      · Locale-Typ erweitert auf `'es' | 'en' | 'gn'`.
-      · GN spärliches Wörterbuch, ES-Fallback für fehlende Keys.
-      · Pro Specialist: bio_gn, headline_gn optional.
+      Verdienen Sie Medaillen für sichtbare Meilensteine: "Schnelle Antwort", "10 Aufträge abgeschlossen", "Top in Ihrem Stadtviertel". Sie erscheinen in Ihrem Profil und heben Sie von der Konkurrenz ab.
+  - kind: new
+    heading: Auch auf Guaraní
+    body: |
+      Auf Wunsch können Ihre Biografie und Überschrift eine Guaraní-Version erhalten. Kundinnen und Kunden, die Guaraní bevorzugen, lesen Sie in ihrer Sprache. Optional — füllen Sie es nur aus, wenn es Ihnen etwas bringt.

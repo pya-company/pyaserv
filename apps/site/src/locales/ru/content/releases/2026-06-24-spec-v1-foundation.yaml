@@ -1,27 +1,23 @@
-title: Spec v1 Foundation — схема + service areas + база геймификации
-tldr: База данных готова для всех фич spec v1. 4 миграции применены к prod D1.
+title: PyaServ открывает двери — 40 зон, геймификация и гуарани
+tldr: Подбираем мастеров по районам Асунсьона и Departamento Central. Зарабатываете XP и значки за хорошую работу. И да, гуарани здесь тоже в деле.
 sections:
   - kind: new
-    heading: Миграции
+    heading: Ищите по своему району
     body: |
-      · **0009** — extensions `specialist_profiles` (slug, cover, services_json, portfolio_json, schedule_json, lead_filters_json, cedula_verified, ruc_number, bio_gn, headline_gn).
-      · **0010** — таблицы геймификации (user_game_state, xp_events, badges_catalog с 18 seeded, user_badges, quests).
-      · **0011** — user_tours_completed + slug backfill для существующих профилей.
-      · **0012** — quotes, quote_templates, client_records, release_subscriptions, user_subscriptions.
+      Выбирайте из 40 зон — 25 районов Асунсьона плюс 15 округов Departamento Central. Фильтруете мастеров, которые рядом с вами, а не в часе езды.
   - kind: new
-    heading: Canonical service areas
+    heading: Покрывайте до 8 зон
     body: |
-      · 40 зон seeded: 25 районов Asunción + 15 distritos Departamento Central.
-      · Таблица `service_areas` (canonical) + link `specialist_service_areas` (many-to-many, до 8 зон на профи).
+      Если вы работаете как мастер, отметьте до 8 зон, куда выезжаете. Клиенты видят вас только тогда, когда ищут в зоне, которую вы покрываете, — никакой потери времени на заказы, до которых далеко.
   - kind: new
-    heading: Базовая система геймификации
+    heading: Растёте в уровне, пока работаете
     body: |
-      · Event-sourced: каждый XP grant — неизменяемая row в `xp_events`.
-      · Materialization: `user_game_state` с денормализованной projection для быстрых HUD reads.
-      · 18 badges seeded в 4 категориях (tier · milestone · superlative · collection).
+      За каждый завершённый заказ, каждый отзыв с фото, каждый быстрый ответ — вы набираете XP. Пять уровней роста: подмастерье · специалист · мастер · главный мастер · патрон. Уровень показан в вашем публичном профиле.
   - kind: new
-    heading: Гуарани (sparse)
+    heading: 18 значков, чтобы выделиться
     body: |
-      · Locale type расширен до `'es' | 'en' | 'gn'`.
-      · GN sparse dictionary, ES fallback для отсутствующих keys.
-      · Per-specialist: bio_gn, headline_gn опционально.
+      Получаете медали за заметные вехи: "Быстрый ответ", "10 завершённых заказов", "Топ в вашем районе". Они появляются в профиле и отличают вас от конкурентов.
+  - kind: new
+    heading: Также на гуарани
+    body: |
+      По желанию у вашей биографии и заголовка может быть версия на гуарани. Клиенты, которые предпочитают гуарани, читают вас на своём языке. Опционально — заполняйте, только если это вам в плюс.

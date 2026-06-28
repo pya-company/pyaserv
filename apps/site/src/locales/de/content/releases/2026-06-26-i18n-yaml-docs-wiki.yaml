@@ -1,56 +1,27 @@
-title: i18n YAML + 4 Sprachen + Docs Wiki + vollständige Release-Seiten
-tldr: Strings in per-Sprache YAML verschoben. 4 gleichrangige Sprachen — ES, EN, DE, RU. Docs ist jetzt ein Wiki mit Sidebar. Jedes Release hat seine eigene URL mit allen Details.
+title: Vier Sprachen, neue Dokumentation und eine stabilere Demo
+tldr: Spanisch · Englisch · Deutsch · Russisch, alle auf gleicher Augenhöhe. Dokumentation als Wiki mit Seitenleiste. Jede Veröffentlichung hat ihre eigene vollständige Seite. Demo-Modus repariert und beständiger.
 sections:
   - kind: new
-    heading: YAML-basiertes i18n
+    heading: Vier Sprachen — alle gleichberechtigt
     body: |
-      · Jede Zeichenkette lebt in `apps/site/src/locales/<lang>/<ns>.yaml` — eine Datei pro Namespace.
-      · YAML ablegen, `bun run i18n:build` ausführen, ausliefern. Null hardcoded Strings in neuem Code.
-      · **309 Keys** in ES + EN mit verpflichtender Parität (`i18n.test.ts` Unit-Test), 97 in DE/RU Bootstrap, GN spärlich.
-      · Fallback-Kette: Locale → EN → ES → Key (letztes Mittel). EN kanonisch.
-      · `t(key)` API unverändert — keine Breaking Changes an Callsites.
+      Wechseln Sie zwischen Spanisch, Englisch, Deutsch und Russisch über den Umschalter in der oberen Leiste. Ihre Wahl wird zwischen Seiten und bei Ihrer Rückkehr gemerkt. Gedacht für die Expat-Gemeinschaft in Paraguay und ebenso für Einheimische.
   - kind: new
-    heading: Vier gleichrangige Sprachen — ES / EN / DE / RU
+    heading: Automatische Erkennung der Browsersprache
     body: |
-      · Browser-Autodetect ohne spanischen Bias: `de` → DE, `ru` → RU, `es` → ES, Fallback EN.
-      · Vier Buttons im Topbar + flying-menu Sprachschalter (vorher 2).
-      · Aria-Labels pro Sprache übersetzt für Screenreader.
-      · Spec §17 (Multi-Sprach-Strategie) — initiales Ziel: Expat-Communities in Paraguay (deutsch, englisch, russisch) + lokal.
+      Wenn Sie mit einem Browser auf Deutsch oder Russisch ankommen, öffnet sich die App bereits in Ihrer Sprache. Keine manuellen Schritte. Sie können jederzeit über den Umschalter wechseln.
   - kind: new
     heading: Dokumentation als Wiki
     body: |
-      · `/docs/` ist jetzt eine Wiki-Ansicht mit Sidebar-Navigation links (keine Cards mehr).
-      · Kategorien: Profil & Sichtbarkeit · Gamification · Werkzeuge · System · Roadmap.
-      · Jedes Feature hat seine eigene Seite `/docs/<slug>/`.
-      · Docs-Suche via Pagefind im nächsten Release.
+      `/docs/` ist jetzt ein Wiki mit Navigationsseitenleiste auf der linken Seite. Kategorien: Profil & Sichtbarkeit · Gamification · Werkzeuge · System · Roadmap. Sie finden, was Sie suchen, schneller als zuvor.
   - kind: new
-    heading: Releases — vollständige Seiten
+    heading: Jede Veröffentlichung auf ihrer eigenen Seite
     body: |
-      · `/releases/` zeigt jetzt vollständige Content-Cards (keine Mini-Cards).
-      · Jedes Release hat seine eigene URL `/releases/<slug>/` — teilbar, indexierbar.
-      · Typisierte Abschnitte: Neu / Verbessert / Behoben / Demnächst.
-      · Pro-Sektion GIF-Slots bereit (Playwright→ffmpeg Pipeline kommt).
+      Jede Neuerung hat ihren eigenen teilbaren Link — kopieren Sie `/releases/<name>/` und senden Sie ihn per WhatsApp, um genau zu zeigen, was sich geändert hat. In Google indexiert.
   - kind: fixed
-    heading: Demo-Banner stuck Bug + Tests
+    heading: Demo-Modus — Banner, das sich tatsächlich schließt
     body: |
-      · `.ps-demo-banner { display: flex }` überschrieb das UA `[hidden]{display:none}`, das Banner blieb immer sichtbar.
-      · Fix: `.ps-demo-banner[hidden] { display: none !important }`.
-      · Suite `tests/e2e/demo-mode.common.spec.ts` — **9 Szenarien × 2 Viewports = 18 Tests**, alle bestanden.
-      · Sticky in-demo Navigation: Links zu `/me/* /p/* /specialists/* /clients/*` bekommen `?demo=1` auto-angefügt; andere verlassen Demo.
-  - kind: fixed
-    heading: Buttons — vereinheitlichtes focus-visible
-    body: |
-      · Eine CSS-Regel deckt `.cl-btn, .ps-lang-btn, .ps-theme-btn, .ps-tab, .gt-btn, .ps-demo-banner__exit` ab mit `outline: 2px solid var(--ps-acc); outline-offset: 2px`.
-      · Hover getrennt von focus-visible (vorher gleicher Selektor — schlechte Barrierefreiheit).
-  - kind: fixed
-    heading: Dark-Theme in neuen Komponenten
-    body: |
-      · Alle `cl-*` (Button, Card, BadgePill, ProfileHeader usw.) nutzen jetzt `--ps-*` Tokens aus `global.css` statt hardcoded Farben.
-      · Demo-Banner und Guided-Tour respektieren das aktive Theme.
+      Der Knopf "Demo verlassen" funktioniert jetzt. Während Sie im Demo-Modus unterwegs sind, behalten Links zu Seiten, die den Demo-Modus erhalten, ihn automatisch bei.
   - kind: next
     heading: Demnächst
     body: |
-      · Pagefind-Suche in /docs/ + /releases/.
-      · Monatliches E-Mail-Digest-Abonnement.
-      · In-App-Toast bei neuem Release seit letztem Besuch.
-      · Recording-Pipeline: Playwright → ffmpeg → WebP auto-eingebettet in Release-Notes.
+      Suche in der Dokumentation. Hinweis, wenn es seit Ihrem letzten Besuch Neuigkeiten gibt. Kurze eingebettete Aufnahmen in den Release-Notes, um neue Funktionen in Aktion zu sehen.

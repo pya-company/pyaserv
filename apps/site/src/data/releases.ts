@@ -23,22 +23,22 @@ export const RELEASES: ReadonlyArray<ReleaseSchema> = [
     slug: '2026-06-26-i18n-yaml-docs-wiki',
     version: 'v1.2.0',
     date: '2026-06-26',
-    tags: ['i18n', 'docs', 'releases', 'ui'],
-    sectionKinds: ['new', 'new', 'new', 'new', 'fixed', 'fixed', 'fixed', 'next'],
+    tags: ['languages', 'documentation', 'demo mode'],
+    sectionKinds: ['new', 'new', 'new', 'new', 'fixed', 'next'],
   },
   {
     slug: '2026-06-25-spec-v1-features',
     version: 'v1.1.0',
     date: '2026-06-25',
-    tags: ['profile', 'gamification', 'quotes', 'crm', 'tour', 'docs', 'components'],
-    sectionKinds: ['new', 'new', 'new', 'new', 'new', 'new', 'new', 'new'],
+    tags: ['public profile', 'quotes', 'demo mode', 'search'],
+    sectionKinds: ['new', 'new', 'new', 'new', 'new', 'new', 'new'],
   },
   {
     slug: '2026-06-24-spec-v1-foundation',
     version: 'v1.0.0',
     date: '2026-06-24',
-    tags: ['foundation', 'schema', 'i18n', 'migrations'],
-    sectionKinds: ['new', 'new', 'new', 'new'],
+    tags: ['neighborhoods', 'levels and badges', 'languages'],
+    sectionKinds: ['new', 'new', 'new', 'new', 'new'],
   },
 ]
 

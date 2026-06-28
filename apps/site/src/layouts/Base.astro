@@ -604,7 +604,14 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         const url = new URL(location.href)
         url.searchParams.delete('demo')
         url.searchParams.delete('tour')
-        location.href = url.pathname + (url.search || '')
+        // If the user is on an auth-gated page (/me/*), staying there would
+        // trigger the guest-redirect that dumps them on the home page with a
+        // login dialog — feels like "exit demo sent me away". Route them to
+        // the closest equivalent public page instead so they stay in context.
+        const path = url.pathname
+        const isProtected = path.startsWith('/me/') || path === '/me'
+        const target = isProtected ? '/specialists/' : path + (url.search || '')
+        location.href = target
       }
 
       const openExitConfirmModal = () => {
@@ -639,6 +646,10 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       }
 
       const buildDemoTour = (code) => {
+        const labels = {
+          back: t('common.back'), next: t('common.next'),
+          skip: t('common.skip'), finish: t('common.finish'),
+        }
         const tours = {
           T1: {
             code: 'T1',
@@ -651,13 +662,56 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
               { selector: 'input[name="barrio"]', title: t('demo.tour_t1_step6_title'), body: t('demo.tour_t1_step6_body') },
               { selector: '#completeness, #completeness-extended', title: t('demo.tour_t1_step7_title'), body: t('demo.tour_t1_step7_body') },
             ],
-            labels: {
-              back: t('common.back'), next: t('common.next'),
-              skip: t('common.skip'), finish: t('common.finish'),
-            },
+            labels,
+          },
+          T_HOME: {
+            code: 'T_HOME',
+            steps: [
+              { selector: 'header.ps-topbar', title: t('demo.tour_home_step1_title'), body: t('demo.tour_home_step1_body') },
+              { selector: '.ps-lang-switch', title: t('demo.tour_home_step2_title'), body: t('demo.tour_home_step2_body') },
+              { selector: '.ps-demo-banner', title: t('demo.tour_home_step3_title'), body: t('demo.tour_home_step3_body') },
+            ],
+            labels,
+          },
+          T_SPECIALISTS: {
+            code: 'T_SPECIALISTS',
+            steps: [
+              { selector: '#filters', title: t('demo.tour_specialists_step1_title'), body: t('demo.tour_specialists_step1_body') },
+              { selector: '#results .ps-card, .ps-cards .ps-card', title: t('demo.tour_specialists_step2_title'), body: t('demo.tour_specialists_step2_body') },
+              { selector: '.ps-demo-banner', title: t('demo.tour_specialists_step3_title'), body: t('demo.tour_specialists_step3_body') },
+            ],
+            labels,
+          },
+          T_CLIENTS: {
+            code: 'T_CLIENTS',
+            steps: [
+              { selector: '#filters', title: t('demo.tour_clients_step1_title'), body: t('demo.tour_clients_step1_body') },
+              { selector: '#results .ps-card, .ps-cards .ps-card', title: t('demo.tour_clients_step2_title'), body: t('demo.tour_clients_step2_body') },
+              { selector: '.ps-demo-banner', title: t('demo.tour_clients_step3_title'), body: t('demo.tour_clients_step3_body') },
+            ],
+            labels,
+          },
+          T_PROFILE: {
+            code: 'T_PROFILE',
+            steps: [
+              { selector: '.ps-profile-header, .ps-profile-name', title: t('demo.tour_profile_step1_title'), body: t('demo.tour_profile_step1_body') },
+              { selector: '#profile-cta, .ps-profile-cta', title: t('demo.tour_profile_step2_title'), body: t('demo.tour_profile_step2_body') },
+              { selector: '#services-section, .ps-profile-section', title: t('demo.tour_profile_step3_title'), body: t('demo.tour_profile_step3_body') },
+            ],
+            labels,
           },
         }
         return tours[code]
+      }
+      // Default tour to auto-start when ?demo=1 has no explicit ?tour=<code>.
+      // Closes the "demo banner appears but no tour" gap on common pages.
+      const pickDefaultTour = (pathname) => {
+        if (pathname === '/' || pathname === '') return 'T_HOME'
+        if (pathname.startsWith('/specialists/')) return 'T_SPECIALISTS'
+        if (pathname.startsWith('/clients/')) return 'T_CLIENTS'
+        if (pathname.startsWith('/p/')) return 'T_PROFILE'
+        if (pathname.startsWith('/me/')) return 'T1'
+        return null
       }
 
       const writeBannerH = () => {
@@ -699,9 +753,17 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
             idleCtl = startIdleWatcher(feature, () => performExit())
           }
           const params = new URLSearchParams(location.search)
-          const tourCode = params.get('tour')
+          // Auto-pick tour by pathname if user didn't pass an explicit ?tour=
+          // — closes the "demo banner appears but no tour" gap on common pages.
+          // Per-(path,tour) sessionStorage gate so the same tour doesn't replay
+          // every time the user comes back via in-app nav.
+          const tourCode = params.get('tour') ?? pickDefaultTour(location.pathname)
           const tour = tourCode ? buildDemoTour(tourCode) : null
-          if (tour) {
+          const tourSeenKey = tourCode ? 'pyaserv.demo.tour_seen.' + tourCode : ''
+          let tourSeen = false
+          try { tourSeen = !!sessionStorage.getItem(tourSeenKey) } catch {}
+          if (tour && !tourSeen) {
+            try { sessionStorage.setItem(tourSeenKey, '1') } catch {}
             // Wait for the page to render its anchors
             setTimeout(() => startTour({
               ...tour,
