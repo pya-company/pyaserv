@@ -74,12 +74,10 @@ export interface FeatureCardProps {
   readonly code: string
   readonly title: string
   readonly description: string
-  readonly status: 'live' | 'demo' | 'soon'
+  readonly status: 'live' | 'soon'
   readonly statusLabel: string
-  readonly demoUrl?: string
   readonly realUrl?: string
   readonly docUrl?: string
-  readonly demoLabel?: string
   readonly realLabel?: string
   readonly docLabel?: string
   readonly soonLabel?: string
@@ -87,7 +85,6 @@ export interface FeatureCardProps {
 export const FeatureCard = (p: FeatureCardProps): string => {
   const actions: string[] = []
   if (p.docUrl) actions.push(Button({ label: p.docLabel ?? 'Más detalles →', variant: 'primary', size: 'sm', href: p.docUrl }))
-  if (p.demoUrl) actions.push(Button({ label: p.demoLabel ?? 'Probar demo →', variant: 'ghost', size: 'sm', href: p.demoUrl }))
   if (p.realUrl) actions.push(Button({ label: p.realLabel ?? 'Ver real →', variant: 'ghost', size: 'sm', href: p.realUrl }))
   if (actions.length === 0) actions.push(Button({ label: p.soonLabel ?? 'Próximamente', size: 'sm', disabled: true }))
   return `<article class="cl-feature-card">

@@ -94,25 +94,6 @@ const app = new Hono<AppEnv>()
   .route('/v1', reviewsRoutes)
   .route('/v1/media', mediaRoutes)
   .route('/v1/analytics', analyticsRoutes)
-  // Demo-mode telemetry sink: site sends fire-and-forget beacons here
-  // (navigator.sendBeacon → POST). We don't persist, only count via console
-  // so CF tail logs show adoption without growing a table. CORS is open
-  // because the beacon is cross-origin (pyaserv.com → api.pyaserv.com).
-  .options('/demo-audit', (c) => {
-    c.header('Access-Control-Allow-Origin', '*')
-    c.header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-    c.header('Access-Control-Allow-Headers', 'Content-Type')
-    return c.body(null, 204)
-  })
-  .post('/demo-audit', async (c) => {
-    c.header('Access-Control-Allow-Origin', '*')
-    try {
-      const body = await c.req.json<{ event?: unknown }>().catch(() => ({}))
-      const ev = typeof body.event === 'string' ? body.event.slice(0, 64) : '?'
-      console.log(`[demo-audit] ${ev}`)
-    } catch { /* never throw from beacon */ }
-    return c.body(null, 204)
-  })
   .all('*', (c) => c.json({ error: { code: 'NotFound', message: 'Endpoint not yet implemented.' } }, 404))
 
 export default app

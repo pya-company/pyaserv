@@ -2,7 +2,7 @@
 import Base from '~/layouts/Base.astro'
 import BarriosDatalist from '~/components/BarriosDatalist.astro'
 import T from '~/components/T.astro'
-import '~/styles/demo-and-docs.css'
+import '~/styles/docs.css'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <Base title="Mi panel" titleKey="me.title" active="me">
@@ -275,21 +275,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
       const token = getToken()
       if (!token) {
-        // Demo mode entry point — anonymous CTA on /docs/demo-mode/ links here.
-        // Skip the login redirect entirely: demoStub serves canned data and the
-        // page should run logged-out. Without this guard, the redirect drops
-        // ?demo=1 (location.pathname strips the search) and breaks the docs CTA.
-        const isDemo = (() => {
-          try { return new URLSearchParams(location.search).has('demo') } catch { return false }
-        })()
-        if (!isDemo) {
-          // Send to home with ?login=1 + ?next= so Base.astro auto-opens the
-          // sign-in dialog with proper return-after-login. The legacy /login/
-          // 302 rewrite strips ?next so we skip it.
-          const target = location.pathname + location.search
-          location.href = `${base}/?login=1&next=${encodeURIComponent(target)}&reason=dashboard`
-          return
-        }
+        // Send to home with ?login=1 + ?next= so Base.astro auto-opens the
+        // sign-in dialog with proper return-after-login. The legacy /login/
+        // 302 rewrite strips ?next so we skip it.
+        const target = location.pathname + location.search
+        location.href = `${base}/?login=1&next=${encodeURIComponent(target)}&reason=dashboard`
+        return
       }
 
       document.getElementById('logout').addEventListener('click', () => {

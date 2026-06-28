@@ -1,7 +1,7 @@
 ---
 import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
-import '~/styles/demo-and-docs.css'
+import '~/styles/docs.css'
 import DocsSidebar from '~/components/DocsSidebar.astro'
 import { DOC_PAGES } from '~/data/docs-content.ts'
 import { getDocContent } from '~/lib/content.ts'
@@ -29,7 +29,7 @@ const sectionBodyMap = (idx: number): Record<string, string> => {
 }
 const statusLabelMap = (): Record<string, string> => {
   const out: Record<string, string> = {}
-  for (const l of VISIBLE_LOCS) out[l] = tFor(l, `docs.status_${doc.status === 'live' ? 'live' : doc.status === 'demo' ? 'demo' : 'soon'}`)
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, `docs.status_${doc.status === 'live' ? 'live' : 'soon'}`)
   return out
 }
 const escapeAttr = (s: string): string =>
@@ -56,10 +56,9 @@ const statusLabel = tFor(loc, `docs.status_${doc.status}`)
         <Fragment set:html={`<h1 ${l10nText(getAllLocales('docs', doc.slug, ['title']))}>${content.title}</h1>`} />
         <Fragment set:html={`<p class="docpage__tldr" ${l10nText(getAllLocales('docs', doc.slug, ['tldr']))}>${content.tldr}</p>`} />
 
-        {(doc.demoUrl || doc.realUrl) && (
+        {doc.realUrl && (
           <div class="docpage__actions">
-            {doc.demoUrl && <a href={doc.demoUrl} class="cl-btn cl-btn--primary" data-i18n="docs.btn_try_demo">{tFor(loc, 'docs.btn_try_demo')}</a>}
-            {doc.realUrl && <a href={doc.realUrl} class="cl-btn cl-btn--ghost" data-i18n="docs.btn_view_real">{tFor(loc, 'docs.btn_view_real')}</a>}
+            <a href={doc.realUrl} class="cl-btn cl-btn--primary" data-i18n="docs.btn_view_real">{tFor(loc, 'docs.btn_view_real')}</a>
           </div>
         )}
       </header>

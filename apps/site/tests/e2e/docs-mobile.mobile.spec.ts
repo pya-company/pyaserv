@@ -91,20 +91,20 @@ test.describe('/docs/ on mobile — sidebar collapse + index layout', () => {
     ).toBeLessThan(sidebarHrefs.length)
   })
 
-  test('/docs/ index hosts the curated content blocks from wireframe §16.8', async ({ page }) => {
+  test('/docs/ index hosts curated content blocks (CTA + latest releases)', async ({ page }) => {
     await page.goto('/docs/')
 
-    // Wireframe §16.8 calls for at least one "Probar →" CTA and a
-    // "Últimas novedades" / Latest releases block on the index. Prod
-    // ships neither (the main column is just a sidebar mirror).
-    const probarCta = page.locator('main.docs-content a, .docs-content a').filter({
-      hasText: /Probar\s*→|Try it\s*→|Demo\s*→/i,
+    // /docs/ index needs at least one actionable CTA (now "Ver real →" /
+    // "View →") and a "Últimas novedades" / Latest releases block. Demo
+    // mode is gone, so CTAs route to realUrl-style targets only.
+    const cta = page.locator('main.docs-content a, .docs-content a').filter({
+      hasText: /Ver real\s*→|See live\s*→|Live ansehen\s*→|Открыть\s*→/i,
     })
     const latestBlock = page.locator('main.docs-content, .docs-content').getByText(
       /Últimas novedades|Latest releases|Latest updates|Neueste|Последние/i
     )
 
-    await expect(probarCta.first(), '/docs/ index must surface a "Probar →" / Try CTA').toBeVisible()
+    await expect(cta.first(), '/docs/ index must surface an actionable CTA on at least one featured card').toBeVisible()
     await expect(latestBlock.first(), '/docs/ index must surface an "Últimas novedades" block').toBeVisible()
   })
 })

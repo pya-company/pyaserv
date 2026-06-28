@@ -4,10 +4,8 @@ docs:
   sidebar_aria: Разделы документации
   sidebar_search_placeholder: Поиск…
   status_live: В работе
-  status_demo: Демо
   status_soon: Скоро
   status_planned: Запланировано
-  btn_try_demo: Попробовать демо →
   btn_view_real: Открыть →
   btn_more: Подробнее →
   btn_soon: Скоро
@@ -22,4 +20,3 @@ docs:
   group_dev: Разработка
   index_featured_h: Начните здесь
   index_latest_h: Последние релизы
-  index_try_cta: Попробовать →

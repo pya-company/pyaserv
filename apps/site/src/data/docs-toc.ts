@@ -1,5 +1,5 @@
 /* Docs TOC — categorized wiki nav. Single source of truth for both index and per-slug pages. */
-import { DOC_PAGES, type DocPage } from './docs-content.ts'
+import { DOC_PAGES, type DocSchema as DocPage } from './docs-content.ts'
 
 export interface DocGroup {
   readonly id: string
@@ -9,9 +9,9 @@ export interface DocGroup {
 
 export const DOC_GROUPS: ReadonlyArray<DocGroup> = [
   { id: 'profile',      i18nKey: 'docs.group_profile',      pageSlugs: ['perfil', 'multilingue', 'analitica'] },
-  { id: 'gamification', i18nKey: 'docs.group_gamification', pageSlugs: ['insignias', 'xp', 'tour'] },
+  { id: 'gamification', i18nKey: 'docs.group_gamification', pageSlugs: ['insignias', 'xp'] },
   { id: 'tools',        i18nKey: 'docs.group_tools',        pageSlugs: ['cotizador', 'mis-clientes', 'filtros-leads'] },
-  { id: 'system',       i18nKey: 'docs.group_system',       pageSlugs: ['demo-mode', 'this-doc'] },
+  { id: 'system',       i18nKey: 'docs.group_system',       pageSlugs: ['this-doc'] },
   { id: 'roadmap',      i18nKey: 'docs.group_roadmap',      pageSlugs: ['recap-card', 'sifen', 'local-first', 'mobile'] },
 ]
 

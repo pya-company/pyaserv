@@ -1,6 +1,6 @@
 ---
 import Base from '~/layouts/Base.astro'
-import '~/styles/demo-and-docs.css'
+import '~/styles/docs.css'
 ---
 <Base title="Nueva cotización" active="me" description="Crear una nueva cotización en PyaServ">
   <section class="ps-section" style="max-width:560px;margin:0 auto;">
@@ -64,12 +64,7 @@ import '~/styles/demo-and-docs.css'
     const init = async () => {
       if (!location.pathname.endsWith('/me/quotes/new/')) return
       const token = getToken()
-      // Demo bypass — when ?demo=1 is on the URL, demoStub intercepts the
-      // apiFetch calls and the page runs logged-out (same pattern as me.astro).
-      // Without this guard, /me/quotes/new/?demo=1 redirects guests to /login/
-      // and the user can't even see the demo banner to exit demo.
-      const isDemo = (() => { try { return new URLSearchParams(location.search).has('demo') } catch { return false } })()
-      if (!token && !isDemo) { location.href = '/?login=1&next=' + encodeURIComponent(location.pathname) + '&reason=dashboard'; return }
+      if (!token) { location.href = '/?login=1&next=' + encodeURIComponent(location.pathname) + '&reason=dashboard'; return }
 
       // Load templates dropdown
       try {

@@ -4,10 +4,8 @@ docs:
   sidebar_aria: Dokumentationsabschnitte
   sidebar_search_placeholder: Suchen…
   status_live: Live
-  status_demo: Demo
   status_soon: Bald
   status_planned: Geplant
-  btn_try_demo: Demo testen →
   btn_view_real: Live ansehen →
   btn_more: Mehr Details →
   btn_soon: Demnächst
@@ -22,4 +20,3 @@ docs:
   group_dev: Entwicklung
   index_featured_h: Hier starten
   index_latest_h: Neueste Releases
-  index_try_cta: Testen →

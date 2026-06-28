@@ -202,14 +202,5 @@ const truncate = (s: string, n = 220): string => s.length > n ? `${s.slice(0, n)
     form.addEventListener('input', load)
     form.addEventListener('submit', (e) => { e.preventDefault(); load() })
     // NOTE: no initial load() — cards are SSR'd inline. Filter input still triggers it.
-    // Demo Mode (?demo=1) — purge SSR'd real production cards and refresh from
-    // the demoStub so no real customer requests leak into the demo view.
-    try {
-      if (new URLSearchParams(location.search).has('demo')) {
-        results.innerHTML = ''
-        results.setAttribute('aria-busy', 'true')
-        void load()
-      }
-    } catch {}
   </script>
 </Base>

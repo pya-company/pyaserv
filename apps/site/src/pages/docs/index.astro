@@ -1,7 +1,7 @@
 ---
 import Base from '~/layouts/Base.astro'
 import '~/styles/components-lib.css'
-import '~/styles/demo-and-docs.css'
+import '~/styles/docs.css'
 import DocsSidebar from '~/components/DocsSidebar.astro'
 import { DOC_PAGES } from '~/data/docs-content.ts'
 import { RELEASES } from '~/data/releases.ts'
@@ -23,10 +23,8 @@ const escapeAttr = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const l10n = (m: Record<string, string>): string => `data-l10n-text='${escapeAttr(JSON.stringify(m))}'`
 
-// Featured docs — the curated entries with demoUrl so the index can surface
-// "Probar →" CTAs (wireframe §16.8). Keeps the main column from being a
-// verbatim sidebar mirror.
-const FEATURED_SLUGS = ['perfil', 'insignias', 'cotizador', 'demo-mode'] as const
+// Featured docs — curated entries the index surfaces above the sidebar list.
+const FEATURED_SLUGS = ['perfil', 'insignias', 'cotizador'] as const
 const featured = FEATURED_SLUGS
   .map((s) => DOC_PAGES.find((p) => p.slug === s))
   .filter((p): p is (typeof DOC_PAGES)[number] => Boolean(p))
@@ -54,11 +52,11 @@ const latestReleases = RELEASES.slice(0, 3)
               <article style="background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-md); padding: var(--ps-space-4); display: flex; flex-direction: column; gap: var(--ps-space-2);">
                 <Fragment set:html={`<h3 ${l10n(titleMap)} style="margin: 0; font-size: 16px; font-weight: 700; color: var(--ps-text);">${c?.title ?? p.slug}</h3>`} />
                 {c?.tldr && <Fragment set:html={`<p ${l10n(tldrMap)} style="margin: 0; color: var(--ps-text-muted); font-size: 13px; line-height: 1.5;">${c.tldr}</p>`} />}
-                <div style="display: flex; gap: var(--ps-space-2); margin-top: var(--ps-space-2);">
-                  {p.demoUrl && (
-                    <Fragment set:html={`<a href="${p.demoUrl}" class="cl-btn cl-btn--primary cl-btn--sm" ${l10n(labelMap('docs.index_try_cta'))}>${tFor(loc, 'docs.index_try_cta')}</a>`} />
-                  )}
-                </div>
+                {p.realUrl && (
+                  <div style="display: flex; gap: var(--ps-space-2); margin-top: var(--ps-space-2);">
+                    <Fragment set:html={`<a href="${p.realUrl}" class="cl-btn cl-btn--primary cl-btn--sm" ${l10n(labelMap('docs.btn_view_real'))}>${tFor(loc, 'docs.btn_view_real')}</a>`} />
+                  </div>
+                )}
               </article>
             )
           })}

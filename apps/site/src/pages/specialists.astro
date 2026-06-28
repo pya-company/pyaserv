@@ -217,15 +217,6 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
 
     form.addEventListener('input', load)
     form.addEventListener('submit', (e) => { e.preventDefault(); load() })
-    // Demo Mode (?demo=1) — SSR baked real prod cards into the markup. Replace
-    // them immediately with the demoStub'd list so no real names leak in demo.
-    try {
-      if (new URLSearchParams(location.search).has('demo')) {
-        results.innerHTML = ''
-        results.setAttribute('aria-busy', 'true')
-        void load()
-      }
-    } catch {}
     const nearBtn = document.getElementById('near-me-btn')
     nearBtn.addEventListener('click', () => {
       if (!navigator.geolocation) return
