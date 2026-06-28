@@ -598,19 +598,31 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       }
 
       const performExit = () => {
+        // Read the entry pathname we stored when demo was first activated —
+        // that's the page the user CAME FROM, not the page they happen to
+        // be on right now. Restoring that is the user's mental model:
+        // "I clicked Try Demo on /releases/ → poked around → Exit → land
+        // back on /releases/". Falling back to current path (then to
+        // /specialists/ if it's auth-gated) only if we can't read entry.
+        let target = ''
+        try {
+          const state = readDemoState('session')
+          const entry = state && typeof state.data?.entry === 'string' ? state.data.entry : ''
+          if (entry && entry.startsWith('/') && !entry.startsWith('/me')) {
+            target = entry
+          }
+        } catch {}
         emitAudit('demo_exited', { feature: 'session' })
         clearDemoState('session')
         exitDemoMode()
-        const url = new URL(location.href)
-        url.searchParams.delete('demo')
-        url.searchParams.delete('tour')
-        // If the user is on an auth-gated page (/me/*), staying there would
-        // trigger the guest-redirect that dumps them on the home page with a
-        // login dialog — feels like "exit demo sent me away". Route them to
-        // the closest equivalent public page instead so they stay in context.
-        const path = url.pathname
-        const isProtected = path.startsWith('/me/') || path === '/me'
-        const target = isProtected ? '/specialists/' : path + (url.search || '')
+        if (!target) {
+          const url = new URL(location.href)
+          url.searchParams.delete('demo')
+          url.searchParams.delete('tour')
+          const path = url.pathname
+          const isProtected = path.startsWith('/me/') || path === '/me'
+          target = isProtected ? '/specialists/' : path + (url.search || '')
+        }
         location.href = target
       }
 

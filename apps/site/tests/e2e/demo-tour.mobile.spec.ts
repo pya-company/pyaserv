@@ -216,6 +216,38 @@ test.describe('Demo guided-tour — no raw i18n keys leak on /me/', () => {
   })
 })
 
+test.describe('Demo exit restores the entry URL, not the current page', () => {
+  test.use({ viewport: VIEWPORT })
+
+  // performExit reads state.data.entry (set on first demo activation) and
+  // navigates there instead of stripping ?demo from the current URL. User's
+  // mental model: "I tried demo from /releases/, poked around /me/, want
+  // to land back on /releases/ — not on /, /specialists/, or login."
+  for (const entryPath of ['/releases/', '/specialists/', '/clients/']) {
+    test(`enter demo on ${entryPath}, navigate to /me/, exit → returns to ${entryPath}`, async ({ page }) => {
+      await page.goto(`${entryPath}?demo=1`)
+      await clearDemoState(page)
+      await page.reload()
+      await page.waitForLoadState('networkidle')
+      await page.waitForTimeout(800)
+
+      // Within-tab nav to /me/?demo=1 (preserves sessionStorage demo state)
+      await page.evaluate(() => { location.href = '/me/?demo=1' })
+      await page.waitForURL(/\/me\//)
+      await page.waitForTimeout(1500)
+
+      // Click Exit Demo → confirm modal → Yes
+      await page.locator('[data-demo-exit]').click()
+      await page.locator('[data-demo-exit-yes]').waitFor({ state: 'visible', timeout: 3000 })
+      await page.locator('[data-demo-exit-yes]').click()
+      await page.waitForURL((url) => url.pathname === entryPath, { timeout: 8000 })
+
+      expect(new URL(page.url()).pathname, 'must land on the original entry path').toBe(entryPath)
+      expect(new URL(page.url()).search, 'must drop the ?demo flag').not.toContain('demo')
+    })
+  }
+})
+
 test.describe('Demo guided-tour — sticky-nav does not accumulate overlays', () => {
   test.use({ viewport: VIEWPORT })
 
