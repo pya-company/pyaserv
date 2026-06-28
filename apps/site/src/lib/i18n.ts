@@ -51,16 +51,16 @@ const stripLocalePrefix = (pathname: string): string => {
   return out === '/' ? '/' : (pathname.endsWith('/') ? out + '/' : out)
 }
 
-// Path-based locale routing: pyaserv.com/ = ES (default at root),
-// pyaserv.com/en/foo = EN, /de/foo = DE, /ru/foo = RU. setLocale
-// navigates to the same page under the new locale prefix — no client-side
-// content swap, no localStorage. The URL is the source of truth.
+// Path-based locale routing: every locale lives under its own prefix —
+// /es/foo, /en/foo, /de/foo, /ru/foo. Bare root and bare /foo paths ship
+// a client-side negotiator that picks the user's best locale and redirects.
+// setLocale navigates to the same page under the new locale prefix — no
+// client-side content swap, no localStorage. URL is the source of truth.
 export const setLocale = (l: Locale): void => {
   if (typeof location === 'undefined') return
   try {
     const base = stripLocalePrefix(location.pathname)
-    const prefix = l === 'es' ? '' : '/' + l
-    const next = prefix + base + location.search + location.hash
+    const next = '/' + l + base + location.search + location.hash
     if (next !== location.pathname + location.search + location.hash) {
       location.href = next
     }

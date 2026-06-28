@@ -22,13 +22,16 @@
   }
 
   // 2. Locale + theme + auth pre-paint
-  // Locale is derived ONLY from URL path: /en/foo → en, /de/foo → de,
-  // /ru/foo → ru, /foo → es (default). No ?lang query param. No localStorage
-  // for locale — the URL IS the source of truth. The lang switcher emits
-  // <a> links that navigate to the same path under a different locale prefix.
+  // Locale is derived ONLY from URL path. Every page lives under /<code>/ —
+  // /es/foo, /en/foo, /de/foo, /ru/foo. The bare root and bare /foo/ paths
+  // ship a tiny client-side negotiator that picks the user's best locale
+  // and redirects (see scripts/mirror-es-and-negotiate.ts). No ?lang query
+  // param. No localStorage for locale. The URL IS the source of truth.
   var isLoc = function (v) { return v === 'es' || v === 'en' || v === 'de' || v === 'ru' || v === 'gn' }
   var isTheme = function (v) { return v === 'light' || v === 'dark' || v === 'auto' }
-  var loc = 'es'
+  // Default 'en' is just a safety net for pages that briefly load BEFORE
+  // the negotiator redirects — should never persist as a final locale.
+  var loc = 'en'
   try {
     var seg = location.pathname.split('/').filter(Boolean)[0]
     if (isLoc(seg)) loc = seg

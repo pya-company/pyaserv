@@ -63,17 +63,17 @@ test.describe('/docs/ on mobile — sidebar collapse + index layout', () => {
   })
 
   test('/docs/ index does NOT duplicate the sidebar entries in the main column', async ({ page }) => {
-    await page.goto('/docs/')
+    await page.goto('/es/docs/')
 
     const sidebar = page.locator('.docs-sidebar')
     await expect(sidebar).toBeVisible()
 
-    const sidebarHrefs = await page.locator('.docs-sidebar a[href^="/docs/"]').evaluateAll(
+    const sidebarHrefs = await page.locator('.docs-sidebar a[href*="/docs/"]').evaluateAll(
       anchors => anchors.map(a => (a as HTMLAnchorElement).getAttribute('href')).filter(Boolean) as string[]
     )
 
     const mainHrefs = await page
-      .locator('main.docs-content a[href^="/docs/"], .docs-content > section a[href^="/docs/"]')
+      .locator('main.docs-content a[href*="/docs/"], .docs-content > section a[href*="/docs/"]')
       .evaluateAll(
         anchors => anchors.map(a => (a as HTMLAnchorElement).getAttribute('href')).filter(Boolean) as string[]
       )
@@ -92,7 +92,7 @@ test.describe('/docs/ on mobile — sidebar collapse + index layout', () => {
   })
 
   test('/docs/ index hosts curated content blocks (CTA + latest releases)', async ({ page }) => {
-    await page.goto('/docs/')
+    await page.goto('/es/docs/')
 
     // /docs/ index needs at least one actionable CTA (now "Ver real →" /
     // "View →") and a "Últimas novedades" / Latest releases block. Demo

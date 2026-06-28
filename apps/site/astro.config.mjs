@@ -12,6 +12,14 @@ export default defineConfig({
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en', 'de', 'ru'],
+    // Pages render at root once. A post-build script (scripts/mirror-es.ts)
+    // copies the ES build into dist/es/, then rewrites every bare page into
+    // a tiny client-side language-negotiator redirector. Final layout:
+    //   /            → redirector (Accept-Language → /<code>/...)
+    //   /es/<page>/  → Spanish
+    //   /en/<page>/  → English (via Astro fallback rewrite + post-build head fix)
+    //   /de/<page>/  → German
+    //   /ru/<page>/  → Russian
     routing: { prefixDefaultLocale: false, fallbackType: 'rewrite' },
     fallback: { en: 'es', de: 'es', ru: 'es' },
   },

@@ -30,11 +30,11 @@ const forceHtmlLang = async (page: import('@playwright/test').Page, lang: 'de' |
 }
 
 const HERO = 'main h1'
-const NAV_SPECIALISTS = '.ps-topbar__nav a[href="/specialists/"], #topnav a[href="/specialists/"]'
+const NAV_SPECIALISTS = '.ps-topbar__nav a[href$="/specialists/"], #topnav a[href$="/specialists/"]'
 
 test.describe('T component — DE/RU must not concatenate ES + EN', () => {
   test('DE: hero h1 does not contain both Spanish and English text', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
     await page.waitForLoadState('networkidle')
     await forceHtmlLang(page, 'de')
 
@@ -52,7 +52,7 @@ test.describe('T component — DE/RU must not concatenate ES + EN', () => {
   })
 
   test('RU: hero h1 does not contain both Spanish and English text', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
     await page.waitForLoadState('networkidle')
     await forceHtmlLang(page, 'ru')
 
@@ -68,7 +68,7 @@ test.describe('T component — DE/RU must not concatenate ES + EN', () => {
   })
 
   test('DE: primary nav link does not show "ProfesionalesSpecialists"', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
     await page.waitForLoadState('networkidle')
     await forceHtmlLang(page, 'de')
 
@@ -81,7 +81,7 @@ test.describe('T component — DE/RU must not concatenate ES + EN', () => {
   })
 
   test('RU: primary nav link does not show "ProfesionalesSpecialists"', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
     await page.waitForLoadState('networkidle')
     await forceHtmlLang(page, 'ru')
 
@@ -95,7 +95,7 @@ test.describe('T component — DE/RU must not concatenate ES + EN', () => {
   test('DE: SSR markup contains DE spans for T components (not just nav aria buttons)', async ({ page }) => {
     // Pure HTML probe — no JS. T.astro must emit <span lang="de"> content
     // beyond the four <button data-lang="de"> aria-labels in the nav.
-    const response = await page.request.get('/?lang=de')
+    const response = await page.request.get('/de/')
     expect(response.ok()).toBeTruthy()
     const html = await response.text()
 

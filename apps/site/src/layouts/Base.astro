@@ -198,22 +198,20 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         }
 
         // 5. Prefix every internal <a href="/..."> with the current locale
-        //    prefix when we're at /en, /de, /ru. Astro's fallbackType:'rewrite'
-        //    serves the same SSR HTML (with bare /links/) under every locale
-        //    path, so without this rewrite a click on /en/specialists/'s "Docs"
-        //    nav link would jump to /docs/ (ES). Skip the locale buttons —
-        //    those navigate cross-locale by design.
-        if (loc !== 'es') {
-          const prefix = '/' + loc
-          for (const a of document.querySelectorAll('a[href]')) {
-            const href = a.getAttribute('href') || ''
-            if (!href.startsWith('/')) continue
-            if (href.startsWith('/_')) continue
-            if (a.closest('.ps-lang-switch')) continue
-            // Already locale-prefixed?
-            if (/^\/(?:en|de|ru|gn)(?:\/|$)/.test(href)) continue
-            a.setAttribute('href', prefix + href)
-          }
+        //    prefix. Every page lives under /es /en /de /ru, and pages SSR
+        //    with bare /links/ (Astro fallback rewrite shares HTML), so
+        //    without this rewrite an in-page click would jump to the bare
+        //    root (which then runs the negotiator again — extra round trip).
+        //    Skip the lang-switcher buttons (cross-locale by design) and
+        //    asset paths under /_*. Apply for ALL locales including /es/.
+        const prefix = '/' + loc
+        for (const a of document.querySelectorAll('a[href]')) {
+          const href = a.getAttribute('href') || ''
+          if (!href.startsWith('/')) continue
+          if (href.startsWith('/_')) continue
+          if (a.closest('.ps-lang-switch')) continue
+          if (/^\/(?:es|en|de|ru|gn)(?:\/|$)/.test(href)) continue
+          a.setAttribute('href', prefix + href)
         }
 
         // 5. Defensively close any flying-menu that may be left open across nav

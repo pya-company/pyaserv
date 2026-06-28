@@ -48,7 +48,7 @@ for (const width of NARROW_DESKTOP_WIDTHS) {
     test.use({ viewport: { width, height: 800 } })
 
     test(`rightmost controls (RU lang + theme button) stay inside the ${width} px viewport`, async ({ page }) => {
-      await page.goto('/')
+      await page.goto('/es/')
       await expect(page.locator('#topbar')).toBeVisible()
       // Desktop nav must be the active surface at this width — flying-menu
       // breakpoint is max-width:719.98px, so >=720 px should show the inline
@@ -72,7 +72,7 @@ for (const width of NARROW_DESKTOP_WIDTHS) {
     })
 
     test(`topbar stays a single row at ${width} px (Sign-in must not wrap)`, async ({ page }) => {
-      await page.goto('/')
+      await page.goto('/es/')
       await expect(page.locator('#topbar')).toBeVisible()
 
       const topbar = await rectOf(page, '#topbar')
@@ -84,7 +84,7 @@ for (const width of NARROW_DESKTOP_WIDTHS) {
     })
 
     test(`nav inner content does not overflow the topbar at ${width} px`, async ({ page }) => {
-      await page.goto('/')
+      await page.goto('/es/')
       await expect(page.locator('.ps-topbar__nav')).toBeVisible()
 
       const { scrollWidth, clientWidth } = await page.evaluate(() => {

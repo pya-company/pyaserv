@@ -13,7 +13,7 @@ const MIN_TAPPABLE_PX = 44
 
 test.describe('mobile flying-menu lang buttons — touch target', () => {
   test('every ES/EN/DE/RU button is ≥44×44 px after menu opens', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
 
     // Open the floating menu (bottom-right hamburger).
     const fly = page.locator('flying-menu')

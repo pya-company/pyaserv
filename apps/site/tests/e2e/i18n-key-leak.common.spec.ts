@@ -46,7 +46,7 @@ const provisionSession = async (): Promise<string> => {
 
 test.describe('i18n raw-key leak guard', () => {
   test('LoginDialog email field label is localized, not the raw "login.email" key', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
     // The email label is the first <span> inside the first <label> of #dlg-start.
     // The <T> component renders both ES and EN <span lang="…"> siblings; we
     // assert NEITHER contains the raw dotted key.
