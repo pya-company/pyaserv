@@ -26,7 +26,7 @@ demo:
   tour_home_step1_title: "Willkommen bei PyaServ"
   tour_home_step1_body: "Wir verbinden Fachleute mit Kunden in Paraguay. Keine Kontaktgebühren."
   tour_home_step2_title: "Vier Sprachen, Sie wählen aus"
-  tour_home_step2_body: "Wechseln Sie jederzeit oben zwischen Spanisch, Englisch, Deutsch und Russisch."
+  tour_home_step2_body: "Wechseln Sie über das Menü jederzeit zwischen Spanisch, Englisch, Deutsch und Russisch."
   tour_home_step3_title: "Sie sind im Demo-Modus"
   tour_home_step3_body: "Sie sehen Beispieldaten. Tippen Sie auf „Demo verlassen\", wenn Sie loslegen möchten."
   tour_specialists_step1_title: "Nach Stadtviertel oder Kategorie filtern"

@@ -109,9 +109,25 @@ const renderStep = (): void => {
   // Brief wait-for-anchor (up to 1.2s in 100ms ticks) handles steps whose
   // anchor is rendered by an async demoStub response — without this we
   // skipped straight to the last step on /specialists/ and /clients/.
+  // Some selectors (.ps-lang-switch, .ps-topbar__nav) exist in TWO places:
+  // the desktop topbar (hidden on mobile via display:none) and the mobile
+  // flying-menu (hidden on desktop). querySelector returns the first match
+  // in document order, which on mobile is the hidden topbar element — its
+  // 0×0 rect placed the tooltip at viewport (0,0) where it gets clipped by
+  // the demo banner. Pick the first match whose layout box is non-empty.
+  const findVisible = (sel: string): HTMLElement | null => {
+    const all = document.querySelectorAll<HTMLElement>(sel)
+    for (const el of all) {
+      if (el.offsetParent === null) continue // display:none ancestor chain
+      const r = el.getBoundingClientRect()
+      if (r.width <= 0 || r.height <= 0) continue
+      return el
+    }
+    return all[0] ?? null
+  }
   const tryRender = (waited: number): void => {
     if (!activeTour) return
-    const anchor = document.querySelector<HTMLElement>(step.selector)
+    const anchor = findVisible(step.selector)
     if (!anchor) {
       if (waited < 1200) {
         setTimeout(() => tryRender(waited + 100), 100)
@@ -233,11 +249,16 @@ const positionSpotlight = (anchor: HTMLElement, step: TourStep): void => {
   }
   // Final viewport clamp on BOTH axes (margin around edges). Guarantees the
   // popover is fully visible even when anchor sits at the very edge of a
-  // narrow viewport.
+  // narrow viewport. The demo banner is fixed/sticky at the top with its
+  // own height — reserve that height as the top margin so tooltips don't
+  // get clipped behind the banner on mobile (where banner ≈ 120px tall).
+  const bannerVar = getComputedStyle(document.documentElement).getPropertyValue('--ps-demo-banner-h').trim()
+  const bannerH = bannerVar.endsWith('px') ? parseFloat(bannerVar) : 0
+  const topMargin = Math.max(margin, bannerH + margin)
   const maxLeft = Math.max(margin, vw - ttRect.width - margin)
-  const maxTop = Math.max(margin, vh - ttRect.height - margin)
+  const maxTop = Math.max(topMargin, vh - ttRect.height - margin)
   left = Math.max(margin, Math.min(maxLeft, left))
-  top = Math.max(margin, Math.min(maxTop, top))
+  top = Math.max(topMargin, Math.min(maxTop, top))
   tooltip.style.top = `${top}px`
   tooltip.style.left = `${left}px`
   tooltip.style.opacity = '1'

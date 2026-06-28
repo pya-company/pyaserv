@@ -703,7 +703,12 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
             code: 'T_HOME',
             steps: [
               { selector: 'header.ps-topbar', title: t('demo.tour_home_step1_title'), body: t('demo.tour_home_step1_body') },
-              { selector: '.ps-lang-switch', title: t('demo.tour_home_step2_title'), body: t('demo.tour_home_step2_body') },
+              // .ps-lang-switch exists in BOTH desktop topbar and mobile flying-menu;
+              // on mobile the desktop one is display:none and the flying-menu one is
+              // inside a closed menu — neither has a visible box. Fall back to `.ps-fly`
+              // (the floating ≡ button, mobile-only) so the spotlight lands on something
+              // the user actually sees and can tap.
+              { selector: '.ps-lang-switch, .ps-fly', title: t('demo.tour_home_step2_title'), body: t('demo.tour_home_step2_body') },
               { selector: '.ps-demo-banner', title: t('demo.tour_home_step3_title'), body: t('demo.tour_home_step3_body') },
             ],
             labels,

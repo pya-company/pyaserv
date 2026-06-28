@@ -157,7 +157,15 @@ const ROUTES: Array<{ match: RegExp; build: (path: string, init: RequestInit) =>
   { match: /^\/v1\/me\/quote-templates\/[\w-]+$/, build: () => wrap({ ok: true }) },
   { match: /^\/v1\/me\/notifications$/,          build: (_, init) => init.method === 'PATCH' ? wrap({ ok: true }) : wrap({ emailNotifications: false }) },
   { match: /^\/v1\/me\/requests/,                build: () => wrap([]) },
-  { match: /^\/v1\/requests/,                    build: (_, init) => init.method === 'POST' ? wrap({ id: 'demo-request-new', createdAt: Math.floor(Date.now()/1000) }) : wrap([]) },
+  // Sample list for /clients/?demo=1 — needs entries so #results renders
+  // and the T_CLIENTS tour has a non-zero anchor to spotlight.
+  { match: /^\/v1\/requests/, build: (_, init) => {
+    if (init.method === 'POST') return wrap({ id: 'demo-request-new', createdAt: Math.floor(Date.now()/1000) })
+    return wrap([
+      { id: 'demo-r-1', userId: 'demo-c-1', title: 'Necesito instalación de termotanque', titleEs: 'Necesito instalación de termotanque', titleEn: 'I need a thermostat installed', body: 'Compré un termotanque eléctrico 80L marca Sole. Necesito instalación profesional con factura.', bodyEs: 'Compré un termotanque eléctrico 80L marca Sole.', bodyEn: 'I bought an 80L electric thermostat. Need professional installation.', category: 'plumbing', barrio: 'Carmelitas', budgetGs: 450000, status: 'open', createdAt: Math.floor(Date.now()/1000) - 86400 * 3 },
+    { id: 'demo-r-2', userId: 'demo-c-2', title: 'Clases de inglés conversacional', titleEs: 'Clases de inglés conversacional', titleEn: 'Conversational English lessons', body: 'Necesito un profesor para clases de conversación 2 veces por semana. Nivel intermedio.', bodyEs: 'Necesito un profesor para clases de conversación.', bodyEn: 'Looking for a tutor for conversation classes twice a week.', category: 'teaching', barrio: 'Villa Morra', budgetGs: 250000, status: 'open', createdAt: Math.floor(Date.now()/1000) - 86400 * 1 },
+    ])
+  } },
   { match: /^\/v1\/analytics\/me$/,              build: () => wrap({ profileViews: 0, phoneClicks: 0, whatsappClicks: 0, inquiriesReceived: 0, jobsCompleted: 0 }) },
   { match: /^\/api\/auth\/passkeys/,             build: (_, init) => init.method === 'DELETE' ? wrap({ ok: true }) : wrap([]) },
   { match: /^\/v1\/media/,                       build: () => wrap({ key: `demo-media-${Date.now()}` }) },
@@ -167,7 +175,15 @@ const ROUTES: Array<{ match: RegExp; build: (path: string, init: RequestInit) =>
   { match: /^\/v1\/me\/analytics-extended$/,     build: () => wrap(DEMO_ANALYTICS) },
   { match: /^\/v1\/me$/,                         build: () => wrap({ userId: 'demo-user', roles: [] }) },
   { match: /^\/v1\/p\/[\w-]+$/,                  build: () => wrap(DEMO_PROFILE) },
-  { match: /^\/v1\/specialists/,                 build: () => wrap([]) },
+  // Sample list for /specialists/?demo=1 — needs at least a couple of cards
+  // so the public list looks alive and the guided tour has something to
+  // anchor its "Tap a card" step on. Empty `[]` left the page blank and
+  // collapsed `#results` to zero height, breaking the tour spotlight.
+  { match: /^\/v1\/specialists/, build: () => wrap([
+    { id: 'demo-s-1', userId: 'demo-u-1', slug: 'demo-andreas-weber', displayName: 'Andreas Weber', headline: 'Carpintero — muebles a medida y restauración', bio: 'Carpintería fina y restauración. 15 años en Asunción.', headlineEs: 'Carpintero — muebles a medida y restauración', headlineEn: 'Carpenter — custom furniture and restoration', bioEs: 'Carpintería fina y restauración. 15 años en Asunción.', bioEn: 'Fine joinery and restoration. 15 years in Asunción.', phone: '+595 981 700001', whatsapp: '+595 981 700001', barrio: 'Carmelitas', lat: -25.2867, lng: -57.5816, photo: null, verified: true, status: 'active', createdAt: 1781000000, updatedAt: 1781000000, ratingAvg: 4.8, ratingCount: 12, primaryCategory: 'repair' },
+    { id: 'demo-s-2', userId: 'demo-u-2', slug: 'demo-svetlana-petrova', displayName: 'Svetlana Petrova', headline: 'Profesora particular de matemática', bio: 'Doy clases en español, ruso e inglés. Primaria y secundaria.', headlineEs: 'Profesora particular de matemática', headlineEn: 'Private math tutor', bioEs: 'Doy clases en español, ruso e inglés.', bioEn: 'I teach math in Spanish, Russian and English.', phone: '+595 981 700002', whatsapp: '+595 981 700002', barrio: 'Villa Morra', lat: -25.2913, lng: -57.5772, photo: null, verified: true, status: 'active', createdAt: 1781100000, updatedAt: 1781100000, ratingAvg: 5.0, ratingCount: 7, primaryCategory: 'teaching' },
+    { id: 'demo-s-3', userId: 'demo-u-3', slug: 'demo-lucia-benitez', displayName: 'Lucía Benítez', headline: 'Peluquera y colorista', bio: 'Salón propio en Las Mercedes. Corte, color, balayage.', headlineEs: 'Peluquera y colorista', headlineEn: 'Hairdresser and colorist', bioEs: 'Salón propio en Las Mercedes.', bioEn: 'My own salon in Las Mercedes.', phone: '+595 981 700004', whatsapp: '+595 981 700004', barrio: 'Las Mercedes', lat: -25.3001, lng: -57.5635, photo: null, verified: true, status: 'active', createdAt: 1781300000, updatedAt: 1781300000, ratingAvg: 4.9, ratingCount: 23, primaryCategory: 'beauty' },
+  ]) },
   { match: /^\/v1\/listings/,                    build: (_, init) => init.method === 'POST' ? wrap({ id: 'demo-listing-new', createdAt: Math.floor(Date.now()/1000) }) : init.method === 'PATCH' || init.method === 'DELETE' ? wrap({ ok: true }) : wrap([]) },
   { match: /^\/v1\/inquiries/,                   build: (_, init) => init.method === 'POST' || init.method === 'PATCH' ? wrap({ ok: true, id: 'demo-inq' }) : wrap([]) },
   { match: /^\/v1\/analytics$/,                  build: () => wrap({ ok: true }) },
