@@ -83,8 +83,6 @@ test.describe('i18n raw-key leak guard', () => {
     await page.goto('/me/')
     // Wait for the /v1/me roundtrip so the profile form is populated and
     // applyI18n has run at least once.
-    await page.waitForLoadState('networkidle')
-
     // These are the five fields that the bug report explicitly lists. Each
     // <span data-i18n="…"> is a child of a <label> inside the profile tab.
     // After hydration, t(key) returns the raw key (the YAML leaf is an

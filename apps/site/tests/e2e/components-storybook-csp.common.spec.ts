@@ -81,9 +81,6 @@ for (const route of COMPONENT_ROUTES) {
     await page.goto(route)
     // Give the init script a chance to execute (it's synchronous in the
     // page, but we also wait for the viewport to receive children).
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(500)
-
     // 1) No CSP violation for an inline script-src block.
     const violations = await readCspViolations(page)
     const inlineScriptBlock = violations.filter(

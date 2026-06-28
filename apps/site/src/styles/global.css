@@ -289,23 +289,23 @@ button { font: inherit; cursor: pointer; }
 /* Narrow-desktop densification (720–960 px): shrink padding + font on nav
    links so DE/RU lang + theme button fit without wrapping the Sign-in CTA. */
 @media (min-width: 720px) and (max-width: 960px) {
-  .ps-topbar { padding-left: 8px; padding-right: 8px; gap: 4px; }
-  .ps-topbar__brand { font-size: 0.95rem; }
+  .ps-topbar { padding-left: 6px; padding-right: 6px; gap: 2px; }
+  .ps-topbar__brand { font-size: 0.85rem; gap: 2px; min-height: 36px; }
   .ps-topbar__nav { gap: 0; }
   .ps-topbar__nav a {
-    padding: 4px 5px;
-    font-size: 0.75rem;
+    padding: 4px 3px;
+    font-size: 0.7rem;
     white-space: nowrap;
     min-height: 32px;
   }
   .ps-topbar__nav-btn {
-    padding: 4px 6px;
-    font-size: 0.75rem;
+    padding: 4px 4px;
+    font-size: 0.7rem;
     white-space: nowrap;
   }
-  .ps-lang-switch { padding: 1px; }
-  .ps-lang-btn { padding: 1px 3px; min-width: 20px; min-height: 26px; font-size: 0.65rem; }
-  .ps-theme-btn { padding: 2px 4px; }
+  .ps-lang-switch { padding: 1px; gap: 0; }
+  .ps-lang-btn { padding: 1px 2px; min-width: 18px; min-height: 24px; font-size: 0.6rem; }
+  .ps-theme-btn { padding: 2px 3px; }
   /* Hide the dev-only /components/ link at narrow desktop to claw back space. */
   .ps-topbar__nav .ps-dev-only { display: none; }
 }

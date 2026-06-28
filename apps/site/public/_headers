@@ -39,24 +39,22 @@
 
 # Static prerendered HTML — let CF edge cache for an hour with SWR so the
 # CDN can serve from cache, instead of returning Cf-Cache-Status: DYNAMIC.
+# Locale-prefixed pages live under /es/ /en/ /de/ /ru/ — match them with
+# CF Pages' single-* glob. The bare root + bare /<page>/ are negotiator HTML;
+# they get the same edge-cache profile so the negotiator script can serve
+# from POP without hitting origin.
 /
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
   Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-/specialists/
+/es/*
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
   Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-/clients/
+/en/*
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
   Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-/docs/
+/de/*
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
   Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-/docs/*
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
-  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-/releases/
-  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
-  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-/releases/*
+/ru/*
   Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
   Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400

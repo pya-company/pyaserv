@@ -90,8 +90,6 @@ test.describe('/p/?slug=… i18n — public profile must respect EN locale', () 
     await page.goto(`/en/p/?slug=${PUBLIC_SLUG}`)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
     // Wait for the client fetch to /v1/p/<slug> to settle so sections render.
-    await page.waitForLoadState('networkidle')
-
     const body = page.locator('body')
     // Section headings hardcoded in /p/index.astro markup.
     await expect(body).not.toContainText('Sobre mí')

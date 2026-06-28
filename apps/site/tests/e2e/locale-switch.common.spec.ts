@@ -1,96 +1,48 @@
 /*
- * Locale switcher — actually swaps visible content, not just aria-pressed.
- *
- * Regression guard for the 2026-06-27 bug: clicking ES/EN/DE/RU buttons
- * caused the active-button visual to change but the visible release titles
- * stayed in their SSR default (Spanish). Fix: server emits per-locale JSON
- * in data-l10n-text / data-l10n-html attrs, client swaps without reload.
- *
- * Cross-viewport: on mobile the topbar nav (and its lang switcher) is hidden
- * behind a flying-menu; we open it first. On desktop it's inline.
+ * Locale switcher — clicking ES/EN/DE/RU navigates to the corresponding
+ * /<code>/releases/ page and the content is server-rendered in that locale.
+ * (Architecture changed from SPA-style in-place content swap to full
+ * navigation between /es/ /en/ /de/ /ru/ — i18n.ts setLocale does
+ * location.href to the new locale path.)
  */
 import { expect, test } from '@playwright/test'
+import { clickLang, gotoStable } from './_helpers.ts'
 
-const clickLang = async (page: import('@playwright/test').Page, lang: 'es' | 'en' | 'de' | 'ru') => {
-  const viewport = page.viewportSize()
-  const isMobile = (viewport?.width ?? 1280) < 720
-  if (isMobile) {
-    // Open the flying-menu floating trigger first. Menu animates open with
-    // a transform, so `waitFor visible` succeeds before the click point is
-    // stable — force the click to bypass Playwright's stability retry loop
-    // (the click still fires the button handler correctly).
-    await page.locator('#menu-btn').click()
-    const btn = page.locator('.ps-fly__menu .ps-lang-btn[data-lang="' + lang + '"]')
-    await btn.waitFor({ state: 'visible', timeout: 5000 })
-    await btn.click({ force: true })
-  } else {
-    await page.locator('.ps-topbar__nav .ps-lang-btn[data-lang="' + lang + '"]').click()
-  }
-  await page.waitForTimeout(300)
-}
-
-test.describe('Locale switcher — content actually swaps', () => {
-  test('clicking ES replaces release title with Spanish copy', async ({ page }) => {
-    await page.goto('/releases/')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(400)
-
-    await clickLang(page, 'es')
-
-    const card = page.locator('.release-card').first()
-    await expect(card.locator('.release-card__title a')).toContainText(/idiomas|Cuatro/)
-  })
-
-  test('clicking EN replaces release title with English copy', async ({ page }) => {
-    await page.goto('/releases/')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(400)
-
+test.describe('Locale switcher navigates to /<code>/releases/ with localized title', () => {
+  test('ES → click EN → /en/releases/ shows English title', async ({ page }) => {
+    await gotoStable(page, '/es/releases/')
     await clickLang(page, 'en')
-
+    expect(new URL(page.url()).pathname).toBe('/en/releases/')
     const card = page.locator('.release-card').first()
     await expect(card.locator('.release-card__title a')).toContainText(/languages|Four/)
   })
 
-  test('clicking RU replaces release title with Cyrillic copy', async ({ page }) => {
-    await page.goto('/releases/')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(400)
-
+  test('ES → click RU → /ru/releases/ shows Cyrillic title', async ({ page }) => {
+    await gotoStable(page, '/es/releases/')
     await clickLang(page, 'ru')
-
+    expect(new URL(page.url()).pathname).toBe('/ru/releases/')
     const card = page.locator('.release-card').first()
     await expect(card.locator('.release-card__title a')).toContainText(/языка|Четыре/)
   })
 
-  test('clicking DE replaces release title with German copy', async ({ page }) => {
-    await page.goto('/releases/')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(400)
-
+  test('ES → click DE → /de/releases/ shows German title', async ({ page }) => {
+    await gotoStable(page, '/es/releases/')
     await clickLang(page, 'de')
-
+    expect(new URL(page.url()).pathname).toBe('/de/releases/')
     const card = page.locator('.release-card').first()
     await expect(card.locator('.release-card__title a')).toContainText(/Sprachen|Vier/)
   })
 
-  test('section body HTML swaps with locale', async ({ page }) => {
-    await page.goto('/releases/')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(400)
-
-    // Swap directly to EN — proves the per-locale data-l10n-html attrs are
-    // wired and applyContent() runs without a page reload. (Avoid double-
-    // swap ES→EN: on mobile the flying-menu animation makes the second
-    // open + click race intermittently.)
+  test('section body HTML is server-rendered in the target locale', async ({ page }) => {
+    await gotoStable(page, '/es/releases/')
     await clickLang(page, 'en')
-
+    expect(new URL(page.url()).pathname).toBe('/en/releases/')
     const body = page.locator('.release-card').first().locator('.release-section__body').first()
     await expect(body).toContainText(/Spanish|English|German|top bar/)
   })
 
-  test('language buttons render text labels, not squares', async ({ page }) => {
-    await page.goto('/releases/')
+  test('lang switcher buttons render their two-letter codes', async ({ page }) => {
+    await gotoStable(page, '/es/releases/')
     const labels = await page.locator('.ps-lang-btn').allTextContents()
     const uniq = Array.from(new Set(labels.map((s) => s.trim())))
     expect(uniq).toEqual(expect.arrayContaining(['ES', 'EN', 'DE', 'RU']))
