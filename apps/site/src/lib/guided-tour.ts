@@ -139,7 +139,17 @@ const renderStep = (): void => {
       return
     }
     const rect = anchor.getBoundingClientRect()
-    const inView = rect.top >= 0 && rect.bottom <= window.innerHeight
+    // Treat the demo banner overlay (--ps-demo-banner-h) as if it consumes
+    // the top of the viewport for "in view" purposes — an anchor whose top
+    // is behind the banner is technically inside window bounds but the user
+    // cannot see it. Same idea on the bottom (floating menu-trigger sits
+    // there on mobile), reserving 80px for the ≡ button.
+    const bannerVarStr = getComputedStyle(document.documentElement).getPropertyValue('--ps-demo-banner-h').trim()
+    const bannerHForCheck = bannerVarStr.endsWith('px') ? parseFloat(bannerVarStr) : 0
+    const bottomReserve = 80
+    const visibleTop = bannerHForCheck
+    const visibleBottom = window.innerHeight - bottomReserve
+    const inView = rect.top >= visibleTop && rect.bottom <= visibleBottom
     // Instant scroll — smooth (300ms+) leaves the spotlight measuring
     // pre-scroll geometry, so the cutout lands on empty space and the
     // tooltip ends up off-screen. `auto` finishes synchronously, then
