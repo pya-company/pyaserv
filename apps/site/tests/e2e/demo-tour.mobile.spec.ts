@@ -223,6 +223,55 @@ test.describe('Demo: referrer-based exit + auto-exit on tour finish', () => {
   // walks the tour → expects to land BACK on /docs/demo-mode/, not on /
   // (entry) or /specialists/ (CTA target). Also: after the tour finishes,
   // demo must auto-exit — user shouldn't have to hunt for the Exit button.
+  //
+  // Two non-obvious traps this guards against:
+  //  · document.referrer is empty for any in-tab ClientRouter navigation
+  //    (Astro uses History pushState). The fix relies on sessionStorage
+  //    lastNonDemo written by EVERY non-demo page on each initDemo() tick.
+  //  · ensureDemoState only writes returnTo on the FIRST demo-page load.
+  //    If that load runs before the previous page's script wrote
+  //    lastNonDemo, returnTo sticks at empty. The fix patches existing
+  //    state when returnTo is empty AND lastNonDemo is now readable.
+
+  // Real-world CTA flows on every docs page that has a "Try demo" link.
+  // Each one MUST round-trip the user back to where they started.
+  const docsToDemoFlows = [
+    { docsPath: '/docs/demo-mode/', expectAfter: '/docs/demo-mode/' },
+    { docsPath: '/docs/perfil/',    expectAfter: '/docs/perfil/' },
+    { docsPath: '/docs/tour/',      expectAfter: '/docs/tour/' },
+    { docsPath: '/docs/insignias/', expectAfter: '/docs/insignias/' },
+    { docsPath: '/docs/cotizador/', expectAfter: '/docs/cotizador/' },
+  ]
+
+  for (const flow of docsToDemoFlows) {
+    test(`real CTA: ${flow.docsPath} → Try demo → exit → returns to ${flow.expectAfter}`, async ({ page }) => {
+      await page.goto(flow.docsPath)
+      await page.evaluate(() => { try { sessionStorage.clear() } catch {} })
+      await page.reload()
+      await page.waitForLoadState('networkidle')
+
+      // Click the Try demo CTA — that's the real anchor users tap. Force
+      // because docs page has overlapping click targets but the link itself
+      // is functional and we just want its navigation behavior.
+      const cta = page.locator('a[href*="?demo=1"]').first()
+      await cta.waitFor({ state: 'visible', timeout: 5000 })
+      await cta.click({ force: true })
+
+      // Wait for nav into demo page
+      await page.waitForURL(/\?demo=1/, { timeout: 5000 })
+      // Give initDemo + ensureDemoState a beat to write state
+      await page.waitForTimeout(1500)
+
+      // Manually exit demo (mid-tour ok — tests the exit path, not finish)
+      await page.locator('[data-demo-exit]').click()
+      await page.locator('[data-demo-exit-yes]').waitFor({ state: 'visible', timeout: 3000 })
+      await page.locator('[data-demo-exit-yes]').click()
+
+      await page.waitForURL((url) => url.pathname === flow.expectAfter, { timeout: 8000 })
+      expect(new URL(page.url()).pathname, `manual Exit Demo from ${flow.docsPath} CTA must return to ${flow.expectAfter}`).toBe(flow.expectAfter)
+    })
+  }
+
   test('docs → ?demo=1 → finish tour → auto-exits AND returns to docs', async ({ page }) => {
     await page.goto('/docs/demo-mode/?cb=t1')
     await page.evaluate(() => { try { sessionStorage.clear() } catch {} })

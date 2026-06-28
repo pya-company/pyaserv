@@ -584,7 +584,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       import { isDemoMode, exitDemoMode } from '../lib/demo-stubs'
       import { startTour } from '../lib/guided-tour'
       import { t } from '../lib/i18n'
-      import { initDemoState, readDemoState, startIdleWatcher, emitAudit, clearDemoState } from '../lib/demo-mode'
+      import { initDemoState, readDemoState, updateDemoState, startIdleWatcher, emitAudit, clearDemoState } from '../lib/demo-mode'
       import '~/styles/demo-and-docs.css'
 
       let idleCtl = null
@@ -593,29 +593,63 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         // existing one within its TTL so navigation inside demo does not
         // reset the clock.
         const feature = 'session'
-        if (!readDemoState(feature)) {
-          // Capture BOTH the entry path (where demo first activated) AND the
-          // referrer if it's same-origin and not itself a demo page. Use case:
-          // user reads /docs/demo-mode/, clicks a "Try demo" CTA that lands
-          // them on /?demo=1, plays through, exits. They expect to be back
-          // at /docs/demo-mode/, not at the CTA landing page. The referrer
-          // is the only signal that captures that intent.
+        const computeReturnTo = () => {
           let returnTo = ''
           try {
-            const ref = document.referrer || ''
-            if (ref) {
-              const refUrl = new URL(ref, location.origin)
-              if (refUrl.origin === location.origin
-                  && !refUrl.pathname.startsWith('/me')
-                  && !refUrl.searchParams.has('demo')
-                  && refUrl.pathname !== location.pathname) {
-                returnTo = refUrl.pathname + refUrl.search.replace(/[?&]demo=1/g, '').replace(/^&/, '?')
-              }
+            const last = sessionStorage.getItem('pyaserv.lastNonDemo') || ''
+            if (last && last.startsWith('/') && !last.startsWith('/me') && last !== (location.pathname + location.search.replace(/[?&]demo=1/g, ''))) {
+              returnTo = last
             }
           } catch {}
-          initDemoState(feature, { entry: location.pathname, returnTo })
+          if (!returnTo) {
+            try {
+              const ref = document.referrer || ''
+              if (ref) {
+                const refUrl = new URL(ref, location.origin)
+                if (refUrl.origin === location.origin
+                    && !refUrl.pathname.startsWith('/me')
+                    && !refUrl.searchParams.has('demo')
+                    && refUrl.pathname !== location.pathname) {
+                  returnTo = refUrl.pathname + refUrl.search.replace(/[?&]demo=1/g, '').replace(/^&/, '?')
+                }
+              }
+            } catch {}
+          }
+          return returnTo
+        }
+        const existing = readDemoState(feature)
+        if (!existing) {
+          initDemoState(feature, { entry: location.pathname, returnTo: computeReturnTo() })
+        } else {
+          // State already exists from earlier in this session. Keep the
+          // original entry but PATCH returnTo if it's empty — covers the
+          // race where ensureDemoState ran during the first page load
+          // before the previous page's script wrote lastNonDemo to
+          // sessionStorage. Without this patch, the first-load empty
+          // returnTo sticks forever.
+          const data = existing.data ?? {}
+          if (!data.returnTo) {
+            const fresh = computeReturnTo()
+            if (fresh) {
+              // updateDemoState merges into data and resets lastActivity
+              updateDemoState(feature, { ...data, returnTo: fresh })
+            }
+          }
         }
         return feature
+      }
+
+      // Track the last NON-demo URL the user was on, so the demo exit knows
+      // where to return them. Runs on every page load, including ClientRouter
+      // navigation (initDemo() fires from astro:page-load). Must run BEFORE
+      // ensureDemoState reads it, so it's set early in the initDemo body.
+      const trackLastNonDemo = () => {
+        try {
+          const params = new URLSearchParams(location.search)
+          if (!params.has('demo') && !location.pathname.startsWith('/me')) {
+            sessionStorage.setItem('pyaserv.lastNonDemo', location.pathname + location.search)
+          }
+        } catch {}
       }
 
       const performExit = () => {
@@ -785,6 +819,13 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
       })
 
       const initDemo = () => {
+        // Always update lastNonDemo first — even when this load IS a demo
+        // page, we still might have inherited a fresh value from the prior
+        // ClientRouter nav (Astro fires astro:page-load AFTER the script
+        // re-runs, so by this point we are on the new page; trackLastNonDemo
+        // only writes when the CURRENT page isn't a demo page, so it's safe
+        // to call here unconditionally).
+        trackLastNonDemo()
         if (isDemoMode()) {
           applyDemoChrome()
           const feature = ensureDemoState()
