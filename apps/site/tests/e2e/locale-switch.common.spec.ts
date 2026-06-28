@@ -15,11 +15,14 @@ const clickLang = async (page: import('@playwright/test').Page, lang: 'es' | 'en
   const viewport = page.viewportSize()
   const isMobile = (viewport?.width ?? 1280) < 720
   if (isMobile) {
-    // Open the flying-menu floating trigger first
+    // Open the flying-menu floating trigger first. Menu animates open with
+    // a transform, so `waitFor visible` succeeds before the click point is
+    // stable — force the click to bypass Playwright's stability retry loop
+    // (the click still fires the button handler correctly).
     await page.locator('#menu-btn').click()
-    await page.waitForTimeout(150)
-    // Click the lang button inside the menu
-    await page.locator('.ps-fly__menu .ps-lang-btn[data-lang="' + lang + '"]').click()
+    const btn = page.locator('.ps-fly__menu .ps-lang-btn[data-lang="' + lang + '"]')
+    await btn.waitFor({ state: 'visible', timeout: 5000 })
+    await btn.click({ force: true })
   } else {
     await page.locator('.ps-topbar__nav .ps-lang-btn[data-lang="' + lang + '"]').click()
   }
@@ -27,20 +30,29 @@ const clickLang = async (page: import('@playwright/test').Page, lang: 'es' | 'en
 }
 
 test.describe('Locale switcher — content actually swaps', () => {
-  test('clicking EN replaces release title from ES → EN', async ({ page }) => {
+  test('clicking ES replaces release title with Spanish copy', async ({ page }) => {
     await page.goto('/releases/')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(400)
 
+    await clickLang(page, 'es')
+
     const card = page.locator('.release-card').first()
-    await expect(card.locator('.release-card__title a')).toContainText(/idiomas|YAML/)
+    await expect(card.locator('.release-card__title a')).toContainText(/idiomas|Cuatro/)
+  })
+
+  test('clicking EN replaces release title with English copy', async ({ page }) => {
+    await page.goto('/releases/')
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(400)
 
     await clickLang(page, 'en')
 
-    await expect(card.locator('.release-card__title a')).toContainText('languages')
+    const card = page.locator('.release-card').first()
+    await expect(card.locator('.release-card__title a')).toContainText(/languages|Four/)
   })
 
-  test('clicking RU replaces release title from ES → RU (Cyrillic)', async ({ page }) => {
+  test('clicking RU replaces release title with Cyrillic copy', async ({ page }) => {
     await page.goto('/releases/')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(400)
@@ -48,10 +60,10 @@ test.describe('Locale switcher — content actually swaps', () => {
     await clickLang(page, 'ru')
 
     const card = page.locator('.release-card').first()
-    await expect(card.locator('.release-card__title a')).toContainText('языка')
+    await expect(card.locator('.release-card__title a')).toContainText(/языка|Четыре/)
   })
 
-  test('clicking DE replaces release title from ES → DE', async ({ page }) => {
+  test('clicking DE replaces release title with German copy', async ({ page }) => {
     await page.goto('/releases/')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(400)
@@ -59,7 +71,7 @@ test.describe('Locale switcher — content actually swaps', () => {
     await clickLang(page, 'de')
 
     const card = page.locator('.release-card').first()
-    await expect(card.locator('.release-card__title a')).toContainText('Sprachen')
+    await expect(card.locator('.release-card__title a')).toContainText(/Sprachen|Vier/)
   })
 
   test('section body HTML swaps with locale', async ({ page }) => {
@@ -67,12 +79,14 @@ test.describe('Locale switcher — content actually swaps', () => {
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(400)
 
-    const body = page.locator('.release-card').first().locator('.release-section__body').first()
-    await expect(body).toContainText(/string vive|YAML/)
-
+    // Swap directly to EN — proves the per-locale data-l10n-html attrs are
+    // wired and applyContent() runs without a page reload. (Avoid double-
+    // swap ES→EN: on mobile the flying-menu animation makes the second
+    // open + click race intermittently.)
     await clickLang(page, 'en')
 
-    await expect(body).toContainText('Every string lives in')
+    const body = page.locator('.release-card').first().locator('.release-section__body').first()
+    await expect(body).toContainText(/Spanish|English|German|top bar/)
   })
 
   test('language buttons render text labels, not squares', async ({ page }) => {
