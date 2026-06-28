@@ -49,11 +49,24 @@
   if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.pages.dev')) {
     document.documentElement.dataset.dev = '1'
   }
+  var hasToken = false
   try {
-    document.documentElement.dataset.auth = sessionStorage.getItem('pyaserv.token') ? 'user' : 'guest'
+    hasToken = !!sessionStorage.getItem('pyaserv.token')
+    document.documentElement.dataset.auth = hasToken ? 'user' : 'guest'
   } catch (e) {
     document.documentElement.dataset.auth = 'guest'
   }
+
+  // Guest hitting any /me/* route — redirect BEFORE the dashboard SSR paints.
+  // This kills the ~150ms flash of the (gated) dashboard before the in-body
+  // JS would have done its own redirect. Uses location.replace so the
+  // back button doesn't carry the user back into the flash.
+  try {
+    if (!hasToken && /^\/(?:[a-z]{2}\/)?me(?:\/|$)/.test(location.pathname)) {
+      var target = '/?login=1&next=' + encodeURIComponent(location.pathname + location.search) + '&reason=dashboard'
+      location.replace(target)
+    }
+  } catch (e) { /* */ }
 
   // 3. /me/ active-tab pre-paint. Without this the dashboard SSRs panel-profile
   //    visible regardless of ?tab=X, then JS hides it and reveals the requested

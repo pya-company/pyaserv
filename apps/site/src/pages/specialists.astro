@@ -43,14 +43,12 @@ const categoryEmoji = (value: string | null): string =>
 const renderStars = (n: number): string =>
   '★★★★★'.slice(0, Math.round(n)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(n))
 
-const countOneEs = tFor('es', 'specialists.count.one')
-const countManyEs = tFor('es', 'specialists.count.many')
-const countOneEn = tFor('en', 'specialists.count.one')
-const countManyEn = tFor('en', 'specialists.count.many')
-const ctaEs = tFor('es', 'specialists.card.cta')
-const ctaEn = tFor('en', 'specialists.card.cta')
-const verifiedEs = tFor('es', 'specialists.card.verified')
-const verifiedEn = tFor('en', 'specialists.card.verified')
+type Loc = 'es' | 'en' | 'de' | 'ru'
+const LOCS: ReadonlyArray<Loc> = ['es', 'en', 'de', 'ru']
+const countOne = (l: Loc): string => tFor(l, 'specialists.count.one')
+const countMany = (l: Loc): string => tFor(l, 'specialists.count.many')
+const cta = (l: Loc): string => tFor(l, 'specialists.card.cta')
+const verified = (l: Loc): string => tFor(l, 'specialists.card.verified')
 ---
 <Base
   title="Profesionales"
@@ -80,13 +78,14 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
     </form>
 
     <p id="status" class="ps-msg" aria-live="polite">
-      <span lang="es">{items.length} {items.length === 1 ? countOneEs : countManyEs}</span>
-      <span lang="en">{items.length} {items.length === 1 ? countOneEn : countManyEn}</span>
+      {LOCS.map((l) => (
+        <span lang={l}>{items.length} {items.length === 1 ? countOne(l) : countMany(l)}</span>
+      ))}
     </p>
     <div id="results" class="ps-cards">
       {items.map((s) => {
-        const catLabelEs = s.primaryCategory ? tFor('es', `category.${s.primaryCategory}`) : null
-        const catLabelEn = s.primaryCategory ? tFor('en', `category.${s.primaryCategory}`) : null
+        // API only ships headlineEs/headlineEn; DE/RU fall back to EN for now.
+        const headline = (l: Loc): string => l === 'en' ? s.headlineEn : s.headlineEs
         return (
           <a class="ps-card ps-card--with-avatar" href={`${base}/specialists/${s.id}/`}>
             <div class={`ps-card__avatar ${s.photo ? 'ps-avatar--photo' : 'ps-avatar--initials'}`}>
@@ -99,8 +98,7 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
                 <h2>{s.displayName}</h2>
                 {s.verified && (
                   <span class="ps-badge">
-                    <span lang="es">{verifiedEs}</span>
-                    <span lang="en">{verifiedEn}</span>
+                    {LOCS.map((l) => <span lang={l}>{verified(l)}</span>)}
                   </span>
                 )}
               </div>
@@ -110,8 +108,7 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
                   <span class="ps-chip">
                     {categoryEmoji(s.primaryCategory)}
                     {' '}
-                    <span lang="es">{catLabelEs}</span>
-                    <span lang="en">{catLabelEn}</span>
+                    {LOCS.map((l) => <span lang={l}>{tFor(l, `category.${s.primaryCategory}`)}</span>)}
                   </span>
                   {s.ratingCount > 0 && (
                     <>
@@ -122,12 +119,10 @@ const verifiedEn = tFor('en', 'specialists.card.verified')
                 </div>
               )}
               <p class="ps-card__body">
-                <span lang="es">{s.headlineEs}</span>
-                <span lang="en">{s.headlineEn}</span>
+                {LOCS.map((l) => <span lang={l}>{headline(l)}</span>)}
               </p>
               <div class="ps-card__cta">
-                <span lang="es">{ctaEs}</span>
-                <span lang="en">{ctaEn}</span>
+                {LOCS.map((l) => <span lang={l}>{cta(l)}</span>)}
               </div>
             </div>
           </a>
