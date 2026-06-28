@@ -216,6 +216,42 @@ test.describe('Demo guided-tour — no raw i18n keys leak on /me/', () => {
   })
 })
 
+test.describe('Demo: referrer-based exit + auto-exit on tour finish', () => {
+  test.use({ viewport: VIEWPORT })
+
+  // The real user complaint: reading /docs/demo-mode/ → CTA → /?demo=1 →
+  // walks the tour → expects to land BACK on /docs/demo-mode/, not on /
+  // (entry) or /specialists/ (CTA target). Also: after the tour finishes,
+  // demo must auto-exit — user shouldn't have to hunt for the Exit button.
+  test('docs → ?demo=1 → finish tour → auto-exits AND returns to docs', async ({ page }) => {
+    await page.goto('/docs/demo-mode/?cb=t1')
+    await page.evaluate(() => { try { sessionStorage.clear() } catch {} })
+    // Within-tab nav so document.referrer is /docs/demo-mode/
+    await page.evaluate(() => { location.href = '/?demo=1' })
+    await page.waitForURL(/\?demo=1/)
+    await page.waitForTimeout(2500)
+
+    // Confirm demo started + returnTo captured
+    const stateRaw = await page.evaluate(() => sessionStorage.getItem('pyaserv.demo.session'))
+    expect(stateRaw, 'demo state stored').toBeTruthy()
+    const state = JSON.parse(stateRaw ?? '{}')
+    expect(state.data.returnTo, 'returnTo equals the docs page we came from').toContain('/docs/demo-mode/')
+
+    // Walk the 3-step T_HOME tour and click Finish on the last step
+    for (let i = 0; i < 3; i++) {
+      const nx = page.locator('.gt-tooltip [data-gt-action="next"]')
+      await nx.click()
+      await page.waitForTimeout(600)
+    }
+
+    // Auto-exit should have fired — wait for navigation back to docs
+    await page.waitForURL(/\/docs\/demo-mode\//, { timeout: 8000 })
+    const finalDemo = await page.evaluate(() => !!document.documentElement.dataset.demoMode)
+    expect(finalDemo, 'demo mode must be OFF after tour finish').toBe(false)
+    expect(new URL(page.url()).pathname).toBe('/docs/demo-mode/')
+  })
+})
+
 test.describe('Demo exit restores the entry URL, not the current page', () => {
   test.use({ viewport: VIEWPORT })
 

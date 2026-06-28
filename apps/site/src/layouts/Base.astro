@@ -593,22 +593,45 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         // existing one within its TTL so navigation inside demo does not
         // reset the clock.
         const feature = 'session'
-        if (!readDemoState(feature)) initDemoState(feature, { entry: location.pathname })
+        if (!readDemoState(feature)) {
+          // Capture BOTH the entry path (where demo first activated) AND the
+          // referrer if it's same-origin and not itself a demo page. Use case:
+          // user reads /docs/demo-mode/, clicks a "Try demo" CTA that lands
+          // them on /?demo=1, plays through, exits. They expect to be back
+          // at /docs/demo-mode/, not at the CTA landing page. The referrer
+          // is the only signal that captures that intent.
+          let returnTo = ''
+          try {
+            const ref = document.referrer || ''
+            if (ref) {
+              const refUrl = new URL(ref, location.origin)
+              if (refUrl.origin === location.origin
+                  && !refUrl.pathname.startsWith('/me')
+                  && !refUrl.searchParams.has('demo')
+                  && refUrl.pathname !== location.pathname) {
+                returnTo = refUrl.pathname + refUrl.search.replace(/[?&]demo=1/g, '').replace(/^&/, '?')
+              }
+            }
+          } catch {}
+          initDemoState(feature, { entry: location.pathname, returnTo })
+        }
         return feature
       }
 
       const performExit = () => {
-        // Read the entry pathname we stored when demo was first activated —
-        // that's the page the user CAME FROM, not the page they happen to
-        // be on right now. Restoring that is the user's mental model:
-        // "I clicked Try Demo on /releases/ → poked around → Exit → land
-        // back on /releases/". Falling back to current path (then to
-        // /specialists/ if it's auth-gated) only if we can't read entry.
+        // Priority: 1) returnTo (referrer captured at demo activation —
+        // the page the user was reading BEFORE entering demo, e.g.
+        // /docs/demo-mode/); 2) entry (where demo first activated); 3)
+        // strip ?demo from current. /me/* is filtered out at every step
+        // so the exit never feeds the user back into the auth gate.
         let target = ''
         try {
           const state = readDemoState('session')
+          const returnTo = state && typeof state.data?.returnTo === 'string' ? state.data.returnTo : ''
           const entry = state && typeof state.data?.entry === 'string' ? state.data.entry : ''
-          if (entry && entry.startsWith('/') && !entry.startsWith('/me')) {
+          if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('/me')) {
+            target = returnTo
+          } else if (entry && entry.startsWith('/') && !entry.startsWith('/me')) {
             target = entry
           }
         } catch {}
@@ -779,7 +802,12 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
             // Wait for the page to render its anchors
             setTimeout(() => startTour({
               ...tour,
-              onFinish: () => {},
+              // Tour finished — user just confirmed they understand demo by
+              // walking every step. Auto-exit so they don't have to hunt for
+              // the Exit button afterward. Skip (×) just closes the tour
+              // overlay and leaves demo running — they may want to keep
+              // exploring after dismissing the guide.
+              onFinish: () => performExit(),
               onSkip: () => {},
             }), 500)
           }
