@@ -77,6 +77,14 @@ const onKey = (e: KeyboardEvent): void => {
 
 const mountOverlay = (): void => {
   if (!activeTour) return
+  // Belt and braces: nuke any orphan tour DOM from a previous instance that
+  // endTour() may have lost the reference to (e.g. when initDemo fires twice
+  // on first paint and creates two activeTours back-to-back, or when Astro
+  // view-transitions accumulate astro:page-load listeners across nav and
+  // re-run this whole module). Without this, the user sees two stacked
+  // tooltips at different step indices ("split personality" bug).
+  document.querySelectorAll('.gt-overlay, .gt-tooltip').forEach((el) => el.remove())
+
   const overlay = document.createElement('div')
   overlay.className = 'gt-overlay'
   overlay.setAttribute('role', 'presentation')
@@ -98,22 +106,28 @@ const renderStep = (): void => {
   const cfg = activeTour.cfg
   const step = cfg.steps[activeTour.idx]
   if (!step) { endTour('finish'); return }
-  const anchor = document.querySelector<HTMLElement>(step.selector)
-  if (!anchor) {
-    // skip steps with missing anchors so the tour doesn't get stuck
-    console.warn('[guided-tour] selector not found:', step.selector, '— skipping step')
-    activeTour.idx++
-    renderStep()
-    return
+  // Brief wait-for-anchor (up to 1.2s in 100ms ticks) handles steps whose
+  // anchor is rendered by an async demoStub response — without this we
+  // skipped straight to the last step on /specialists/ and /clients/.
+  const tryRender = (waited: number): void => {
+    if (!activeTour) return
+    const anchor = document.querySelector<HTMLElement>(step.selector)
+    if (!anchor) {
+      if (waited < 1200) {
+        setTimeout(() => tryRender(waited + 100), 100)
+        return
+      }
+      console.warn('[guided-tour] selector not found:', step.selector, '— skipping step')
+      activeTour.idx++
+      renderStep()
+      return
+    }
+    const rect = anchor.getBoundingClientRect()
+    const inView = rect.top >= 0 && rect.bottom <= window.innerHeight
+    if (!inView) anchor.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    requestAnimationFrame(() => requestAnimationFrame(() => positionSpotlight(anchor, step)))
   }
-
-  // auto-scroll if off-screen
-  const rect = anchor.getBoundingClientRect()
-  const inView = rect.top >= 0 && rect.bottom <= window.innerHeight
-  if (!inView) anchor.scrollIntoView({ behavior: 'smooth', block: 'center' })
-
-  // wait a beat for scroll then position spotlight
-  requestAnimationFrame(() => requestAnimationFrame(() => positionSpotlight(anchor, step)))
+  tryRender(0)
 }
 
 const positionSpotlight = (anchor: HTMLElement, step: TourStep): void => {
@@ -156,27 +170,69 @@ const positionSpotlight = (anchor: HTMLElement, step: TourStep): void => {
     </div>
   `
 
-  // Position tooltip relative to spotlight
+  // Position tooltip relative to spotlight.
+  // IMPORTANT: set `position: fixed` BEFORE measuring, otherwise the tooltip
+  // is a block in normal flow and `getBoundingClientRect()` returns layout
+  // width (often full viewport width on mobile), which then breaks every
+  // subsequent clamp/centering calculation.
+  tooltip.style.position = 'fixed'
+  tooltip.style.left = '0px'
+  tooltip.style.top = '0px'
   const desired = step.position ?? 'auto'
   const ttRect = tooltip.getBoundingClientRect()
   const gap = 14
+  const margin = 8
+  const vw = window.innerWidth
+  const vh = window.innerHeight
   const space = {
-    top: r.top, bottom: window.innerHeight - r.bottom,
-    left: r.left, right: window.innerWidth - r.right,
+    top: r.top, bottom: vh - r.bottom,
+    left: r.left, right: vw - r.right,
   }
-  let pos = desired
-  if (pos === 'auto') {
-    if (space.bottom >= ttRect.height + gap) pos = 'bottom'
-    else if (space.top >= ttRect.height + gap) pos = 'top'
-    else if (space.right >= ttRect.width + gap) pos = 'right'
-    else pos = 'left'
+  // If the tooltip cannot physically fit beside the anchor at all (typical on
+  // narrow mobile viewports), force a top/bottom layout instead of letting
+  // explicit 'left'/'right' push it off-screen.
+  const fitsRight = space.right >= ttRect.width + gap + margin
+  const fitsLeft = space.left >= ttRect.width + gap + margin
+  const fitsBelow = space.bottom >= ttRect.height + gap + margin
+  const fitsAbove = space.top >= ttRect.height + gap + margin
+  let pos: 'top' | 'bottom' | 'left' | 'right'
+  if (desired === 'auto') {
+    if (fitsBelow) pos = 'bottom'
+    else if (fitsAbove) pos = 'top'
+    else if (fitsRight) pos = 'right'
+    else if (fitsLeft) pos = 'left'
+    else pos = space.bottom >= space.top ? 'bottom' : 'top'
+  } else {
+    // Honour explicit position when possible; otherwise flip to the opposite
+    // side, then fall back to top/bottom so the popover never escapes the
+    // viewport.
+    pos = desired
+    if (pos === 'right' && !fitsRight) pos = fitsLeft ? 'left' : (fitsBelow ? 'bottom' : 'top')
+    else if (pos === 'left' && !fitsLeft) pos = fitsRight ? 'right' : (fitsBelow ? 'bottom' : 'top')
+    else if (pos === 'bottom' && !fitsBelow) pos = fitsAbove ? 'top' : (fitsRight ? 'right' : 'left')
+    else if (pos === 'top' && !fitsAbove) pos = fitsBelow ? 'bottom' : (fitsRight ? 'right' : 'left')
   }
   let top = 0, left = 0
-  if (pos === 'bottom') { top = r.bottom + gap; left = Math.max(8, Math.min(window.innerWidth - ttRect.width - 8, r.left + r.width / 2 - ttRect.width / 2)) }
-  else if (pos === 'top') { top = r.top - ttRect.height - gap; left = Math.max(8, Math.min(window.innerWidth - ttRect.width - 8, r.left + r.width / 2 - ttRect.width / 2)) }
-  else if (pos === 'right') { left = r.right + gap; top = Math.max(8, Math.min(window.innerHeight - ttRect.height - 8, r.top + r.height / 2 - ttRect.height / 2)) }
-  else { left = r.left - ttRect.width - gap; top = Math.max(8, Math.min(window.innerHeight - ttRect.height - 8, r.top + r.height / 2 - ttRect.height / 2)) }
-  tooltip.style.position = 'fixed'
+  if (pos === 'bottom') {
+    top = r.bottom + gap
+    left = r.left + r.width / 2 - ttRect.width / 2
+  } else if (pos === 'top') {
+    top = r.top - ttRect.height - gap
+    left = r.left + r.width / 2 - ttRect.width / 2
+  } else if (pos === 'right') {
+    left = r.right + gap
+    top = r.top + r.height / 2 - ttRect.height / 2
+  } else {
+    left = r.left - ttRect.width - gap
+    top = r.top + r.height / 2 - ttRect.height / 2
+  }
+  // Final viewport clamp on BOTH axes (margin around edges). Guarantees the
+  // popover is fully visible even when anchor sits at the very edge of a
+  // narrow viewport.
+  const maxLeft = Math.max(margin, vw - ttRect.width - margin)
+  const maxTop = Math.max(margin, vh - ttRect.height - margin)
+  left = Math.max(margin, Math.min(maxLeft, left))
+  top = Math.max(margin, Math.min(maxTop, top))
   tooltip.style.top = `${top}px`
   tooltip.style.left = `${left}px`
   tooltip.style.opacity = '1'

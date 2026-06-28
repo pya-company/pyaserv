@@ -677,7 +677,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
             code: 'T_SPECIALISTS',
             steps: [
               { selector: '#filters', title: t('demo.tour_specialists_step1_title'), body: t('demo.tour_specialists_step1_body') },
-              { selector: '#results .ps-card, .ps-cards .ps-card', title: t('demo.tour_specialists_step2_title'), body: t('demo.tour_specialists_step2_body') },
+              { selector: '#results', title: t('demo.tour_specialists_step2_title'), body: t('demo.tour_specialists_step2_body') },
               { selector: '.ps-demo-banner', title: t('demo.tour_specialists_step3_title'), body: t('demo.tour_specialists_step3_body') },
             ],
             labels,
@@ -686,7 +686,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
             code: 'T_CLIENTS',
             steps: [
               { selector: '#filters', title: t('demo.tour_clients_step1_title'), body: t('demo.tour_clients_step1_body') },
-              { selector: '#results .ps-card, .ps-cards .ps-card', title: t('demo.tour_clients_step2_title'), body: t('demo.tour_clients_step2_body') },
+              { selector: '#results', title: t('demo.tour_clients_step2_title'), body: t('demo.tour_clients_step2_body') },
               { selector: '.ps-demo-banner', title: t('demo.tour_clients_step3_title'), body: t('demo.tour_clients_step3_body') },
             ],
             labels,
@@ -694,9 +694,9 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           T_PROFILE: {
             code: 'T_PROFILE',
             steps: [
-              { selector: '.ps-profile-header, .ps-profile-name', title: t('demo.tour_profile_step1_title'), body: t('demo.tour_profile_step1_body') },
-              { selector: '#profile-cta, .ps-profile-cta', title: t('demo.tour_profile_step2_title'), body: t('demo.tour_profile_step2_body') },
-              { selector: '#services-section, .ps-profile-section', title: t('demo.tour_profile_step3_title'), body: t('demo.tour_profile_step3_body') },
+              { selector: '#profile-root, .ps-profile-wrap', title: t('demo.tour_profile_step1_title'), body: t('demo.tour_profile_step1_body') },
+              { selector: '.ps-profile-header, .ps-profile-name', title: t('demo.tour_profile_step2_title'), body: t('demo.tour_profile_step2_body') },
+              { selector: '.ps-demo-banner', title: t('demo.tour_profile_step3_title'), body: t('demo.tour_profile_step3_body') },
             ],
             labels,
           },
@@ -808,8 +808,18 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
         }
       })
 
+      // Astro view-transitions re-runs body <script type="module"> on every
+      // navigation. Without guarding, this listener stacks (page 2 has BOTH
+      // page 1's and page 2's initDemo handlers attached, page 3 has three,
+      // etc.) and every astro:page-load fires initDemo N times — producing
+      // multiple guided-tour overlays ("split personality" tooltips).
+      // Window-level flag ensures we register the listener exactly once for
+      // the lifetime of the document.
+      if (!window.__psDemoBound) {
+        window.__psDemoBound = true
+        document.addEventListener('astro:page-load', initDemo)
+      }
       initDemo()
-      document.addEventListener('astro:page-load', initDemo)
     </script>
     <script>
       // @ts-nocheck
