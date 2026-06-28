@@ -206,6 +206,29 @@ html, body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Kill the mobile "grey square" tap highlight on every interactive
+     element globally. Replaced by our focus-visible accent ring (keyboard)
+     and CSS :active state (touch/click) on the buttons that need feedback. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Universal kill of the browser's default focus outline — replaced by the
+   accent ring under :focus-visible (keyboard nav only). Plain :focus from
+   mouse/touch click does NOT show any outline.  Buttons that need press
+   feedback use :active (transform / opacity) explicitly. */
+button, a, [role="button"], summary, input, select, textarea {
+  outline: none;
+}
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ps-acc);
+  outline-offset: 2px;
+  border-radius: var(--ps-radius-sm);
 }
 
 a { color: inherit; }
