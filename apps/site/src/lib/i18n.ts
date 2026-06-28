@@ -48,9 +48,22 @@ export const setLocale = (l: Locale): void => {
     document.documentElement.lang = l
     document.documentElement.dataset.loc = l
   }
+  // Reflect the choice in the URL so the link a user shares from the address
+  // bar carries the language — `?lang=ru` opens that page in Russian on the
+  // recipient's browser regardless of their stored preference. Uses
+  // replaceState so back-button history isn't polluted with one entry per
+  // language click. bootstrap.js reads ?lang= first on every page load.
+  if (typeof location !== 'undefined' && typeof history !== 'undefined') {
+    try {
+      const url = new URL(location.href)
+      if (url.searchParams.get('lang') !== l) {
+        url.searchParams.set('lang', l)
+        history.replaceState(history.state, '', url.toString())
+      }
+    } catch {}
+  }
   // Dispatch a custom event so app code can re-render content without a
-  // full reload. Listeners: Base.astro init script (applyContent + applyI18n
-  // + aria-pressed update on the lang switcher).
+  // full reload. Base.astro listens → applyContent + applyI18n + aria-pressed.
   try { globalThis.dispatchEvent(new CustomEvent('pyaserv:locale', { detail: { locale: l } })) } catch {}
 }
 

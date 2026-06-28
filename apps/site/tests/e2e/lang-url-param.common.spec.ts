@@ -49,6 +49,60 @@ test.describe('?lang=<code> URL parameter — pre-paint locale', () => {
   })
 })
 
+test.describe('Clicking a lang button writes ?lang=<code> to the URL (shareable)', () => {
+  // Regression guard for the post-demo-removal cleanup: clicking ES/EN/DE/RU
+  // must update history.replaceState so the address bar reflects the chosen
+  // locale. Without this the URL a user copies from the bar doesn't carry
+  // the language and the recipient sees the page in the wrong one.
+
+  // The lang button lives in TWO DOM trees: desktop topbar nav and mobile
+  // flying-menu. Desktop one is display:none on mobile and vice versa.
+  // setLocale runs from a document-level click handler regardless of which
+  // tree the click came from, so dispatching the click via JS bypasses the
+  // viewport-specific visibility plumbing and tests the URL-update logic.
+  const clickLang = async (page: import('@playwright/test').Page, lang: 'es' | 'en' | 'de' | 'ru'): Promise<void> => {
+    await page.evaluate((l) => {
+      const btn = document.querySelector<HTMLElement>(`.ps-lang-btn[data-lang="${l}"]`)
+      if (!btn) throw new Error('lang button not found: ' + l)
+      btn.click()
+    }, lang)
+    await page.waitForTimeout(400)
+  }
+
+  test('clicking RU lang button updates URL with ?lang=ru', async ({ page }) => {
+    await page.goto('/')
+    await page.evaluate(() => { try { localStorage.clear() } catch {} })
+    await clickLang(page, 'ru')
+    expect(new URL(page.url()).searchParams.get('lang')).toBe('ru')
+  })
+
+  test('clicking DE lang button updates URL with ?lang=de', async ({ page }) => {
+    await page.goto('/')
+    await page.evaluate(() => { try { localStorage.clear() } catch {} })
+    await clickLang(page, 'de')
+    expect(new URL(page.url()).searchParams.get('lang')).toBe('de')
+  })
+
+  test('switching locales replaces (not appends) the lang param', async ({ page }) => {
+    await page.goto('/?lang=ru')
+    await clickLang(page, 'en')
+    const url = new URL(page.url())
+    expect(url.searchParams.getAll('lang')).toEqual(['en'])
+  })
+
+  test('history is replaceState — back button does NOT cycle through lang clicks', async ({ page }) => {
+    await page.goto('/')
+    await page.evaluate(() => { try { localStorage.clear() } catch {} })
+    // Mark the initial history.length so we can assert no entries were pushed.
+    const startLen = await page.evaluate(() => history.length)
+    await clickLang(page, 'de')
+    await clickLang(page, 'ru')
+    await clickLang(page, 'en')
+    const endLen = await page.evaluate(() => history.length)
+    expect(endLen, 'replaceState must not grow history per lang click').toBe(startLen)
+  })
+})
+
 test.describe('navigator.language — no ES bias for non-EN browsers (AC-ML1)', () => {
   // Asserts the EARLIEST observable state: while bootstrap.js (sync head
   // script) is the only thing that has run, html[lang] / data-loc must
