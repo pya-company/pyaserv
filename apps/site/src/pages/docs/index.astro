@@ -29,6 +29,10 @@ const featured = FEATURED_SLUGS
   .map((s) => DOC_PAGES.find((p) => p.slug === s))
   .filter((p): p is (typeof DOC_PAGES)[number] => Boolean(p))
 
+const altLabelMap: Record<string, string> = {}
+for (const l of VISIBLE_LOCS) altLabelMap[l] = tFor(l, 'docs.screenshot_alt')
+const altDataAttr = `data-l10n-attr='${escapeAttr(JSON.stringify({ alt: altLabelMap }))}'`
+
 const latestReleases = RELEASES.slice(0, 3)
 ---
 <Base title={title} active="home" description={intro}>
@@ -49,7 +53,10 @@ const latestReleases = RELEASES.slice(0, 3)
             const titleMap = getAllLocales('docs', p.slug, ['title'])
             const tldrMap = getAllLocales('docs', p.slug, ['tldr'])
             return (
-              <article style="background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-md); padding: var(--ps-space-4); display: flex; flex-direction: column; gap: var(--ps-space-2);">
+              <article style="background: var(--ps-surface); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-md); padding: var(--ps-space-4); display: flex; flex-direction: column; gap: var(--ps-space-3);">
+                {p.screenshot && (
+                  <Fragment set:html={`<a href="/docs/${p.slug}/" style="display: block; margin: calc(-1 * var(--ps-space-4)) calc(-1 * var(--ps-space-4)) 0 calc(-1 * var(--ps-space-4)); aspect-ratio: 16 / 10; overflow: hidden; background: var(--ps-surface-2); border-bottom: 1px solid var(--ps-border);"><img src="${p.screenshot}" alt="${escapeAttr(tFor(loc, 'docs.screenshot_alt'))}" loading="lazy" decoding="async" ${altDataAttr} style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center;" /></a>`} />
+                )}
                 <Fragment set:html={`<h3 ${l10n(titleMap)} style="margin: 0; font-size: 16px; font-weight: 700; color: var(--ps-text);">${c?.title ?? p.slug}</h3>`} />
                 {c?.tldr && <Fragment set:html={`<p ${l10n(tldrMap)} style="margin: 0; color: var(--ps-text-muted); font-size: 13px; line-height: 1.5;">${c.tldr}</p>`} />}
                 {p.realUrl && (

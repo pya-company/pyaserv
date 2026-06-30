@@ -8,6 +8,7 @@ docs:
   status_planned: Planeado
   btn_view_real: Ver real →
   btn_more: Más detalles →
+  screenshot_alt: Captura de la feature en producción
   btn_soon: Próximamente
   back_to_index: ← Toda la documentación
   breadcrumb_root: Docs

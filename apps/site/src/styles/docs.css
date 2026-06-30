@@ -95,6 +95,25 @@
   margin-top: var(--ps-space-4);
 }
 
+.docpage__screenshot {
+  margin: var(--ps-space-5) 0 0 0;
+  background: var(--ps-surface-2);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  overflow: hidden;
+  box-shadow: var(--ps-shadow-sm);
+}
+.docpage__screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Reserve vertical space approximately matching screenshot aspect so the
+   * paragraph below doesn't lurch when the lazy-loaded image lands. */
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+}
+
 .docpage section {
   margin: var(--ps-space-6) 0;
   padding-bottom: var(--ps-space-4);

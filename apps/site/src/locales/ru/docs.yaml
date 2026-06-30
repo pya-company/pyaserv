@@ -8,6 +8,7 @@ docs:
   status_planned: Запланировано
   btn_view_real: Открыть →
   btn_more: Подробнее →
+  screenshot_alt: Скриншот фичи в продакшене
   btn_soon: Скоро
   back_to_index: ← Вся документация
   breadcrumb_root: Docs
