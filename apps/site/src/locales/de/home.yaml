@@ -1,0 +1,23 @@
+home:
+  title: Dienstleistungen in Paraguay ohne Gebühren
+  description: PyaServ verbindet Fachleute und Kunden in ganz Paraguay. Keine Kontaktgebühren, keine Zahlungen über die Plattform.
+  hero:
+    title: Dienstleistungen in Paraguay, ohne Mittelsmänner.
+    body: Ob Sie eine Dienstleistung anbieten oder jemanden suchen, der etwas für Sie erledigt — bei PyaServ finden Sie Ihre Seite. Keine Vermittlungsgebühren — Sie schließen den Auftrag direkt ab.
+  specialists:
+    title: Ich suche einen Fachmann
+    desc: Klempner, Elektriker, Nachhilfelehrer, Friseure — suchen Sie nach Stadtviertel und Kategorie. Wenn Sie sich entschieden haben, nehmen Sie direkt Kontakt auf.
+    cta: Fachleute ansehen →
+  clients:
+    title: Ich biete eine Dienstleistung an
+    desc: Sehen Sie offene Anfragen in Ihrer Gegend. Wenn es zu Ihrem Angebot passt, schreiben Sie direkt — keine Filter, keine Bewerbungsgebühr.
+    cta: Anfragen ansehen →
+  banner:
+    html: >-
+      <strong>Status:</strong> MVP live. Erstellen Sie Ihr Fachprofil oder Ihre Anfrage im Bereich <a data-banner-link>Mein Dashboard</a>. Wenn Sie noch kein Konto haben, legen wir eins mit Ihrer
+      E-Mail-Adresse an — ganz ohne Passwort.
+    status_label: 'Status:'
+    body: MVP live. Erstellen Sie Ihr Fachprofil oder Ihre Anfrage im Bereich
+    cta: Mein Dashboard
+    tail: Wenn Sie noch kein Konto haben, legen wir eins mit Ihrer E-Mail-Adresse an — ganz ohne Passwort.
+  stats: <strong>{specs}</strong> aktive Fachleute · <strong>{reqs}</strong> offene Anfragen

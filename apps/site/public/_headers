@@ -8,7 +8,7 @@
   #   - connect-src: 'self' + api.pyaserv.com (our worker)
   #   - frame-ancestors 'none' replaces X-Frame-Options
   #   - upgrade-insecure-requests for any stray http://
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://api.pyaserv.com; font-src 'self' data:; connect-src 'self' https://api.pyaserv.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default ps-html lit-html
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://api.pyaserv.com https://images.unsplash.com; font-src 'self' data:; connect-src 'self' https://api.pyaserv.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default ps-html lit-html
   Content-Security-Policy-Report-Only: require-trusted-types-for 'script'
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   Cross-Origin-Opener-Policy: same-origin
@@ -23,3 +23,38 @@
 /sw.js
   Cache-Control: no-cache, no-store, must-revalidate
   Service-Worker-Allowed: /
+
+# Explicit content-type for PWA manifest (CF Pages may not auto-detect .webmanifest).
+/manifest.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+
+# Hashed Astro assets — content hash changes when bytes change, so we can
+# cache aggressively (1 year, immutable). Saves a 304 round-trip every 4 h
+# for returning visitors on slow PY 3G.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static prerendered HTML — let CF edge cache for an hour with SWR so the
+# CDN can serve from cache, instead of returning Cf-Cache-Status: DYNAMIC.
+# Locale-prefixed pages live under /es/ /en/ /de/ /ru/ — match them with
+# CF Pages' single-* glob. The bare root + bare /<page>/ are negotiator HTML;
+# they get the same edge-cache profile so the negotiator script can serve
+# from POP without hitting origin.
+/
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/es/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/en/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/de/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/ru/*
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, must-revalidate
+  Cdn-Cache-Control: public, max-age=3600, stale-while-revalidate=86400

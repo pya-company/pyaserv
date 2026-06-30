@@ -1,0 +1,34 @@
+request:
+  detail:
+    title: Pedido
+    status:
+      open: Abierto
+      closed: Cerrado
+    locked:
+      cta: iniciá sesión
+    reply_btn: Postularme
+    compose_h: Postularme
+    compose:
+      label: Mensaje al cliente
+      placeholder: Hola, puedo encargarme…
+    description: Pedido publicado por un cliente. Postulate sin comisión.
+  new:
+    title: Nuevo pedido
+    back: ← Mis pedidos
+    intro: Describí el trabajo que necesitás. Los profesionales relevantes podrán postularse — el contacto ocurre por mensaje privado.
+    submit: Publicar pedido
+  field:
+    category: Categoría
+    title:
+      placeholder: Necesito plomero urgente
+    description:
+      placeholder: Qué hay que hacer, fecha aproximada, urgencia, particularidades…
+    barrio:
+      placeholder: Villa Morra
+    budget:
+      short: Presupuesto (Gs)
+    status:
+      open: Abierto
+      closed: Cerrado
+  edit:
+    title: Editar pedido

@@ -54,7 +54,12 @@ const swManifest = (): AstroIntegration => ({
 
       compileSw(swPath)
 
-      const routes = collectHtmlRoutes(distPath)
+      // App-shell only — keep precache <= 30 URLs. Every other page is lazy-
+      // cached on first navigation via the SW fetch handler. Avoids burning
+      // 2.5 MB on PY 3G install and stops one 404 from killing the install.
+      const allRoutes = collectHtmlRoutes(distPath)
+      const APP_SHELL: ReadonlyArray<string> = ['/', '/specialists/', '/clients/', '/docs/', '/releases/', '/me/']
+      const routes = APP_SHELL.filter((r) => allRoutes.includes(r))
       // Build timestamp as the cache version. Same source + same routes →
       // same SW bytes → browser sees no update → no purge thrash. Different
       // build → version flips → activate purges old cache.

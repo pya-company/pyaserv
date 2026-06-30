@@ -1,0 +1,89 @@
+me:
+  title: Мой кабинет
+  heading: Мой кабинет
+  logout: Выйти
+  tabs:
+    aria: Разделы
+    profile: 👤 Мой профиль
+    listings: 🛠️ Мои услуги
+    quotes: 📄 Сметы
+    clients: 👥 Мои клиенты
+    game: 🏆 Достижения
+    requests: 📢 Мои заявки
+    inquiries: 💬 Переписки
+    stats: 📊 Статистика
+  ext:
+    summary: Расширенный профиль (обложка · услуги · районы · портфолио · расписание · фильтры · гуарани)
+    add_service: + Добавить услугу
+    add_photo: + Добавить фото
+    save: Сохранить расширенный профиль
+  loading_passkeys: Загружаем passkey…
+  loading_quests: Загружаем задания…
+  stats:
+    h: Статистика
+    intro: Метрики профиля за последние 30 дней.
+    empty: У вас пока нет профиля специалиста. Создайте его, чтобы увидеть статистику.
+    profile_view: Просмотры профиля
+    phone_click: Клики по телефону
+    whatsapp_click: Клики по WhatsApp
+    inquiries: Полученные обращения
+    completed: Выполненные работы
+  session_prefix: Вы вошли · userId
+  profile:
+    h: Профиль специалиста
+    intro: Если хотите оказывать услуги, заполните здесь свой профиль.
+    display_name: Имя для показа
+    headline: Краткое описание
+    phone: Телефон
+    whatsapp: WhatsApp (по желанию)
+    barrio: Район
+    bio: О себе
+    headline_placeholder: Сантехник в Асунсьоне, 24/7
+    phone_placeholder: +595 981 234567
+    whatsapp_placeholder: +595 981 234567
+    barrio_placeholder: Villa Morra
+    bio_placeholder: Расскажите об опыте, инструментах, районах выезда…
+    saved: ✓ Профиль сохранён
+    geoloc_button: 'Использовать моё местоположение'
+    geoloc:
+      locating: Определяем местоположение…
+      denied: Доступ к местоположению запрещён
+      unavailable: Геолокация недоступна
+    completeness:
+
+      label: "Профиль заполнен: {pct}%"
+      empty: 'Профиль заполнен: 0%'
+  listings:
+    h: Мои опубликованные услуги
+    new: + Новая
+    empty_profile:
+      title: Сначала создайте профиль
+      hint: Перед публикацией заполните вкладку «Мой профиль».
+    empty:
+      title: Вы пока не опубликовали услуги
+      hint: Нажмите «+ Новая» вверху, чтобы начать.
+    price_from: от
+    confirm_delete: Удалить эту услугу?
+  requests:
+    h: Мои заявки как клиента
+    new: + Новая
+    empty:
+      title: У вас нет открытых заявок
+      hint: Если нужно что-то конкретное, нажмите «+ Новая».
+    status:
+      open: Открыта
+      closed: Закрыта
+    public_view: Публичный вид →
+  inquiries:
+    h: Переписки
+    empty:
+      title: Переписок пока нет
+      hint: Как только вы с кем-то свяжетесь или вам напишут, диалоги появятся здесь.
+    as_client: Как клиент
+    as_specialist: Как специалист
+    about_listing: По услуге
+    about_request: По заявке
+  notifs:
+    h: Уведомления
+    email: Получать уведомления на e-mail
+    saved: ✓ Настройка сохранена

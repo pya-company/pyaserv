@@ -51,7 +51,7 @@ test.describe('login dialog flow', () => {
     })
     // Auto-open via ?login=1 — works for both mobile (where the topbar
     // Sign in button is hidden behind the flying-menu) and desktop.
-    await page.goto('/?login=1')
+    await page.goto('/es/?login=1')
 
     const dlg = page.locator('#login-dlg')
     await expect(dlg).toHaveAttribute('open', '', { timeout: 5000 })
@@ -70,18 +70,19 @@ test.describe('login dialog flow', () => {
     await expect(dlg).not.toHaveAttribute('open', '', { timeout: 5000 })
     const stored = await page.evaluate(() => sessionStorage.getItem('pyaserv.token'))
     expect(stored).toBe(FAKE_SID)
-    // URL stayed at / — no /login/ page in history
-    expect(new URL(page.url()).pathname).toBe('/')
+    // URL stayed inside /<lang>/ — no /login/ page in history
+    expect(new URL(page.url()).pathname).toBe('/es/')
   })
 
-  test('/login/ redirects to /?login=1 and auto-opens dialog', async ({ page }) => {
+  test('/login/ redirects to negotiator → /<lang>/ with login dialog open', async ({ page }) => {
     await page.addInitScript(() => {
       try { sessionStorage.removeItem('pyaserv.token') } catch {}
+      Object.defineProperty(navigator, 'languages', { get: () => ['es-ES','es'], configurable: true })
     })
     await page.goto('/login/')
-    await page.waitForURL((url) => url.pathname === '/', { timeout: 5000 })
+    // _redirects → /?login=1 → negotiator → /<lang>/?login=1
+    await page.waitForURL((url) => /^\/(es|en|de|ru)\/$/.test(url.pathname), { timeout: 5000 })
     await expect(page.locator('#login-dlg')).toHaveAttribute('open', '', { timeout: 2000 })
-    // login param has been stripped from URL
     expect(new URL(page.url()).searchParams.get('login')).toBeNull()
   })
 

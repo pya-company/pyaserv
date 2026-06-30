@@ -1,0 +1,27 @@
+title: Vier Sprachen, neue Dokumentation und eine stabilere Demo
+tldr: Spanisch · Englisch · Deutsch · Russisch, alle auf gleicher Augenhöhe. Dokumentation als Wiki mit Seitenleiste. Jede Veröffentlichung hat ihre eigene vollständige Seite. Demo-Modus repariert und beständiger.
+sections:
+  - kind: new
+    heading: Vier Sprachen — alle gleichberechtigt
+    body: |
+      Wechseln Sie zwischen Spanisch, Englisch, Deutsch und Russisch über den Umschalter in der oberen Leiste. Ihre Wahl wird zwischen Seiten und bei Ihrer Rückkehr gemerkt. Gedacht für die Expat-Gemeinschaft in Paraguay und ebenso für Einheimische.
+  - kind: new
+    heading: Automatische Erkennung der Browsersprache
+    body: |
+      Wenn Sie mit einem Browser auf Deutsch oder Russisch ankommen, öffnet sich die App bereits in Ihrer Sprache. Keine manuellen Schritte. Sie können jederzeit über den Umschalter wechseln.
+  - kind: new
+    heading: Dokumentation als Wiki
+    body: |
+      `/docs/` ist jetzt ein Wiki mit Navigationsseitenleiste auf der linken Seite. Kategorien: Profil & Sichtbarkeit · Gamification · Werkzeuge · System · Roadmap. Sie finden, was Sie suchen, schneller als zuvor.
+  - kind: new
+    heading: Jede Veröffentlichung auf ihrer eigenen Seite
+    body: |
+      Jede Neuerung hat ihren eigenen teilbaren Link — kopieren Sie `/releases/<name>/` und senden Sie ihn per WhatsApp, um genau zu zeigen, was sich geändert hat. In Google indexiert.
+  - kind: fixed
+    heading: Demo-Modus — Banner, das sich tatsächlich schließt
+    body: |
+      Der Knopf "Demo verlassen" funktioniert jetzt. Während Sie im Demo-Modus unterwegs sind, behalten Links zu Seiten, die den Demo-Modus erhalten, ihn automatisch bei.
+  - kind: next
+    heading: Demnächst
+    body: |
+      Suche in der Dokumentation. Hinweis, wenn es seit Ihrem letzten Besuch Neuigkeiten gibt. Kurze eingebettete Aufnahmen in den Release-Notes, um neue Funktionen in Aktion zu sehen.

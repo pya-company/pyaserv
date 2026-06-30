@@ -1,0 +1,5 @@
+time:
+  now: now
+  min_ago: '{n} min ago'
+  hour_ago: '{n} h ago'
+  day_ago: '{n} d ago'

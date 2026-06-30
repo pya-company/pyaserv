@@ -1,0 +1,22 @@
+listing:
+  new:
+    title: Nuevo servicio
+    back: ← Mis servicios
+    intro: Publicá un servicio concreto que ofrecés. Aparecerá en el catálogo público de profesionales filtrable por categoría.
+    submit: Publicar
+  field:
+    category: Categoría
+    title:
+      placeholder: Reparación de calefones
+    description:
+      placeholder: Qué incluye el servicio, qué materiales, en qué zonas…
+    price_from:
+      short: Precio desde (Gs)
+    unit:
+      none: —
+      hour: Hora
+      job: Trabajo
+  edit:
+    title: Editar servicio
+    not_found: Servicio no encontrado o no es tuyo
+    confirm_delete: ¿Eliminar definitivamente?

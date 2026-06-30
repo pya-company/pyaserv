@@ -1,0 +1,10 @@
+title: Filtros de leads
+tldr: Configurá presupuesto mínimo y escondé cuentas nuevas (anti-spam). Hoy persistido en perfil; filtering en query — próximo sprint.
+sections:
+  - heading: Opciones actuales
+    body: |-
+      · `minBudget` (Gs): no mostrar inquiries por debajo de X
+      · `hideNewAccounts`: esconder de cuentas creadas hace menos de 7 días
+      · Próximo: distance limit, only-my-area, time-of-day
+  - heading: Estado
+    body: UI + persistence ✓. Aplicación al query de `/v1/me/inquiries` — pendiente próximo sprint (afecta query existente).

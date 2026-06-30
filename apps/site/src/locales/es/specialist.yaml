@@ -1,0 +1,45 @@
+specialist:
+  public:
+    loading: Cargando…
+    about: Sobre mí
+    services: Servicios
+    work_areas: Zonas de trabajo
+    jobs: Trabajos
+    badges: Insignias
+    contact_whatsapp: Contactar por WhatsApp
+    wa_template: 'Hola {name}, te contacto desde PyaServ.'
+    not_found_title: Perfil no encontrado
+    not_found_body: Este profesional no existe o aún no completó su registro.
+    see_all: Ver todos los profesionales →
+    no_slug_title: Falta el identificador del profesional
+    no_slug_body: 'Esta URL espera ?slug=<identificador>.'
+    wa_verified: ✓ WhatsApp verificado
+    cedula_verified: ✓ Cédula verificada
+    price_from: 'Desde {amount}'
+    price_to_arrange: A coordinar
+    tier:
+      aprendiz: aprendiz
+      oficial: oficial
+      maestro: maestro
+      maestro_mayor: maestro mayor
+      patron: patron
+  detail:
+    title: Perfil
+    locked:
+      cta: iniciá sesión
+    verified: ✓ Verificado
+    contact_btn: Enviar mensaje
+    services_h: Servicios que ofrece
+    no_services:
+      title: Aún no publicó servicios
+    compose_h: Escribirle
+    compose:
+      label: Mensaje
+      placeholder: Hola, me interesa…
+    no_listings_err: Este profesional aún no publicó servicios; no se puede iniciar la conversación todavía.
+    price_from: desde
+    per_hour: hora
+    per_job: trabajo
+    price_tbd: Precio a coordinar
+    ask_about: Consultar sobre este servicio
+    description: Perfil del profesional en PyaServ. Contactá directo sin comisiones.

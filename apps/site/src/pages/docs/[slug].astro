@@ -1,0 +1,91 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/components-lib.css'
+import '~/styles/docs.css'
+import DocsSidebar from '~/components/DocsSidebar.astro'
+import { DOC_PAGES } from '~/data/docs-content.ts'
+import { getDocContent } from '~/lib/content.ts'
+import { renderReleaseBody } from '~/lib/markdown-mini.ts'
+import { tFor, LOCALES, type Locale } from '~/lib/i18n.ts'
+import { getAllLocales } from '~/lib/l10n-emit.ts'
+
+export function getStaticPaths() {
+  return DOC_PAGES.map((p) => ({ params: { slug: p.slug }, props: { doc: p } }))
+}
+const { doc } = Astro.props
+const loc: Locale = (Astro.currentLocale ?? 'es') as Locale
+const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
+const content = getDocContent(loc, doc.slug)
+if (!content) throw new Error(`Missing doc content for ${doc.slug}`)
+
+const sectionBodyMap = (idx: number): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) {
+    const c = getDocContent(l, doc.slug)
+    const s = c?.sections?.[idx]
+    if (s) out[l] = renderReleaseBody(s.body)
+  }
+  return out
+}
+const statusLabelMap = (): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, `docs.status_${doc.status === 'live' ? 'live' : 'soon'}`)
+  return out
+}
+const uiLabelMap = (key: string): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, key)
+  return out
+}
+const escapeAttr = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const l10nText = (m: Record<string, string>): string => `data-l10n-text='${escapeAttr(JSON.stringify(m))}'`
+const l10nHtml = (m: Record<string, string>): string => `data-l10n-html='${escapeAttr(JSON.stringify(m))}'`
+const l10nAttr = (attr: string, m: Record<string, string>): string =>
+  `data-l10n-attr='${escapeAttr(JSON.stringify({ [attr]: m }))}'`
+
+const statusLabel = tFor(loc, `docs.status_${doc.status}`)
+---
+<Base title={`${content.title} — ${tFor(loc, 'docs.page_title')}`} active="home" description={content.tldr}>
+  <div class="docs-wiki">
+    <DocsSidebar currentSlug={doc.slug} />
+
+    <article class="docs-content docpage">
+      <nav class="docpage__crumbs">
+        <a href="/docs/" data-i18n="docs.breadcrumb_root">{tFor(loc, 'docs.breadcrumb_root')}</a> · <Fragment set:html={`<span ${l10nText(getAllLocales('docs', doc.slug, ['title']))}>${content.title}</span>`} />
+      </nav>
+
+      <header>
+        <div class="docpage__meta">
+          <span class="docpage__code">{doc.code}</span>
+          <Fragment set:html={`<span class="docpage__status" data-status="${doc.status}" ${l10nText(statusLabelMap())}>${statusLabel}</span>`} />
+        </div>
+        <Fragment set:html={`<h1 ${l10nText(getAllLocales('docs', doc.slug, ['title']))}>${content.title}</h1>`} />
+        <Fragment set:html={`<p class="docpage__tldr" ${l10nText(getAllLocales('docs', doc.slug, ['tldr']))}>${content.tldr}</p>`} />
+
+        {doc.realUrl && (
+          <div class="docpage__actions">
+            <a href={doc.realUrl} class="cl-btn cl-btn--primary" data-i18n="docs.btn_view_real">{tFor(loc, 'docs.btn_view_real')}</a>
+          </div>
+        )}
+
+        {doc.screenshot && (
+          <figure class="docpage__screenshot">
+            <Fragment set:html={`<img src="${doc.screenshot}" alt="${escapeAttr(tFor(loc, 'docs.screenshot_alt'))}" loading="lazy" decoding="async" ${l10nAttr('alt', uiLabelMap('docs.screenshot_alt'))} />`} />
+          </figure>
+        )}
+      </header>
+
+      {content.sections.map((section, i) => (
+        <section>
+          <Fragment set:html={`<h2 ${l10nText(getAllLocales('docs', doc.slug, ['sections', i, 'heading']))}>${section.heading}</h2>`} />
+          <Fragment set:html={`<div ${l10nHtml(sectionBodyMap(i))}>${renderReleaseBody(section.body)}</div>`} />
+        </section>
+      ))}
+
+      <div class="docpage__back">
+        <a href="/docs/" data-i18n="docs.back_to_index">{tFor(loc, 'docs.back_to_index')}</a>
+      </div>
+    </article>
+  </div>
+</Base>

@@ -1,0 +1,5 @@
+time:
+  now: ahora
+  min_ago: hace {n} min
+  hour_ago: hace {n} h
+  day_ago: hace {n} d

@@ -1,0 +1,31 @@
+title: The 13 features you needed — public profile, quoter, demo, and more
+tldr: A WhatsApp-shareable profile, quotes with PDF, a lite client CRM, a guided tour, hyperlocal search, and a demo mode to look around before signing up.
+sections:
+  - kind: new
+    heading: Public profile, ready to share
+    body: |
+      Every pro gets their own link at `/p/your-name` with photo, cover, bio, services, badges, schedule, and a WhatsApp button. Drop the link in a WhatsApp group and clients see everything in one tap.
+  - kind: new
+    heading: One-tap quotes with PDF
+    body: |
+      Build the quote with items + IVA, download the PDF, and send it straight to the client over WhatsApp. No need to go back to a desktop.
+  - kind: new
+    heading: Level up while you work
+    body: |
+      XP for every job done, badges for milestones, a daily streak that holds even if you take a day off. Five levels from apprentice to patron — the client sees it on your profile.
+  - kind: new
+    heading: Your clients, remembered
+    body: |
+      When you finish a job, the client gets saved in "My clients". Editable notes, job counter. Coming soon: automatic reminders to offer maintenance.
+  - kind: new
+    heading: Guided tour on first sign-in
+    body: |
+      If you've just created your profile, we walk you through what's left to fill in step by step — no manuals to read. The tour closes itself once you've seen everything.
+  - kind: new
+    heading: 400 local pages so Google finds you
+    body: |
+      We automatically generate one page per trade and neighborhood — "Plumbers in Villa Morra", "Electricians in Lambaré" — so when a client searches on Google, they find you first.
+  - kind: new
+    heading: Demo mode — look before you sign up
+    body: |
+      Add `?demo=1` to any link and you can walk through the whole app with sample data, no account needed. For when you land from a WhatsApp group and want to see what it's about.

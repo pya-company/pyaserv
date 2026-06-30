@@ -1,0 +1,45 @@
+specialist:
+  public:
+    loading: Загрузка…
+    about: Обо мне
+    services: Услуги
+    work_areas: Районы выезда
+    jobs: Работы
+    badges: Награды
+    contact_whatsapp: Написать в WhatsApp
+    wa_template: 'Здравствуйте, {name}! Пишу через PyaServ.'
+    not_found_title: Профиль не найден
+    not_found_body: Такого специалиста нет или он не завершил регистрацию.
+    see_all: Смотреть всех специалистов →
+    no_slug_title: Не указан идентификатор специалиста
+    no_slug_body: 'В URL ожидается ?slug=<идентификатор>.'
+    wa_verified: ✓ WhatsApp подтверждён
+    cedula_verified: ✓ Cédula подтверждена
+    price_from: 'От {amount}'
+    price_to_arrange: По договорённости
+    tier:
+      aprendiz: подмастерье
+      oficial: специалист
+      maestro: мастер
+      maestro_mayor: главный мастер
+      patron: патрон
+  detail:
+    title: Профиль
+    locked:
+      cta: войти
+    verified: ✓ Проверен
+    contact_btn: Написать сообщение
+    services_h: Предлагаемые услуги
+    no_services:
+      title: Услуги пока не опубликованы
+    compose_h: Сообщение
+    compose:
+      label: Сообщение
+      placeholder: Здравствуйте, мне интересно…
+    no_listings_err: У специалиста ещё нет опубликованных услуг — начать переписку нельзя.
+    price_from: от
+    per_hour: час
+    per_job: работа
+    price_tbd: Цена по договорённости
+    ask_about: Спросить об этой услуге
+    description: Профиль специалиста на PyaServ. Связывайтесь напрямую, без комиссий.

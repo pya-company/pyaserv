@@ -1,0 +1,34 @@
+request:
+  detail:
+    title: Anfrage
+    status:
+      open: Offen
+      closed: Geschlossen
+    locked:
+      cta: anmelden
+    reply_btn: Bewerben
+    compose_h: Bewerben
+    compose:
+      label: Nachricht an den Kunden
+      placeholder: Hallo, ich kann das übernehmen…
+    description: Anfrage eines Kunden. Bewerben Sie sich direkt, ohne Provision.
+  new:
+    title: Neue Anfrage
+    back: ← Meine Anfragen
+    intro: Beschreiben Sie die benötigte Arbeit. Passende Fachleute können sich bewerben — der Kontakt läuft per privater Nachricht.
+    submit: Anfrage veröffentlichen
+  field:
+    category: Kategorie
+    title:
+      placeholder: Brauche dringend einen Klempner
+    description:
+      placeholder: Was gemacht werden soll, ungefährer Termin, Dringlichkeit, Details…
+    barrio:
+      placeholder: Villa Morra
+    budget:
+      short: Budget (Gs)
+    status:
+      open: Offen
+      closed: Geschlossen
+  edit:
+    title: Anfrage bearbeiten

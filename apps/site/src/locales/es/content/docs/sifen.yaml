@@ -1,0 +1,11 @@
+title: SIFEN — factura electrónica
+tldr: Generación de factura electrónica integrada con DGII en cada trabajo completado. Bloqueada por consultoría tributaria.
+sections:
+  - heading: Bloqueo
+    body: |-
+      Antes de implementar necesito clarity de un contador parguayo sobre:
+      · ¿Qué tipo de RUC requiere PyaServ?
+      · ¿Es PyaServ emisor o sólo proveedor de infra para el profesional?
+      · ¿Cómo se aplica IVA si el profesional NO tiene RUC?
+  - heading: Plan
+    body: Sprint 5 si juicio legal positivo, sino sigue como "soon" hasta resolver.

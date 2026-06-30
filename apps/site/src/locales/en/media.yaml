@@ -1,0 +1,7 @@
+media:
+  upload: Upload photo
+  uploading: Uploading…
+  replace: Replace photo
+  remove: Remove
+  too_big: Image must be under 5 MB.
+  bad_type: Only JPG, PNG or WebP.

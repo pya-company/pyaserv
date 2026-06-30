@@ -1,0 +1,15 @@
+login:
+  title: Anmelden
+  description: Melden Sie sich bei PyaServ mit Ihrer E-Mail-Adresse an — ohne Passwort. Sechsstelliger Code per E-Mail.
+  intro: Keine Passwörter — wir senden Ihnen einen sechsstelligen Code per E-Mail.
+  email_label: E-Mail
+  email:
+    placeholder: ihrname@email.com
+  send_code: Code senden
+  code: Code (6 Ziffern)
+  confirm: Bestätigen
+  change_email: E-Mail ändern
+  sent_ok: Prüfen Sie Ihr Postfach — dort liegt ein sechsstelliger Code.
+  success: ✓ Fertig, Sie werden weitergeleitet…
+
+  reason_dashboard: Melden Sie sich an, um auf Ihr Konto zuzugreifen.

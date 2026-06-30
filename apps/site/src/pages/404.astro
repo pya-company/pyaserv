@@ -1,0 +1,13 @@
+---
+import Base from '~/layouts/Base.astro'
+import T from '~/components/T.astro'
+---
+<Base title="404" active="home" description="Página no encontrada">
+  <section style="max-width: 720px; margin: 80px auto; padding: 0 16px; text-align: center;">
+    <h1 style="font-size: clamp(28px, 5vw, 40px); margin: 0 0 16px 0; font-weight: 800;">404</h1>
+    <T k="error.not_found_title" as="p" class="ps-card__sub" />
+    <p style="margin-top: 24px;">
+      <a href="/" style="color: var(--ps-acc); font-weight: 600;"><T k="error.back_home" /></a>
+    </p>
+  </section>
+</Base>

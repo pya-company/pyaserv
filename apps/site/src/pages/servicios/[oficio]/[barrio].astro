@@ -1,0 +1,98 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/docs.css'
+import { OFICIOS, SERVICE_AREAS } from '~/data/service-areas.ts'
+
+export function getStaticPaths() {
+  const paths = []
+  for (const o of OFICIOS) {
+    for (const a of SERVICE_AREAS) {
+      paths.push({ params: { oficio: o.slug, barrio: a.slug }, props: { oficio: o, area: a } })
+    }
+  }
+  return paths
+}
+
+const { oficio, area } = Astro.props
+const title = `${oficio.name} en ${area.name} — PyaServ`
+const description = `Encontrá ${oficio.name.toLowerCase()} en ${area.name}, ${area.region === 'asuncion' ? 'Asunción' : 'Departamento Central'}. Contacto directo por WhatsApp, sin comisiones.`
+---
+<Base title={title} active="specialists" description={description}>
+  <div style="max-width:760px;margin:0 auto;padding:24px 16px;">
+    <nav style="font-size:13px;color:#6b7280;margin-bottom:16px;">
+      <a href="/servicios/" style="color:#4f46e5;">Servicios</a> · <a href={`/servicios/${oficio.slug}/`} style="color:#4f46e5;">{oficio.name}</a> · <span>{area.name}</span>
+    </nav>
+    <h1 style="font-size:28px;margin:0 0 8px 0;">{oficio.name} en {area.name}</h1>
+    <p style="color:#6b7280;margin:0 0 24px 0;">
+      {description}
+    </p>
+
+    <div id="results" style="margin-bottom:32px;" aria-busy="true">
+      <p style="text-align:center;color:#6b7280;padding:24px;background:#f9fafb;border-radius:8px;">Cargando profesionales…</p>
+    </div>
+
+    <section style="background:#eef2ff;border-radius:12px;padding:20px;margin-top:32px;">
+      <h2 style="margin:0 0 8px 0;font-size:18px;">¿Sos {oficio.name.toLowerCase()} en {area.name}?</h2>
+      <p style="margin:0 0 12px 0;color:#1f2937;">Sumá tu perfil gratis a PyaServ y aparece en las búsquedas de clientes de tu barrio.</p>
+      <a href="/me/" style="background:#4f46e5;color:white;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Crear mi perfil →</a>
+    </section>
+
+    <section style="margin-top:32px;">
+      <h2 style="font-size:18px;margin:0 0 12px 0;">Preguntas frecuentes</h2>
+      <details style="background:#f9fafb;padding:14px;border-radius:8px;margin-bottom:8px;">
+        <summary style="font-weight:600;cursor:pointer;">¿Cuánto cobra un {oficio.name.toLowerCase()} en {area.name}?</summary>
+        <p style="margin:8px 0 0 0;color:#4b5563;">Los precios varían según el trabajo. Cada profesional publica su rango aproximado en su perfil. Antes de coordinar, pedile al profesional una cotización detallada.</p>
+      </details>
+      <details style="background:#f9fafb;padding:14px;border-radius:8px;margin-bottom:8px;">
+        <summary style="font-weight:600;cursor:pointer;">¿PyaServ cobra comisión?</summary>
+        <p style="margin:8px 0 0 0;color:#4b5563;">No. PyaServ es gratis para el cliente. El profesional puede tener un plan gratuito hasta cierta cantidad de contactos por mes; pasado ese límite paga una suscripción.</p>
+      </details>
+      <details style="background:#f9fafb;padding:14px;border-radius:8px;margin-bottom:8px;">
+        <summary style="font-weight:600;cursor:pointer;">¿Cómo verifico que un profesional es confiable?</summary>
+        <p style="margin:8px 0 0 0;color:#4b5563;">Mirá el perfil completo: insignia "WhatsApp verificado", reseñas de clientes anteriores (idealmente con foto), tiempo promedio de respuesta y portfolio de trabajos.</p>
+      </details>
+    </section>
+  </div>
+
+  <script define:vars={{ oficio: oficio.slug, barrio: area.slug }}>
+    const root = document.getElementById('results')
+    if (root) {
+      ;(async () => {
+        try {
+          const res = await fetch(`https://api.pyaserv.com/v1/specialists?barrio=${encodeURIComponent(barrio)}`)
+          if (!res.ok) throw new Error('HTTP ' + res.status)
+          const body = await res.json()
+          const all = body.data ?? []
+          // Filter by oficio if specialists have a primary_category
+          const filtered = all.filter((s) => !s.primaryCategory || s.primaryCategory === oficio || s.primaryCategory.includes(oficio))
+          root.removeAttribute('aria-busy')
+          if (filtered.length === 0) {
+            root.innerHTML = `
+              <div style="text-align:center;padding:32px 16px;background:#f9fafb;border-radius:8px;">
+                <p style="margin:0 0 8px 0;color:#1f2937;font-weight:600;">Todavía no hay profesionales de este oficio en esta zona.</p>
+                <p style="margin:0;color:#6b7280;font-size:14px;">Probá otros barrios o vení después — la red está creciendo.</p>
+              </div>`
+            return
+          }
+          root.innerHTML = filtered.map((s) => `
+            <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+              <div style="width:48px;height:48px;border-radius:50%;background:#e5e7eb;background-size:cover;background-position:center;${s.photo ? `background-image:url(https://api.pyaserv.com/v1/media/${s.photo});` : ''}flex-shrink:0;"></div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:600;">${escapeHtml(s.displayName)}</div>
+                <div style="color:#6b7280;font-size:13px;">${escapeHtml(s.headline ?? '')}</div>
+                ${s.ratingCount > 0 ? `<div style="font-size:12px;color:#f59e0b;">★ ${s.ratingAvg.toFixed(1)} (${s.ratingCount})</div>` : ''}
+              </div>
+              <a href="/specialists/${s.id}/" style="background:#4f46e5;color:white;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;flex-shrink:0;">Ver →</a>
+            </div>
+          `).join('')
+        } catch (e) {
+          root.removeAttribute('aria-busy')
+          root.innerHTML = `<p style="color:#991b1b;padding:16px;">Error al cargar profesionales.</p>`
+        }
+      })()
+    }
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c])
+    }
+  </script>
+</Base>

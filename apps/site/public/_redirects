@@ -4,3 +4,17 @@
 # and the magic-link auto-verify path in Base.astro picks it up.
 /login    /?login=1   302
 /login/   /?login=1   302
+
+# Pretty profile URL — temporarily disabled until /p/[slug].astro lands.
+# Without this, an unknown `/p/<slug>/` resolves to the CF Pages 404 page,
+# satisfying spec §SEO + the AC-404 contract. Direct shareable URLs use
+# `/p/?slug=<slug>` against the index.html that ships at /p/.
+#/p/:slug    /p/?slug=:slug   200
+#/p/:slug/   /p/?slug=:slug   200
+
+# /p/<bogus>/ MUST return a real 404, not the SPA fallback to /p/index.html.
+# CF Pages SPA fallback would serve /p/index.html for any /p/<slug>/ since
+# the directory has an index. Using `:slug` placeholders so /p/ itself is
+# untouched (its index.html still handles ?slug= query-param flow).
+/p/:slug/   /404/   404
+/p/:slug    /404/   404

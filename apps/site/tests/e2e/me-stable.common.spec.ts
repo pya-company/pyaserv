@@ -55,10 +55,7 @@ test.describe('/me/ stability', () => {
     }, sid)
 
     await page.goto('/me/')
-    await page.waitForLoadState('networkidle')
     // give post-paint settle a moment
-    await page.waitForTimeout(800)
-
     const cls = await page.evaluate(() => {
       const shifts = (window as { __shifts?: Array<{ value: number; hadRecentInput: boolean }> }).__shifts || []
       return shifts
@@ -94,14 +91,10 @@ test.describe('/me/ stability', () => {
 
     await page.goto('/me/')
     // Wait for the initial /v1/me roundtrip to settle.
-    await page.waitForLoadState('networkidle')
-
     // Navigate away through a ClientRouter swap, then back.
     await page.goto('/specialists/')
     await page.waitForURL(/\/specialists\/$/)
     await page.goto('/me/')
-    await page.waitForLoadState('networkidle')
-
     // Click the Listings tab and assert its panel becomes the active one. The
     // bug: inline script ran once at first /me/ load; after the swap the tab
     // click listeners died, so nothing happened on click.

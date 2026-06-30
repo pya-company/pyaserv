@@ -1,0 +1,4 @@
+error:
+  network: Error de red. Intentá de nuevo.
+  not_found_title: Esta página no existe o se movió.
+  back_home: ← Volver al inicio

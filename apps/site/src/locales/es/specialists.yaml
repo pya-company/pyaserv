@@ -1,0 +1,24 @@
+specialists:
+  title: Profesionales
+  description: Plomeros, electricistas, peluqueras, profes — encontralos en tu barrio en Asunción.
+  heading: Profesionales disponibles
+  intro: Filtrá por categoría o barrio. El contacto se hace fuera de la plataforma; PyaServ solo presenta.
+  filter:
+    category_label: Categoría
+    barrio_label: Barrio
+    category:
+      all: Todas
+    barrio:
+      placeholder: Villa Morra, Carmelitas…
+    near_me: 📍 Cerca de mí
+    near_me_on: 📍 Cerca de mí · activado
+    near_me_denied: Sin acceso a ubicación
+  empty:
+    title: Nada por acá
+    hint: Probá quitar filtros o cambiar el barrio.
+  count:
+    one: profesional
+    many: profesionales
+  card:
+    verified: ✓ verificado
+    cta: Ver perfil →

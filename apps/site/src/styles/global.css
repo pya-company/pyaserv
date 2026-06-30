@@ -206,6 +206,29 @@ html, body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Kill the mobile "grey square" tap highlight on every interactive
+     element globally. Replaced by our focus-visible accent ring (keyboard)
+     and CSS :active state (touch/click) on the buttons that need feedback. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Universal kill of the browser's default focus outline — replaced by the
+   accent ring under :focus-visible (keyboard nav only). Plain :focus from
+   mouse/touch click does NOT show any outline.  Buttons that need press
+   feedback use :active (transform / opacity) explicitly. */
+button, a, [role="button"], summary, input, select, textarea {
+  outline: none;
+}
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ps-acc);
+  outline-offset: 2px;
+  border-radius: var(--ps-radius-sm);
 }
 
 a { color: inherit; }
@@ -244,6 +267,8 @@ button { font: inherit; cursor: pointer; }
   align-items: center;
   gap: var(--ps-space-2);
   margin-right: auto;
+  min-height: 44px;
+  padding-block: var(--ps-space-1);
 }
 .ps-topbar__brand-em { color: var(--ps-acc); }
 
@@ -252,10 +277,49 @@ button { font: inherit; cursor: pointer; }
   display: flex;
   gap: var(--ps-space-1);
   flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;        /* allow children to shrink past content size */
+  margin-left: auto;
+  overflow: hidden;    /* fail-safe so an oversized child cannot push siblings off-screen */
 }
 @media (max-width: 719.98px) {
   .ps-topbar__nav { display: none; }
 }
+/* Narrow-desktop densification (720–960 px): shrink padding + font on nav
+   links so DE/RU lang + theme button fit without wrapping the Sign-in CTA. */
+@media (min-width: 720px) and (max-width: 960px) {
+  .ps-topbar { padding-left: 6px; padding-right: 6px; gap: 2px; }
+  .ps-topbar__brand { font-size: 0.85rem; gap: 2px; min-height: 36px; }
+  .ps-topbar__nav { gap: 0; }
+  .ps-topbar__nav a {
+    padding: 4px 3px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    min-height: 32px;
+  }
+  .ps-topbar__nav-btn {
+    padding: 4px 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+  .ps-lang-switch { padding: 1px; gap: 0; }
+  .ps-lang-btn { padding: 1px 2px; min-width: 18px; min-height: 24px; font-size: 0.6rem; }
+  .ps-theme-btn { padding: 2px 3px; }
+  /* Hide the dev-only /components/ link at narrow desktop to claw back space. */
+  .ps-topbar__nav .ps-dev-only { display: none; }
+}
+
+/* Dev-only nav affordances (storybook, debug toggles): hidden everywhere by
+   default, revealed only when bootstrap.js stamps <html data-dev="1"> on
+   localhost + .pages.dev preview hosts. Production pyaserv.com stays clean.
+   Specific selectors so the rule wins against `.ps-topbar__nav a` (0-2-0). */
+.ps-topbar__nav .ps-dev-only,
+.ps-fly .ps-dev-only,
+a.ps-dev-only { display: none !important; }
+html[data-dev="1"] .ps-topbar__nav .ps-dev-only,
+html[data-dev="1"] .ps-fly .ps-dev-only,
+html[data-dev="1"] a.ps-dev-only { display: revert !important; }
 
 /* ----- flying-menu integration (mobile only) -----------------------------
    Custom element from @igor-ganov/flying-menu. Draggable, corner-snapping
@@ -340,6 +404,8 @@ flying-menu:not(:defined) { display: none; }
 }
 @media (max-width: 719.98px) {
   .ps-lang-switch { align-self: stretch; justify-content: center; margin-top: var(--ps-space-2); }
+  /* WCAG 2.5.5 AAA — tappable targets ≥44×44 inside the mobile flying-menu. */
+  .ps-fly__menu .ps-lang-btn { min-height: 44px; min-width: 44px; padding: 8px 12px; }
 }
 .ps-lang-btn {
   appearance: none;
@@ -353,12 +419,23 @@ flying-menu:not(:defined) { display: none; }
   min-width: 36px;
   border-radius: var(--ps-radius-pill);
   letter-spacing: 0.04em;
+  cursor: pointer;
   transition: color 120ms, background 120ms;
+  font-family: inherit;
 }
-.ps-lang-btn:hover,
-.ps-lang-btn:focus-visible { color: var(--ps-text); }
+.ps-lang-btn:hover { color: var(--ps-text); background: var(--ps-surface-2); }
+/* Унифицированный focus-visible: outline + offset для всех интерактивных. */
+.ps-lang-btn:focus-visible,
+.ps-theme-btn:focus-visible,
+.ps-topbar__nav-btn:focus-visible,
+.ps-tab:focus-visible,
+.cl-btn:focus-visible {
+  outline: 2px solid var(--ps-acc);
+  outline-offset: 2px;
+  color: var(--ps-text);
+}
 .ps-lang-btn[aria-pressed="true"] {
-  background: var(--ps-surface);
+  background: var(--ps-acc-soft);
   color: var(--ps-acc);
   box-shadow: var(--ps-shadow-sm);
 }
@@ -539,6 +616,9 @@ flying-menu:not(:defined) { display: none; }
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ps-acc) 18%, transparent);
 }
 .ps-form { display: grid; gap: var(--ps-space-3); margin: var(--ps-space-3) 0; max-width: 36rem; }
+/* Respect the [hidden] attribute — `display: grid` above otherwise overrides
+   the UA stylesheet and forces gated forms (e.g. login verify) to stay visible. */
+.ps-form[hidden] { display: none; }
 @media (min-width: 720px) { .ps-form { gap: var(--ps-space-4); } }
 .ps-form textarea { min-height: 6rem; resize: vertical; font-family: inherit; }
 
@@ -649,14 +729,20 @@ html[data-auth="user"] [data-auth-guest] { display: none; }
 .ps-fly__menuitem:hover { background: var(--ps-surface-2); }
 /* Pre-paint locale highlight on lang buttons */
 html[data-loc="es"] .ps-lang-btn[data-lang="es"],
-html[data-loc="en"] .ps-lang-btn[data-lang="en"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
+html[data-loc="en"] .ps-lang-btn[data-lang="en"],
+html[data-loc="de"] .ps-lang-btn[data-lang="de"],
+html[data-loc="ru"] .ps-lang-btn[data-lang="ru"],
+html[data-loc="gn"] .ps-lang-btn[data-lang="gn"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
 
 /* Dual-language render — see components/T.astro. We ship both ES and EN text
    in the HTML and hide the wrong one via html[lang]. Zero JS, zero pop-in,
    zero text width swap. Works on the first frame because the head inline
    bootstrap.js sets <html lang> + <html data-loc> before <body> parses. */
-html[lang="es"] [lang="en"],
-html[lang="en"] [lang="es"] { display: none; }
+html[lang="es"] [lang="en"], html[lang="es"] [lang="de"], html[lang="es"] [lang="ru"], html[lang="es"] [lang="gn"],
+html[lang="en"] [lang="es"], html[lang="en"] [lang="de"], html[lang="en"] [lang="ru"], html[lang="en"] [lang="gn"],
+html[lang="de"] [lang="es"], html[lang="de"] [lang="en"], html[lang="de"] [lang="ru"], html[lang="de"] [lang="gn"],
+html[lang="ru"] [lang="es"], html[lang="ru"] [lang="en"], html[lang="ru"] [lang="de"], html[lang="ru"] [lang="gn"],
+html[lang="gn"] [lang="es"], html[lang="gn"] [lang="en"], html[lang="gn"] [lang="de"], html[lang="gn"] [lang="ru"] { display: none; }
 /* Reset that's only for descendants of our T component — we don't want to
    accidentally hide content that uses lang for genuine multilingual quoting. */
 

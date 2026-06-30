@@ -1,0 +1,15 @@
+title: Insignias
+tldr: 18 insignias en 4 categorías que reconocen logros del profesional. Públicas en el perfil, opcionalmente ocultables.
+sections:
+  - heading: Categorías
+    body: |-
+      · **Tier** (5): Aprendiz → Patrón del Oficio
+      · **Milestone** (5): primer trabajo, 10/50/100 trabajos, primer 5★
+      · **Superlative** (3): velocista del mes, estrella del barrio, maestro del barrio
+      · **Collection** (5): Perfil Maestro, multilingüe, constructor, equipo, verificado completo
+  - heading: Rarity
+    body: common · rare · epic · legendary. Determina color del pill y peso visual.
+  - heading: Auto-grant
+    body: Las superlativos se evalúan mensualmente (cron próximo sprint). Las milestone + collection se otorgan en eventos (job completed, photo added, ruc set).
+  - heading: Visibilidad
+    body: Por defecto públicas en el perfil. El usuario puede ocultar individualmente desde /me/?tab=game.

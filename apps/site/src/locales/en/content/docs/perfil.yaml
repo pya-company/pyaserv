@@ -1,0 +1,30 @@
+title: Your public profile
+tldr: Your own page at pyaserv.com/p/<your-slug> with photo, cover, bio, services with price, portfolio gallery, reviews, badges, schedule, and a direct WhatsApp button.
+sections:
+  - heading: What is included
+    body: |
+      · Profile photo + cover image (16:9)
+      · Bio + services with price range
+      · Up to 8 work areas
+      · Weekly schedule
+      · Work gallery (up to 24 photos)
+      · Customer reviews with photo
+      · Badges + gamification tier
+      · Sticky WhatsApp button
+      · QR for business card
+  - heading: URL
+    body: |
+      Each professional gets a human-friendly slug based on their name: `pyaserv.com/p/juan-perez-019ec8`. Generated when saving the profile; not changeable later.
+  - heading: SEO
+    body: |
+      · Dynamic title and meta description
+      · Schema.org `LocalBusiness` with aggregateRating
+      · Open Graph + Twitter Card
+      · Hreflang for ES/EN/DE/RU versions
+      · LCP target < 2 s on 3 G + 4× CPU
+  - heading: How to edit
+    body: |
+      Go to `/me/` → "My profile" tab → basic fields there. For cover / services / portfolio / schedule / filters / Guarani: open the "Advanced profile" details below the main form.
+  - heading: How "completeness" is calculated
+    body: |
+      10 steps, 10 % each, starting at 20 % endowed-progress (Nunes 2006). At 100 %: "Master Profile" badge + 7 free Boost days.

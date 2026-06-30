@@ -1,0 +1,5 @@
+time:
+  now: gerade eben
+  min_ago: 'vor {n} Min.'
+  hour_ago: 'vor {n} Std.'
+  day_ago: 'vor {n} Tg.'

@@ -1,0 +1,9 @@
+title: Mis clientes (Lite-CRM)
+tldr: Lista de clientes recurrentes. Se agregan automáticamente al completar un trabajo. Notas editables.
+sections:
+  - heading: Auto-add
+    body: 'Cuando una inquiry pasa a `work_status=done` (ambos confirmaron), se crea `client_record` con: display_name, phone, barrio, job_count, last_job_at.'
+  - heading: Notas
+    body: Cada record tiene un campo `notes` libre, editable por el profesional. Útil para "le instalé el calefactor de cocina en marzo, le devuelvo en septiembre para mantenimiento".
+  - heading: 'Próximo: maintenance pitch'
+    body: Para oficios con mantenimiento regular (plomería, AC), el sistema sugerirá auto-contacto al cliente N meses después de cierto tipo de trabajo.

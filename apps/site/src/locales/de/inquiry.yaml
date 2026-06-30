@@ -1,0 +1,27 @@
+inquiry:
+  detail:
+    title: Konversation
+    back: ← Konversationen
+    heading: Konversation
+    view_subject: Beitrag ansehen
+    placeholder: Nachricht schreiben…
+    about_listing: Zu einer Dienstleistung
+    about_request: Zu einer Anfrage
+  back: ← Konversationen
+  view_subject: Beitrag ansehen
+  compose_placeholder: Nachricht schreiben…
+  subject_listing: Zu einer Dienstleistung
+  subject_request: Zu einer Anfrage
+  status_negotiating: In Abstimmung
+  status_in_progress: In Bearbeitung
+  status_done: Erledigt
+  status_cancelled: Abgebrochen
+  btn_start: Auftrag starten
+  btn_done: Als erledigt markieren
+  btn_cancel: Abbrechen
+  cancel_confirm: Diesen Auftrag abbrechen?
+  review_h: Arbeit bewerten
+  review_body_label: Kommentar (optional)
+  review_body_placeholder: Schildern Sie anderen, wie es gelaufen ist.
+  review_submit: Bewertung absenden
+  review_thanks: Danke für Ihre Bewertung!

@@ -1,0 +1,12 @@
+title: Recap-card PNG (WhatsApp Status)
+tldr: Generador 1080×1920 PNG semanal con métricas de la semana, listo para compartir en WhatsApp Status / Instagram Story.
+sections:
+  - heading: Trigger
+    body: Domingo 18:00 PY — auto-genera y muestra modal en /me/ si hubo actividad significativa esa semana.
+  - heading: Triggers adicionales
+    body: |-
+      · Desbloqueo de insignia importante.
+      · Hito numérico (50, 100 trabajos).
+      · Manual "Compartir mi semana".
+  - heading: Stack
+    body: Cloudflare Worker + Satori + Resvg. Pendiente bundling fix.

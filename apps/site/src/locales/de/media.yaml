@@ -1,0 +1,7 @@
+media:
+  upload: Foto hochladen
+  uploading: Wird hochgeladen…
+  replace: Foto ersetzen
+  remove: Entfernen
+  too_big: Bild darf maximal 5 MB groß sein.
+  bad_type: Nur JPG, PNG oder WebP.

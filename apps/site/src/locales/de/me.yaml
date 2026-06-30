@@ -1,0 +1,89 @@
+me:
+  title: Mein Dashboard
+  heading: Mein Dashboard
+  logout: Abmelden
+  tabs:
+    aria: Bereiche
+    profile: 👤 Mein Profil
+    listings: 🛠️ Meine Dienstleistungen
+    quotes: 📄 Angebote
+    clients: 👥 Meine Kunden
+    game: 🏆 Erfolge
+    requests: 📢 Meine Anfragen
+    inquiries: 💬 Konversationen
+    stats: 📊 Statistik
+  ext:
+    summary: Erweitertes Profil (Titelbild · Dienstleistungen · Einsatzgebiete · Portfolio · Zeitplan · Filter · Guaraní)
+    add_service: + Dienstleistung hinzufügen
+    add_photo: + Foto hinzufügen
+    save: Erweitertes Profil speichern
+  loading_passkeys: Passkeys werden geladen…
+  loading_quests: Quests werden geladen…
+  stats:
+    h: Statistik
+    intro: Profilkennzahlen — letzte 30 Tage.
+    empty: Sie haben noch kein Fachprofil. Erstellen Sie eines, um Kennzahlen zu sehen.
+    profile_view: Profilaufrufe
+    phone_click: Klicks auf Telefonnummer
+    whatsapp_click: Klicks auf WhatsApp
+    inquiries: Eingegangene Anfragen
+    completed: Erledigte Aufträge
+  session_prefix: Angemeldet · userId
+  profile:
+    h: Fachprofil
+    intro: Wenn Sie Dienstleistungen anbieten möchten, füllen Sie hier Ihr Profil aus.
+    display_name: Anzeigename
+    headline: Kurzbeschreibung
+    phone: Telefon
+    whatsapp: WhatsApp (optional)
+    barrio: Stadtviertel
+    bio: Über mich
+    headline_placeholder: Klempner rund um die Uhr in Asunción
+    phone_placeholder: +595 981 234567
+    whatsapp_placeholder: +595 981 234567
+    barrio_placeholder: Villa Morra
+    bio_placeholder: Erzählen Sie von Ihrer Erfahrung, Werkzeugen, abgedeckten Gebieten…
+    saved: ✓ Profil gespeichert
+    geoloc_button: 'Meinen Standort verwenden'
+    geoloc:
+      locating: Standort wird ermittelt…
+      denied: Zugriff auf den Standort verweigert
+      unavailable: Standortermittlung nicht verfügbar
+    completeness:
+
+      label: "Profil vollständig: {pct}%"
+      empty: 'Profil ausgefüllt: 0 %'
+  listings:
+    h: Meine veröffentlichten Dienstleistungen
+    new: + Neu
+    empty_profile:
+      title: Erstellen Sie zuerst Ihr Profil
+      hint: Füllen Sie den Reiter „Mein Profil“ aus, bevor Sie veröffentlichen.
+    empty:
+      title: Sie haben noch keine Dienstleistungen veröffentlicht
+      hint: Tippen Sie oben auf „+ Neu“, um zu beginnen.
+    price_from: ab
+    confirm_delete: Diese Dienstleistung löschen?
+  requests:
+    h: Meine Anfragen als Kunde
+    new: + Neu
+    empty:
+      title: Sie haben keine offenen Anfragen
+      hint: Wenn Sie etwas Konkretes brauchen, tippen Sie auf „+ Neu“.
+    status:
+      open: Offen
+      closed: Geschlossen
+    public_view: Öffentliche Ansicht →
+  inquiries:
+    h: Konversationen
+    empty:
+      title: Noch keine Konversationen
+      hint: Sobald Sie jemanden kontaktieren oder jemand Sie kontaktiert, erscheinen die Gespräche hier.
+    as_client: Als Kunde
+    as_specialist: Als Fachmann
+    about_listing: Zu einer Dienstleistung
+    about_request: Zu einer Anfrage
+  notifs:
+    h: Benachrichtigungen
+    email: E-Mail-Benachrichtigungen erhalten
+    saved: ✓ Einstellung gespeichert

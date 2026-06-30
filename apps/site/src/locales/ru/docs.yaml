@@ -1,0 +1,23 @@
+docs:
+  page_title: Документация
+  page_intro: Вики PyaServ. У каждой фичи свой раздел с деталями, ссылкой на демо и продакшен.
+  sidebar_aria: Разделы документации
+  sidebar_search_placeholder: Поиск…
+  status_live: В работе
+  status_soon: Скоро
+  status_planned: Запланировано
+  btn_view_real: Открыть →
+  btn_more: Подробнее →
+  screenshot_alt: Скриншот фичи в продакшене
+  btn_soon: Скоро
+  back_to_index: ← Вся документация
+  breadcrumb_root: Docs
+  
+  group_profile: Профиль и видимость
+  group_gamification: Геймификация
+  group_tools: Инструменты
+  group_system: Система
+  group_roadmap: Дорожная карта
+  group_dev: Разработка
+  index_featured_h: Начните здесь
+  index_latest_h: Последние релизы

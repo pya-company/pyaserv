@@ -1,0 +1,27 @@
+title: Cuatro idiomas, documentación nueva y demo más estable
+tldr: Español · Inglés · Alemán · Ruso, todos en el mismo nivel. Documentación como wiki con sidebar. Cada release tiene su página completa. Demo mode arreglado y más persistente.
+sections:
+  - kind: new
+    heading: Cuatro idiomas — todos en pie de igualdad
+    body: |
+      Cambiá entre español, inglés, alemán o ruso desde el switcher en la barra superior. Tu elección se recuerda entre páginas y al volver. Pensado para la comunidad expat en Paraguay además de los locales.
+  - kind: new
+    heading: Detección automática del idioma del navegador
+    body: |
+      Si llegás con el navegador en alemán o ruso, abrís la app ya en tu idioma. Sin pasos manuales. Podés cambiarlo cuando quieras desde el switcher.
+  - kind: new
+    heading: Documentación como wiki
+    body: |
+      `/docs/` ahora es una wiki con sidebar de navegación a la izquierda. Categorías: Perfil & visibilidad · Gamification · Herramientas · Sistema · Roadmap. Encontrás lo que buscás más rápido que antes.
+  - kind: new
+    heading: Cada release con su propia página
+    body: |
+      Cada novedad tiene su propio link compartible — copiás `/releases/<nombre>/` y lo mandás por WhatsApp para mostrar exactamente qué cambió. Indexado en Google.
+  - kind: fixed
+    heading: Demo mode — banner que sí se cierra
+    body: |
+      El botón "Salir del demo" ahora funciona. Mientras navegás en modo demo, los links a las páginas que mantienen el demo lo conservan automáticamente.
+  - kind: next
+    heading: Próximamente
+    body: |
+      Buscador en la documentación. Aviso cuando hay novedades desde tu última visita. Grabaciones cortas embebidas en las release notes para ver las funciones nuevas en acción.

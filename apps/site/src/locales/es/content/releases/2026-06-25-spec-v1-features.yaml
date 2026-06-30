@@ -1,0 +1,31 @@
+title: Las 13 funciones que necesitabas — perfil público, cotizador, demo y más
+tldr: Perfil compartible por WhatsApp, cotizaciones con PDF, lite-CRM de clientes, tour guiado, búsqueda hyperlocal y modo demo para mirar antes de registrarse.
+sections:
+  - kind: new
+    heading: Perfil público listo para compartir
+    body: |
+      Cada profesional tiene su propio link `/p/tu-nombre` con foto, portada, bio, servicios, badges, horario y botón de WhatsApp. Pegás el link en un grupo de WhatsApp y los clientes ven todo en un toque.
+  - kind: new
+    heading: Cotizador con PDF en un toque
+    body: |
+      Armás la cotización con items + IVA, descargás el PDF y lo enviás directo al cliente por WhatsApp. Sin volver al escritorio.
+  - kind: new
+    heading: Subís de nivel mientras trabajás
+    body: |
+      XP por cada trabajo terminado, badges por hitos, racha diaria que se mantiene incluso si te tomás un día. Cinco niveles desde Aprendiz hasta Patrón — el cliente lo ve en tu perfil.
+  - kind: new
+    heading: Tus clientes recordados
+    body: |
+      Cuando terminás un trabajo, el cliente queda guardado en "Mis clientes". Notas editables, contador de trabajos. Próximamente: recordatorio automático para ofrecer mantenimiento.
+  - kind: new
+    heading: Tour guiado al primer ingreso
+    body: |
+      Si recién creás tu perfil, te llevamos paso a paso por lo que falta completar — sin leer manuales. El tour se cierra solo cuando ya conocés todo.
+  - kind: new
+    heading: 400 páginas locales para que te encuentren en Google
+    body: |
+      Generamos automáticamente una página por oficio y barrio — "Plomeros en Villa Morra", "Electricistas en Lambaré" — para que cuando un cliente busque en Google, te encuentre primero.
+  - kind: new
+    heading: Modo demo — mirá antes de registrarte
+    body: |
+      Sumá `?demo=1` a cualquier link y recorrés la app completa con datos de muestra, sin crear cuenta. Para cuando llegás desde un grupo de WhatsApp y querés ver de qué se trata.

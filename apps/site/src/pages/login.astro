@@ -1,0 +1,31 @@
+---
+/* Legacy /login/ redirect — the real login UX lives in a modal triggered from
+   any page via ?login=1. This page exists so deep links to /login/?next=… work
+   on environments without `_redirects` (CF Pages reroutes via that file; local
+   astro preview / CI runners don't, so a real page is the safety net).
+
+   The redirect is client-side because we need to preserve the hash fragment
+   (magic-link arrival pattern uses `#email=…&code=…`, which Cloudflare 30x
+   redirects also preserve but a static page lets us be explicit). */
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0; url=/?login=1" />
+    <title>Sign in · PyaServ</title>
+    <script is:inline>
+      (function () {
+        try {
+          var qp = new URLSearchParams(location.search)
+          var next = qp.get('next')
+          var url = '/?login=1' + (next ? '&next=' + encodeURIComponent(next) : '') + (location.hash || '')
+          location.replace(url)
+        } catch (e) {
+          location.replace('/?login=1')
+        }
+      })()
+    </script>
+  </head>
+  <body></body>
+</html>

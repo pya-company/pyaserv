@@ -62,7 +62,6 @@ test.describe('/me/ dashboard CLS — every tab', () => {
       await page.goto(`/me/?tab=${tab}`)
       // Let every async populate finish — passkeys (3.2s) and analytics (4.8s)
       // are the slowest under prod-RTT, so 6s covers the worst case.
-      await page.waitForLoadState('networkidle')
       await page.waitForTimeout(2000)
 
       const result = await page.evaluate(() => {

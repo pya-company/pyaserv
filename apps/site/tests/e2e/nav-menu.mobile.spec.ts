@@ -12,7 +12,7 @@ import { expect, test } from '@playwright/test'
 // no runtime skip, the file simply isn't picked up by the desktop project.
 test.describe('mobile flying-menu', () => {
   test('opens on first page load', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
     const fly = page.locator('flying-menu')
     await expect(fly).not.toHaveAttribute('open', '')
     const trigger = fly.locator('[slot="trigger"]')
@@ -21,7 +21,7 @@ test.describe('mobile flying-menu', () => {
   })
 
   test('REGRESSION GUARD: still opens after ClientRouter navigation', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
 
     // Cross-page navigation via in-page <a href="/specialists/"> — ClientRouter
     // intercepts and swaps the body instead of a full reload.

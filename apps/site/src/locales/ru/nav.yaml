@@ -1,0 +1,24 @@
+nav:
+  menu_open: Открыть меню
+  primary_aria: Главная навигация
+  specialists: Специалисты
+  clients: Заявки
+  docs: Документация
+  releases: Обновления
+  components: Компоненты
+  me: Мой кабинет
+  login: Войти
+  logout: Выйти
+  skip: Перейти к содержимому
+  lang_label: Язык
+  theme_label: Сменить тему (светлая/тёмная/авто)
+  lang_es: ES
+  lang_en: EN
+  lang_de: DE
+  lang_ru: RU
+  lang_gn: GN
+  lang_es_aria: Переключить на испанский
+  lang_en_aria: Переключить на английский
+  lang_de_aria: Переключить на немецкий
+  lang_ru_aria: Переключить на русский
+  lang_gn_aria: Переключить на гуарани
