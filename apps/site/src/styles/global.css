@@ -824,9 +824,15 @@ html[lang="gn"] [lang="es"], html[lang="gn"] [lang="en"], html[lang="gn"] [lang=
 .ps-card__main h2 { margin: 0; font-size: 1rem; line-height: 1.3; }
 
 /* Photo upload widget */
-.ps-photo-widget { align-items: center; gap: var(--ps-space-3); }
+/* Reserve the widget's tallest state (avatar height) so the async profile
+   load — which reveals the "remove photo" button via showPhoto() — cannot
+   grow the row and shift the form fields below it. CLS fix. */
+.ps-photo-widget { align-items: center; gap: var(--ps-space-3); min-height: 96px; }
 .ps-photo-widget__ctrl { gap: var(--ps-space-1); }
 .ps-photo-widget__btn { margin: 0; }
+/* Keep the remove button in flow while hidden (visibility, not display) so its
+   slot is reserved on first paint and the reveal on load is shift-free. */
+#photo-remove.ps-hidden { display: inline-flex !important; visibility: hidden; }
 
 /* Notifications + checkbox row */
 .ps-notif-fieldset { margin-top: var(--ps-space-4); gap: var(--ps-space-2); border: 1px solid var(--ps-border); border-radius: var(--ps-radius-md); padding: var(--ps-space-3) var(--ps-space-4); }

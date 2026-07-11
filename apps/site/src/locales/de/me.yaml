@@ -17,6 +17,20 @@ me:
     add_service: + Dienstleistung hinzufügen
     add_photo: + Foto hinzufügen
     save: Erweitertes Profil speichern
+    cover_h: Titelbild (URL)
+    services_h: Leistungen mit Preis
+    zones_h: Gebiete (bis zu 8)
+    portfolio_h: Portfolio (Foto-URLs)
+    schedule_h: Zeiten
+    leadfilters_h: Lead-Filter
+    budget_min: Mindestbudget (Gs)
+    budget_min_ph: 0 = kein Filter
+    hide_new: Konten ausblenden, die vor weniger als 7 Tagen erstellt wurden (Anti-Spam)
+    guarani_h: Guaraní (optional)
+    guarani_phrase: Kurzer Satz auf Guaraní
+    guarani_bio: Bio auf Guaraní
+    verification_h: Verifizierung
+    ruc: RUC (optional)
   loading_passkeys: Passkeys werden geladen…
   loading_quests: Quests werden geladen…
   stats:
@@ -87,3 +101,12 @@ me:
     h: Benachrichtigungen
     email: E-Mail-Benachrichtigungen erhalten
     saved: ✓ Einstellung gespeichert
+  passkeys:
+    h: Sicherheit — Passkeys
+    intro: Melde dich mit Touch ID, Face ID, Windows Hello oder der Bildschirmsperre deines Telefons an — kein E-Mail-Code nötig.
+    add: + Passkey hinzufügen
+    empty: Noch keine Passkeys gespeichert. Füge einen hinzu, um dich ohne Code anzumelden.
+    delete_aria: Passkey löschen
+    unsupported: Dein Browser unterstützt keine Passkeys.
+    saved: Passkey gespeichert.
+    save_error: Passkey konnte nicht gespeichert werden.

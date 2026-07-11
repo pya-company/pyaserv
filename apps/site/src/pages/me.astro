@@ -112,46 +112,46 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <div id="ext-msg" class="ps-msg" style="margin-top:8px;color:#10b981;"></div>
 
         <label style="display:block;margin-top:16px;">
-          <span style="display:block;font-weight:600;margin-bottom:4px;">Imagen de portada (URL)</span>
+          <span style="display:block;font-weight:600;margin-bottom:4px;" data-i18n="me.ext.cover_h">Imagen de portada (URL)</span>
           <input id="ext-cover-url" type="url" placeholder="https://…/cover.jpg" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
         </label>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Servicios con precio</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.services_h">Servicios con precio</h3>
         <div id="ext-services"></div>
         <button type="button" id="ext-add-service" data-i18n="me.ext.add_service" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Zonas (hasta 8)</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.zones_h">Zonas (hasta 8)</h3>
         <div id="ext-areas" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Portfolio (URLs de fotos)</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.portfolio_h">Portfolio (URLs de fotos)</h3>
         <div id="ext-portfolio"></div>
         <button type="button" id="ext-add-photo" data-i18n="me.ext.add_photo" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Horario</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.schedule_h">Horario</h3>
         <div id="ext-schedule" style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;align-items:center;font-size:13px;"></div>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Filtros de leads</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.leadfilters_h">Filtros de leads</h3>
         <label style="display:block;margin-bottom:8px;">
-          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">Presupuesto mínimo (Gs)</span>
-          <input id="ext-lf-min" type="number" min="0" placeholder="0 = sin filtro" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.budget_min">Presupuesto mínimo (Gs)</span>
+          <input id="ext-lf-min" type="number" min="0" data-i18n-placeholder="me.ext.budget_min_ph" placeholder="0 = sin filtro" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
         </label>
         <label style="display:block;margin-bottom:8px;">
-          <input id="ext-lf-hide-new" type="checkbox" /> Esconder cuentas creadas hace &lt; 7 días (anti-spam)
+          <input id="ext-lf-hide-new" type="checkbox" /> <span data-i18n="me.ext.hide_new">Esconder cuentas creadas hace &lt; 7 días (anti-spam)</span>
         </label>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Guaraní (opcional)</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.guarani_h">Guaraní (opcional)</h3>
         <label style="display:block;margin-bottom:8px;">
-          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">Frase corta en guaraní</span>
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.guarani_phrase">Frase corta en guaraní</span>
           <input id="ext-headline-gn" type="text" maxlength="120" placeholder="Mba'e oñembo'epáva…" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
         </label>
         <label style="display:block;margin-bottom:8px;">
-          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">Bio en guaraní</span>
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.guarani_bio">Bio en guaraní</span>
           <textarea id="ext-bio-gn" rows="3" maxlength="2000" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;"></textarea>
         </label>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;">Verificación</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.verification_h">Verificación</h3>
         <label style="display:block;margin-bottom:8px;">
-          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;">RUC (opcional)</span>
+          <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.ruc">RUC (opcional)</span>
           <input id="ext-ruc" type="text" maxlength="20" placeholder="Ej: 80012345-1" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
         </label>
 
@@ -168,14 +168,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       </fieldset>
 
       <fieldset class="ps-banner ps-stack">
-        <legend><strong>
-          <span lang="es">Seguridad — Passkeys</span>
-          <span lang="en">Security — Passkeys</span>
-        </strong></legend>
-        <p class="ps-card__sub">
-          <span lang="es">Iniciá sesión con Touch ID, Face ID, Windows Hello o el bloqueo de tu teléfono — sin código por email.</span>
-          <span lang="en">Sign in with Touch ID, Face ID, Windows Hello or your phone's screen lock — no email code needed.</span>
-        </p>
+        <legend><T k="me.passkeys.h" as="strong" /></legend>
+        <T k="me.passkeys.intro" as="p" class="ps-card__sub" />
         <!-- Skeleton reserves 3rem (single row height) so the form below
              doesn't shift when GET /api/auth/passkeys returns. JS swaps the
              content + removes the data-skeleton attr on first paint. -->
@@ -183,8 +177,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
           <p class="ps-card__sub" data-i18n="me.loading_passkeys"></p>
         </div>
         <button type="button" id="passkey-add" class="ps-btn ps-btn--sm">
-          <span lang="es">+ Agregar passkey</span>
-          <span lang="en">+ Add passkey</span>
+          <T k="me.passkeys.add" />
         </button>
         <p id="passkey-msg" class="ps-msg" role="alert" style="min-height:1.5rem"></p>
       </fieldset>
@@ -452,7 +445,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         // committed to the rendered list height).
         passkeyList.removeAttribute('data-skeleton')
         if (!items.length) {
-          passkeyList.innerHTML = `<p class="ps-card__sub">No hay passkeys guardadas. Agregá una para iniciar sesión sin código.</p>`
+          passkeyList.innerHTML = `<p class="ps-card__sub">${escape(t('me.passkeys.empty'))}</p>`
           return
         }
         passkeyList.innerHTML = items.map((p) => `
@@ -461,7 +454,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
               <strong>${escape(p.label || 'Passkey')}</strong>
               <p class="ps-card__sub" style="margin:0">${formatRelativeTime(p.createdAt)}</p>
             </div>
-            <button type="button" class="ps-btn ps-btn--ghost ps-btn--sm js-pk-delete" data-id="${escape(p.credentialId)}" aria-label="Eliminar passkey">×</button>
+            <button type="button" class="ps-btn ps-btn--ghost ps-btn--sm js-pk-delete" data-id="${escape(p.credentialId)}" aria-label="${escape(t('me.passkeys.delete_aria'))}">×</button>
           </div>
         `).join('')
         for (const btn of passkeyList.querySelectorAll('.js-pk-delete')) {
@@ -486,18 +479,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       }
       passkeyAdd.addEventListener('click', async () => {
         if (!passkeySupported()) {
-          passkeyMsg.innerHTML = `<span class="ps-error">Tu navegador no soporta passkeys.</span>`
+          passkeyMsg.innerHTML = `<span class="ps-error">${escape(t('me.passkeys.unsupported'))}</span>`
           return
         }
         passkeyMsg.textContent = t('common.saving')
         const r = await enrollPasskey(apiFetch)
         if (r === 'ok') {
-          passkeyMsg.innerHTML = `<span class="ps-msg--ok">Passkey guardada.</span>`
+          passkeyMsg.innerHTML = `<span class="ps-msg--ok">${escape(t('me.passkeys.saved'))}</span>`
           await refreshPasskeys()
         } else if (r === 'cancelled') {
           passkeyMsg.textContent = ''
         } else {
-          passkeyMsg.innerHTML = `<span class="ps-error">No se pudo guardar la passkey.</span>`
+          passkeyMsg.innerHTML = `<span class="ps-error">${escape(t('me.passkeys.save_error'))}</span>`
         }
       })
       // Hide the Add button if the browser can't do passkeys at all.

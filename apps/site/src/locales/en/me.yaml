@@ -17,6 +17,20 @@ me:
     add_service: + Add service
     add_photo: + Add photo
     save: Save advanced profile
+    cover_h: Cover image (URL)
+    services_h: Services with price
+    zones_h: Areas (up to 8)
+    portfolio_h: Portfolio (photo URLs)
+    schedule_h: Schedule
+    leadfilters_h: Lead filters
+    budget_min: Minimum budget (Gs)
+    budget_min_ph: 0 = no filter
+    hide_new: Hide accounts created less than 7 days ago (anti-spam)
+    guarani_h: Guaraní (optional)
+    guarani_phrase: Short phrase in Guaraní
+    guarani_bio: Bio in Guaraní
+    verification_h: Verification
+    ruc: RUC (optional)
   loading_passkeys: Loading passkeys…
   loading_quests: Loading quests…
   stats:
@@ -87,3 +101,12 @@ me:
     h: Notifications
     email: Receive email notifications
     saved: ✓ Preference saved
+  passkeys:
+    h: Security — Passkeys
+    intro: Sign in with Touch ID, Face ID, Windows Hello or your phone's screen lock — no email code needed.
+    add: + Add passkey
+    empty: No passkeys saved yet. Add one to sign in without a code.
+    delete_aria: Delete passkey
+    unsupported: Your browser does not support passkeys.
+    saved: Passkey saved.
+    save_error: Could not save the passkey.

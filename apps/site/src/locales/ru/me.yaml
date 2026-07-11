@@ -17,6 +17,20 @@ me:
     add_service: + Добавить услугу
     add_photo: + Добавить фото
     save: Сохранить расширенный профиль
+    cover_h: Обложка (URL)
+    services_h: Услуги с ценой
+    zones_h: Районы (до 8)
+    portfolio_h: Портфолио (URL фотографий)
+    schedule_h: Часы работы
+    leadfilters_h: Фильтры заявок
+    budget_min: Минимальный бюджет (Gs)
+    budget_min_ph: 0 = без фильтра
+    hide_new: Скрывать аккаунты младше 7 дней (антиспам)
+    guarani_h: Гуарани (необязательно)
+    guarani_phrase: Короткая фраза на гуарани
+    guarani_bio: Био на гуарани
+    verification_h: Верификация
+    ruc: RUC (необязательно)
   loading_passkeys: Загружаем passkey…
   loading_quests: Загружаем задания…
   stats:
@@ -87,3 +101,12 @@ me:
     h: Уведомления
     email: Получать уведомления на e-mail
     saved: ✓ Настройка сохранена
+  passkeys:
+    h: Безопасность — Passkey
+    intro: Входите с помощью Touch ID, Face ID, Windows Hello или блокировки экрана телефона — без кода из письма.
+    add: + Добавить passkey
+    empty: Passkey ещё не сохранены. Добавьте один, чтобы входить без кода.
+    delete_aria: Удалить passkey
+    unsupported: Ваш браузер не поддерживает passkey.
+    saved: Passkey сохранён.
+    save_error: Не удалось сохранить passkey.
