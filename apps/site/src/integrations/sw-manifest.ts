@@ -8,6 +8,7 @@
  * rest of the project uses. Keeping it on a separate esbuild lane avoids
  * tsconfig contortions.
  */
+import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -60,10 +61,20 @@ const swManifest = (): AstroIntegration => ({
       const allRoutes = collectHtmlRoutes(distPath)
       const APP_SHELL: ReadonlyArray<string> = ['/', '/specialists/', '/clients/', '/docs/', '/releases/', '/me/']
       const routes = APP_SHELL.filter((r) => allRoutes.includes(r))
-      // Build timestamp as the cache version. Same source + same routes →
-      // same SW bytes → browser sees no update → no purge thrash. Different
-      // build → version flips → activate purges old cache.
-      const version = readFileSync(swPath, 'utf-8').length.toString(36)
+      // Cache version = hash of the precached HTML payloads. Those payloads
+      // embed the content-hashed _astro asset URLs, so ANY content, script or
+      // style change flips the version — which is exactly when the SW must
+      // update and `activate` must purge the stale app-shell cache. (The old
+      // sw.js-length version never changed on content-only deploys, pinning
+      // returning users to a stale /me/ forever.)
+      const shellHash = createHash('sha256')
+      for (const r of routes) {
+        const htmlFile = r === '/'
+          ? join(distPath, 'index.html')
+          : join(distPath, r.replace(/^\/+|\/+$/g, ''), 'index.html')
+        try { shellHash.update(readFileSync(htmlFile)) } catch { /* route not emitted yet */ }
+      }
+      const version = shellHash.digest('hex').slice(0, 12)
 
       let sw = readFileSync(swPath, 'utf-8')
       sw = sw.replace('"__PRECACHE_URLS__"', JSON.stringify(routes))
