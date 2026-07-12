@@ -5,15 +5,27 @@ const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.e
 
 const TOKEN_KEY = 'pyaserv.token'
 
-export const getToken = (): string | null =>
-  typeof sessionStorage === 'undefined' ? null : sessionStorage.getItem(TOKEN_KEY)
+// Persist the session id in localStorage, not sessionStorage: the backend
+// session + cookie both live 30 days (see @pya-company/auth), so the client
+// copy must survive tab close / browser restart / backgrounding too —
+// otherwise every new tab or relaunch reads no token and logs the user out.
+// One-time migration: adopt any legacy sessionStorage token on first read.
+export const getToken = (): string | null => {
+  if (typeof localStorage === 'undefined') return null
+  const persisted = localStorage.getItem(TOKEN_KEY)
+  if (persisted) return persisted
+  const legacy = typeof sessionStorage === 'undefined' ? null : sessionStorage.getItem(TOKEN_KEY)
+  if (legacy) localStorage.setItem(TOKEN_KEY, legacy)
+  return legacy
+}
 
 export const setToken = (token: string): void => {
-  sessionStorage.setItem(TOKEN_KEY, token)
+  localStorage.setItem(TOKEN_KEY, token)
 }
 
 export const clearToken = (): void => {
-  sessionStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(TOKEN_KEY)
+  try { sessionStorage.removeItem(TOKEN_KEY) } catch {}
 }
 
 export const apiFetch = async <T = unknown>(

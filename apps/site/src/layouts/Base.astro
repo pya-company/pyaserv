@@ -171,7 +171,7 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           document.documentElement.dataset.theme = isTheme(stTheme) ? stTheme : 'auto'
         } catch {}
         try {
-          const token = sessionStorage.getItem('pyaserv.token')
+          const token = localStorage.getItem('pyaserv.token') || sessionStorage.getItem('pyaserv.token')
           document.documentElement.dataset.auth = token ? 'user' : 'guest'
         } catch {}
 

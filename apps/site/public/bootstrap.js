@@ -54,7 +54,7 @@
   }
   var hasToken = false
   try {
-    hasToken = !!sessionStorage.getItem('pyaserv.token')
+    hasToken = !!(localStorage.getItem('pyaserv.token') || sessionStorage.getItem('pyaserv.token'))
     document.documentElement.dataset.auth = hasToken ? 'user' : 'guest'
   } catch (e) {
     document.documentElement.dataset.auth = 'guest'
