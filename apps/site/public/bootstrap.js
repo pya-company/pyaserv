@@ -54,7 +54,11 @@
   }
   var hasToken = false
   try {
-    hasToken = !!(localStorage.getItem('pyaserv.token') || sessionStorage.getItem('pyaserv.token'))
+    // Auth is the httpOnly cookie; JS can't see it, so we trust a non-sensitive
+    // flag (set on login) plus any legacy/fallback token. A stale flag just
+    // self-corrects on the first 401.
+    hasToken = localStorage.getItem('pyaserv.authed') === '1'
+      || !!(localStorage.getItem('pyaserv.token') || sessionStorage.getItem('pyaserv.token'))
     document.documentElement.dataset.auth = hasToken ? 'user' : 'guest'
   } catch (e) {
     document.documentElement.dataset.auth = 'guest'

@@ -59,12 +59,11 @@ import '~/styles/docs.css'
   </section>
 
   <script>
-    import { apiFetch, getToken } from '~/lib/api.ts'
+    import { apiFetch, isAuthed } from '~/lib/api.ts'
 
     const init = async () => {
       if (!location.pathname.endsWith('/me/quotes/new/')) return
-      const token = getToken()
-      if (!token) { location.href = '/?login=1&next=' + encodeURIComponent(location.pathname) + '&reason=dashboard'; return }
+      if (!isAuthed()) { location.href = '/?login=1&next=' + encodeURIComponent(location.pathname) + '&reason=dashboard'; return }
 
       // Load templates dropdown
       try {
