@@ -107,52 +107,52 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <p id="profile-msg" class="ps-msg" role="alert"></p>
       </form>
 
-      <details style="margin-top:24px;background:#f9fafb;border-radius:10px;padding:16px;">
+      <details style="margin-top:24px;background:var(--ps-surface-2);color:var(--ps-text);border:1px solid var(--ps-border);border-radius:10px;padding:16px;">
         <summary style="font-weight:700;cursor:pointer;" data-i18n="me.ext.summary"></summary>
         <div id="ext-msg" class="ps-msg" style="margin-top:8px;color:#10b981;"></div>
 
         <label style="display:block;margin-top:16px;">
           <span style="display:block;font-weight:600;margin-bottom:4px;" data-i18n="me.ext.cover_h">Imagen de portada (URL)</span>
-          <input id="ext-cover-url" type="url" placeholder="https://…/cover.jpg" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+          <input id="ext-cover-url" type="url" placeholder="https://…/cover.jpg" style="width:100%;padding:8px;border:1px solid var(--ps-border);border-radius:6px;background:var(--ps-surface);color:var(--ps-text);" />
         </label>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.services_h">Servicios con precio</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.services_h">Servicios con precio</h3>
         <div id="ext-services"></div>
-        <button type="button" id="ext-add-service" data-i18n="me.ext.add_service" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
+        <button type="button" id="ext-add-service" data-i18n="me.ext.add_service" style="background:var(--ps-acc-soft);color:var(--ps-acc);border:1px solid var(--ps-border);border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.zones_h">Zonas (hasta 8)</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.zones_h">Zonas (hasta 8)</h3>
         <div id="ext-areas" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.portfolio_h">Portfolio (URLs de fotos)</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.portfolio_h">Portfolio (URLs de fotos)</h3>
         <div id="ext-portfolio"></div>
-        <button type="button" id="ext-add-photo" data-i18n="me.ext.add_photo" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
+        <button type="button" id="ext-add-photo" data-i18n="me.ext.add_photo" style="background:var(--ps-acc-soft);color:var(--ps-acc);border:1px solid var(--ps-border);border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.schedule_h">Horario</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.schedule_h">Horario</h3>
         <div id="ext-schedule" style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;align-items:center;font-size:13px;"></div>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.leadfilters_h">Filtros de leads</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.leadfilters_h">Filtros de leads</h3>
         <label style="display:block;margin-bottom:8px;">
           <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.budget_min">Presupuesto mínimo (Gs)</span>
-          <input id="ext-lf-min" type="number" min="0" data-i18n-placeholder="me.ext.budget_min_ph" placeholder="0 = sin filtro" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+          <input id="ext-lf-min" type="number" min="0" data-i18n-placeholder="me.ext.budget_min_ph" placeholder="0 = sin filtro" style="width:100%;padding:8px;border:1px solid var(--ps-border);border-radius:6px;background:var(--ps-surface);color:var(--ps-text);" />
         </label>
         <label style="display:block;margin-bottom:8px;">
           <input id="ext-lf-hide-new" type="checkbox" /> <span data-i18n="me.ext.hide_new">Esconder cuentas creadas hace &lt; 7 días (anti-spam)</span>
         </label>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.guarani_h">Guaraní (opcional)</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.guarani_h">Guaraní (opcional)</h3>
         <label style="display:block;margin-bottom:8px;">
           <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.guarani_phrase">Frase corta en guaraní</span>
-          <input id="ext-headline-gn" type="text" maxlength="120" placeholder="Mba'e oñembo'epáva…" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+          <input id="ext-headline-gn" type="text" maxlength="120" placeholder="Mba'e oñembo'epáva…" style="width:100%;padding:8px;border:1px solid var(--ps-border);border-radius:6px;background:var(--ps-surface);color:var(--ps-text);" />
         </label>
         <label style="display:block;margin-bottom:8px;">
           <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.guarani_bio">Bio en guaraní</span>
-          <textarea id="ext-bio-gn" rows="3" maxlength="2000" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;font-family:inherit;"></textarea>
+          <textarea id="ext-bio-gn" rows="3" maxlength="2000" style="width:100%;padding:8px;border:1px solid var(--ps-border);border-radius:6px;background:var(--ps-surface);color:var(--ps-text);font-family:inherit;"></textarea>
         </label>
 
-        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;" data-i18n="me.ext.verification_h">Verificación</h3>
+        <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.verification_h">Verificación</h3>
         <label style="display:block;margin-bottom:8px;">
           <span style="display:block;font-weight:600;margin-bottom:4px;font-size:13px;" data-i18n="me.ext.ruc">RUC (opcional)</span>
-          <input id="ext-ruc" type="text" maxlength="20" placeholder="Ej: 80012345-1" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;" />
+          <input id="ext-ruc" type="text" maxlength="20" placeholder="Ej: 80012345-1" style="width:100%;padding:8px;border:1px solid var(--ps-border);border-radius:6px;background:var(--ps-surface);color:var(--ps-text);" />
         </label>
 
         <button type="button" id="ext-save" data-i18n="me.ext.save" class="ps-btn" style="margin-top:16px;width:100%;"></button>
@@ -216,9 +216,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     <div class="ps-tabpanel" id="panel-game" role="tabpanel" aria-labelledby="tab-game">
       <h2>Logros e insignias</h2>
       <div id="completeness-extended" style="margin-bottom:16px;"></div>
-      <h3 style="margin-top:24px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Misiones de hoy</h3>
+      <h3 style="margin-top:24px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--ps-text-muted);">Misiones de hoy</h3>
       <div id="quests-daily" class="ps-quests" aria-busy="true"><p class="ps-card__sub" data-i18n="me.loading_quests"></p></div>
-      <h3 style="margin-top:16px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Misión semanal</h3>
+      <h3 style="margin-top:16px;font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--ps-text-muted);">Misión semanal</h3>
       <div id="quests-weekly" class="ps-quests" aria-busy="true"><p class="ps-card__sub" data-i18n="me.loading_quests"></p></div>
       <h3 style="margin-top:24px;font-size:16px;">Insignias</h3>
       <div id="badges-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;" aria-busy="true"></div>
@@ -654,7 +654,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const areasEl = document.getElementById('ext-areas')
       if (areasEl) {
         areasEl.innerHTML = areas.map((a) => `
-          <label style="display:flex;align-items:center;gap:4px;background:white;border:1px solid #e5e7eb;border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer;">
+          <label style="display:flex;align-items:center;gap:4px;background:var(--ps-surface);border:1px solid var(--ps-border);border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer;">
             <input type="checkbox" data-area="${escape(a.slug)}" style="margin:0;" /> ${escape(a.name)}
           </label>
         `).join('')
@@ -719,9 +719,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const row = document.createElement('div')
       row.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 32px;gap:6px;margin-bottom:6px;'
       row.innerHTML = `
-        <input type="text" placeholder="Servicio" value="${escape(s.name || '')}" data-svc="name" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
-        <input type="number" placeholder="Desde Gs" value="${s.priceMin ?? ''}" data-svc="priceMin" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
-        <input type="number" placeholder="Hasta Gs" value="${s.priceMax ?? ''}" data-svc="priceMax" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
+        <input type="text" placeholder="Servicio" value="${escape(s.name || '')}" data-svc="name" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="number" placeholder="Desde Gs" value="${s.priceMin ?? ''}" data-svc="priceMin" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="number" placeholder="Hasta Gs" value="${s.priceMax ?? ''}" data-svc="priceMax" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
         <button type="button" data-svc-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;cursor:pointer;">×</button>`
       row.addEventListener('click', (e) => { if (e.target.closest('[data-svc-remove]')) row.remove() })
       c.appendChild(row)
@@ -738,8 +738,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const row = document.createElement('div')
       row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 32px;gap:6px;margin-bottom:6px;'
       row.innerHTML = `
-        <input type="url" placeholder="URL de la foto" value="${escape(p.url || '')}" data-ph="url" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
-        <input type="text" placeholder="Descripción (opc)" value="${escape(p.caption || '')}" data-ph="caption" style="padding:6px;border:1px solid #e5e7eb;border-radius:4px;" />
+        <input type="url" placeholder="URL de la foto" value="${escape(p.url || '')}" data-ph="url" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="text" placeholder="Descripción (opc)" value="${escape(p.caption || '')}" data-ph="caption" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
         <button type="button" data-ph-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;cursor:pointer;">×</button>`
       row.addEventListener('click', (e) => { if (e.target.closest('[data-ph-remove]')) row.remove() })
       c.appendChild(row)
@@ -904,17 +904,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         list.removeAttribute('aria-busy')
         const items = r.data ?? []
         if (items.length === 0) {
-          list.innerHTML = `<p class="ps-card__sub" style="text-align:center;padding:32px 16px;background:#f9fafb;border-radius:8px;">No hay cotizaciones aún. <a href="/me/quotes/new/" style="color:#4f46e5;">Crear la primera →</a></p>`
+          list.innerHTML = `<p class="ps-card__sub" style="text-align:center;padding:32px 16px;background:var(--ps-surface-2);border-radius:8px;">No hay cotizaciones aún. <a href="/me/quotes/new/" style="color:var(--ps-acc);">Crear la primera →</a></p>`
           return
         }
         list.innerHTML = items.map((q) => `
-          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;">
+          <div style="background:var(--ps-surface);border:1px solid var(--ps-border);border-radius:10px;padding:14px;margin-bottom:8px;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <div>
                 <div style="font-weight:600;">${escape(q.clientName ?? 'Sin cliente')}</div>
-                <div style="color:#6b7280;font-size:13px;">${q.items.length} ítems · ${formatRelativeTime(q.createdAt)}</div>
+                <div style="color:var(--ps-text-muted);font-size:13px;">${q.items.length} ítems · ${formatRelativeTime(q.createdAt)}</div>
               </div>
-              <div style="font-weight:700;color:#4f46e5;">${new Intl.NumberFormat('es-PY',{maximumFractionDigits:0}).format(q.total)} Gs</div>
+              <div style="font-weight:700;color:var(--ps-acc);">${new Intl.NumberFormat('es-PY',{maximumFractionDigits:0}).format(q.total)} Gs</div>
             </div>
             ${q.sentAt ? `<div style="margin-top:6px;font-size:12px;color:#10b981;">✓ Enviado por WhatsApp</div>` : ''}
           </div>
@@ -933,16 +933,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         list.removeAttribute('aria-busy')
         const items = r.data ?? []
         if (items.length === 0) {
-          list.innerHTML = `<p class="ps-card__sub" style="text-align:center;padding:32px 16px;background:#f9fafb;border-radius:8px;">Sin clientes aún. Se agregan automáticamente cuando completés un trabajo en PyaServ.</p>`
+          list.innerHTML = `<p class="ps-card__sub" style="text-align:center;padding:32px 16px;background:var(--ps-surface-2);border-radius:8px;">Sin clientes aún. Se agregan automáticamente cuando completés un trabajo en PyaServ.</p>`
           return
         }
         list.innerHTML = items.map((cl) => `
-          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;" data-client-id="${escape(cl.id)}">
+          <div style="background:var(--ps-surface);border:1px solid var(--ps-border);border-radius:10px;padding:14px;margin-bottom:8px;" data-client-id="${escape(cl.id)}">
             <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;">
               <div style="flex:1;min-width:0;">
                 <div style="font-weight:600;">${escape(cl.displayName || 'Cliente')}</div>
-                <div style="color:#6b7280;font-size:13px;">${cl.jobCount} trabajo${cl.jobCount !== 1 ? 's' : ''} · ${cl.barrio || '—'}${cl.lastJobAt ? ` · último: ${formatRelativeTime(cl.lastJobAt)}` : ''}</div>
-                ${cl.notes ? `<div style="margin-top:6px;color:#1f2937;font-size:13px;background:#f9fafb;padding:6px 8px;border-radius:6px;">${escape(cl.notes)}</div>` : ''}
+                <div style="color:var(--ps-text-muted);font-size:13px;">${cl.jobCount} trabajo${cl.jobCount !== 1 ? 's' : ''} · ${cl.barrio || '—'}${cl.lastJobAt ? ` · último: ${formatRelativeTime(cl.lastJobAt)}` : ''}</div>
+                ${cl.notes ? `<div style="margin-top:6px;color:var(--ps-text);font-size:13px;background:var(--ps-surface-2);padding:6px 8px;border-radius:6px;">${escape(cl.notes)}</div>` : ''}
               </div>
               <button type="button" class="ps-btn ps-btn--sm ps-btn--ghost" data-client-notes>Notas</button>
             </div>
