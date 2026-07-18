@@ -85,7 +85,7 @@ export interface ProgressBarProps {
 export const ProgressBar = (p: ProgressBarProps): string => {
   const pct = Math.max(0, Math.min(100, p.pct))
   const h = p.height ?? 8
-  const accent = p.accent ?? 'linear-gradient(90deg,#4f46e5,#818cf8)'
+  const accent = p.accent ?? 'linear-gradient(90deg,#9a6a1f,#cf9b4f)'
   return `<div class="cl-progress" style="background:#e5e7eb;border-radius:999px;height:${h}px;overflow:hidden;">
     <div class="cl-progress__fill" style="background:${accent};height:100%;width:${pct}%;transition:width .6s cubic-bezier(.22,1,.36,1);"></div>
   </div>`

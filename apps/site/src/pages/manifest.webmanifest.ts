@@ -8,7 +8,7 @@ const MANIFEST = {
   scope: '/',
   display: 'standalone',
   background_color: '#ffffff',
-  theme_color: '#4f46e5',
+  theme_color: '#cf9b4f',
   lang: 'es',
   icons: [
     { src: '/icon-192.png', type: 'image/png', sizes: '192x192', purpose: 'any' },

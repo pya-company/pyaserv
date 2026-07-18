@@ -128,7 +128,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
         <button type="button" id="ext-add-photo" data-i18n="me.ext.add_photo" style="background:var(--ps-acc-soft);color:var(--ps-acc);border:1px solid var(--ps-border);border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;"></button>
 
         <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.schedule_h">Horario</h3>
-        <div id="ext-schedule" style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;align-items:center;font-size:13px;"></div>
+        <div id="ext-schedule" style="display:grid;grid-template-columns:56px minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;font-size:13px;"></div>
 
         <h3 style="margin:16px 0 8px 0;font-size:14px;text-transform:uppercase;color:var(--ps-text-muted);letter-spacing:.05em;" data-i18n="me.ext.leadfilters_h">Filtros de leads</h3>
         <label style="display:block;margin-bottom:8px;">
@@ -664,8 +664,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       if (schedEl) {
         schedEl.innerHTML = DAY_ORDER.map((d) => `
           <div>${DAY_LABELS[d]}</div>
-          <input type="time" data-day-from="${d}" />
-          <input type="time" data-day-to="${d}" />
+          <input type="time" data-day-from="${d}" style="min-width:0;width:100%;box-sizing:border-box;" />
+          <input type="time" data-day-to="${d}" style="min-width:0;width:100%;box-sizing:border-box;" />
         `).join('')
       }
       // Load existing
@@ -717,11 +717,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const c = document.getElementById('ext-services')
       if (!c) return
       const row = document.createElement('div')
-      row.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 32px;gap:6px;margin-bottom:6px;'
+      row.style.cssText = 'display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) 32px;gap:6px;margin-bottom:6px;'
       row.innerHTML = `
-        <input type="text" placeholder="Servicio" value="${escape(s.name || '')}" data-svc="name" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
-        <input type="number" placeholder="Desde Gs" value="${s.priceMin ?? ''}" data-svc="priceMin" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
-        <input type="number" placeholder="Hasta Gs" value="${s.priceMax ?? ''}" data-svc="priceMax" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="text" placeholder="Servicio" value="${escape(s.name || '')}" data-svc="name" style="min-width:0;padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="number" placeholder="Desde Gs" value="${s.priceMin ?? ''}" data-svc="priceMin" style="min-width:0;padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="number" placeholder="Hasta Gs" value="${s.priceMax ?? ''}" data-svc="priceMax" style="min-width:0;padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
         <button type="button" data-svc-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;cursor:pointer;">×</button>`
       row.addEventListener('click', (e) => { if (e.target.closest('[data-svc-remove]')) row.remove() })
       c.appendChild(row)
@@ -736,10 +736,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
       const c = document.getElementById('ext-portfolio')
       if (!c) return
       const row = document.createElement('div')
-      row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 32px;gap:6px;margin-bottom:6px;'
+      row.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 32px;gap:6px;margin-bottom:6px;'
       row.innerHTML = `
-        <input type="url" placeholder="URL de la foto" value="${escape(p.url || '')}" data-ph="url" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
-        <input type="text" placeholder="Descripción (opc)" value="${escape(p.caption || '')}" data-ph="caption" style="padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="url" placeholder="URL de la foto" value="${escape(p.url || '')}" data-ph="url" style="min-width:0;padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
+        <input type="text" placeholder="Descripción (opc)" value="${escape(p.caption || '')}" data-ph="caption" style="min-width:0;padding:6px;border:1px solid var(--ps-border);border-radius:4px;background:var(--ps-surface);color:var(--ps-text);" />
         <button type="button" data-ph-remove style="background:#fee2e2;color:#991b1b;border:none;border-radius:4px;cursor:pointer;">×</button>`
       row.addEventListener('click', (e) => { if (e.target.closest('[data-ph-remove]')) row.remove() })
       c.appendChild(row)

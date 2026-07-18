@@ -125,6 +125,9 @@ const verified = (l: Loc): string => tFor(l, 'specialists.card.verified')
                 {LOCS.map((l) => <span lang={l}>{cta(l)}</span>)}
               </div>
             </div>
+            <div class="ps-tears" aria-hidden="true">
+              {Array.from({ length: 7 }).map(() => <span class="ps-tear">✆</span>)}
+            </div>
           </a>
         )
       })}
@@ -182,6 +185,7 @@ const verified = (l: Loc): string => tFor(l, 'specialists.card.verified')
             <p class="ps-card__body">${escape(s.headline)}</p>
             <div class="ps-card__cta"><span>${cta}</span></div>
           </div>
+          <div class="ps-tears" aria-hidden="true">${'<span class="ps-tear">✆</span>'.repeat(7)}</div>
         </a>`).join('')
     }
 

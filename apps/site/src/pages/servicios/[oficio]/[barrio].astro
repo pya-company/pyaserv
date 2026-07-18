@@ -20,7 +20,7 @@ const description = `Encontrá ${oficio.name.toLowerCase()} en ${area.name}, ${a
 <Base title={title} active="specialists" description={description}>
   <div style="max-width:760px;margin:0 auto;padding:24px 16px;">
     <nav style="font-size:13px;color:#6b7280;margin-bottom:16px;">
-      <a href="/servicios/" style="color:#4f46e5;">Servicios</a> · <a href={`/servicios/${oficio.slug}/`} style="color:#4f46e5;">{oficio.name}</a> · <span>{area.name}</span>
+      <a href="/servicios/" style="color:var(--ps-acc);">Servicios</a> · <a href={`/servicios/${oficio.slug}/`} style="color:var(--ps-acc);">{oficio.name}</a> · <span>{area.name}</span>
     </nav>
     <h1 style="font-size:28px;margin:0 0 8px 0;">{oficio.name} en {area.name}</h1>
     <p style="color:#6b7280;margin:0 0 24px 0;">
@@ -31,10 +31,10 @@ const description = `Encontrá ${oficio.name.toLowerCase()} en ${area.name}, ${a
       <p style="text-align:center;color:#6b7280;padding:24px;background:#f9fafb;border-radius:8px;">Cargando profesionales…</p>
     </div>
 
-    <section style="background:#eef2ff;border-radius:12px;padding:20px;margin-top:32px;">
+    <section style="background:var(--ps-acc-soft);border-radius:12px;padding:20px;margin-top:32px;">
       <h2 style="margin:0 0 8px 0;font-size:18px;">¿Sos {oficio.name.toLowerCase()} en {area.name}?</h2>
-      <p style="margin:0 0 12px 0;color:#1f2937;">Sumá tu perfil gratis a PyaServ y aparece en las búsquedas de clientes de tu barrio.</p>
-      <a href="/me/" style="background:#4f46e5;color:white;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Crear mi perfil →</a>
+      <p style="margin:0 0 12px 0;color:var(--ps-text);">Sumá tu perfil gratis a PyaServ y aparece en las búsquedas de clientes de tu barrio.</p>
+      <a href="/me/" style="background:var(--ps-acc);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Crear mi perfil →</a>
     </section>
 
     <section style="margin-top:32px;">
@@ -82,7 +82,7 @@ const description = `Encontrá ${oficio.name.toLowerCase()} en ${area.name}, ${a
                 <div style="color:#6b7280;font-size:13px;">${escapeHtml(s.headline ?? '')}</div>
                 ${s.ratingCount > 0 ? `<div style="font-size:12px;color:#f59e0b;">★ ${s.ratingAvg.toFixed(1)} (${s.ratingCount})</div>` : ''}
               </div>
-              <a href="/specialists/${s.id}/" style="background:#4f46e5;color:white;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;flex-shrink:0;">Ver →</a>
+              <a href="/specialists/${s.id}/" style="background:var(--ps-acc);color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;flex-shrink:0;">Ver →</a>
             </div>
           `).join('')
         } catch (e) {

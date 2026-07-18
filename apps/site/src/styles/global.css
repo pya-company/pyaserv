@@ -1,24 +1,33 @@
-/* PyaServ design system — indigo primary, light-first.
- * Contrasts with PyaEats's warm-orange palette: calm, professional, trustworthy. */
+/* PyaServ design system — "cream craft": warm cream ground, honey-wood accent.
+ * Signature element: primary actions render as game-style wooden signs (.ps-btn).
+ * Everything else stays plain and classic. Contrasts with PyaEats's orange. */
 :root {
-  --ps-bg: #f7f8fa;
-  --ps-surface: #ffffff;
-  --ps-surface-2: #f0f2f5;
-  --ps-text: #111827;
-  --ps-text-muted: #6b7280;
-  --ps-text-soft: #6b7280;
-  --ps-border: #e5e7eb;
-  --ps-border-strong: #d1d5db;
-  --ps-acc: #4f46e5;
-  --ps-acc-hover: #4338ca;
-  --ps-acc-soft: #eef2ff;
-  --ps-warn: #d97706;
-  --ps-warn-soft: #fffbeb;
-  --ps-good: #059669;
-  --ps-good-soft: #ecfdf5;
-  --ps-bad: #dc2626;
-  --ps-bad-soft: #fef2f2;
-  --ps-star: #f59e0b;
+  --ps-bg: #f4efe6;
+  --ps-surface: #fffaf1;
+  --ps-surface-2: #ece1cf;
+  --ps-text: #2c2620;
+  --ps-text-muted: #7c6e5c;
+  --ps-text-soft: #9a8a74;
+  --ps-border: #e4d8c2;
+  --ps-border-strong: #cdb999;
+  --ps-acc: #9a6a1f;          /* honey — dark enough for text on cream (~4.8:1) */
+  --ps-acc-hover: #7d5416;
+  --ps-acc-soft: #f6ead0;
+  --ps-acc-fill: #cf9b4f;     /* brighter honey for avatar/fill accents */
+  --ps-warn: #b5701a;
+  --ps-warn-soft: #fbf1de;
+  --ps-good: #4d7c2e;
+  --ps-good-soft: #edf3df;
+  --ps-bad: #b5482c;
+  --ps-bad-soft: #f8e7e0;
+  --ps-star: #d99a2b;
+
+  /* Wooden sign graphics — hand-authored SVG with procedural feTurbulence wood
+     grain, irregular plank silhouette (clip-path), knots, nails and a dark
+     outline. CSP-safe data URIs. The board stretches to the button via
+     background-size:100% 100%; the post is an opt-in .ps-btn--hero ::after. */
+  --ps-sign: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 130' preserveAspectRatio='none'><defs><linearGradient id='w' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23bd9057'/><stop offset='.5' stop-color='%23a06f38'/><stop offset='1' stop-color='%23855727'/></linearGradient><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.013 0.11' numOctaves='3' seed='6'/><feColorMatrix type='matrix' values='0 0 0 0 0.30 0 0 0 0 0.18 0 0 0 0 0.06 0 0 0 0.55 0'/></filter><clipPath id='p'><path d='M4,13 L150,8 L232,11 L296,8 L294,41 L200,45 L92,43 L6,46 Z'/><path d='M9,51 L120,48 L297,51 L293,85 L160,89 L42,87 L5,84 Z'/><path d='M6,92 L140,89 L294,92 L296,122 L150,126 L60,124 L9,120 Z'/></clipPath></defs><g clip-path='url(%23p)'><rect width='300' height='130' fill='url(%23w)'/><rect width='300' height='130' filter='url(%23g)' opacity='.5'/><ellipse cx='214' cy='27' rx='9' ry='6' fill='%236b4522' opacity='.55'/><ellipse cx='214' cy='27' rx='3.4' ry='2.3' fill='%234a3016'/><ellipse cx='96' cy='108' rx='8' ry='5' fill='%236b4522' opacity='.5'/></g><g fill='none' stroke='%233d280f' stroke-width='3.4' stroke-linejoin='round'><path d='M4,13 L150,8 L232,11 L296,8 L294,41 L200,45 L92,43 L6,46 Z'/><path d='M9,51 L120,48 L297,51 L293,85 L160,89 L42,87 L5,84 Z'/><path d='M6,92 L140,89 L294,92 L296,122 L150,126 L60,124 L9,120 Z'/></g><g fill='%232b1c0b'><circle cx='24' cy='27' r='3.4'/><circle cx='276' cy='26' r='3.4'/><circle cx='24' cy='68' r='3.4'/><circle cx='276' cy='68' r='3.4'/><circle cx='26' cy='107' r='3.4'/><circle cx='274' cy='107' r='3.4'/></g></svg>");
+  --ps-post: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 150' preserveAspectRatio='none'><defs><linearGradient id='pg' x1='0' x2='1'><stop offset='0' stop-color='%233f2a14'/><stop offset='.5' stop-color='%23664726'/><stop offset='1' stop-color='%233a2611'/></linearGradient><filter id='pg2'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.12' numOctaves='2' seed='3'/><feColorMatrix type='matrix' values='0 0 0 0 0.16 0 0 0 0 0.1 0 0 0 0 0.05 0 0 0 0.5 0'/></filter></defs><path d='M2,0 L28,0 L28,130 L15,150 L2,130 Z' fill='url(%23pg)' stroke='%23241708' stroke-width='2'/><path d='M2,0 L28,0 L28,130 L15,150 L2,130 Z' fill='%23000' filter='url(%23pg2)' opacity='.5'/></svg>");
 
   --ps-radius-sm: 6px;
   --ps-radius-md: 12px;
@@ -52,48 +61,50 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ps-bg: #111827;
-    --ps-surface: #1f2937;
-    --ps-surface-2: #111827;
-    --ps-text: #f9fafb;
-    --ps-text-muted: #d1d5db;
-    --ps-text-soft: #9ca3af;
-    --ps-border: #374151;
-    --ps-border-strong: #4b5563;
-    --ps-acc: #818cf8;
-    --ps-acc-hover: #6366f1;
-    --ps-acc-soft: #1e1b4b;
-    --ps-warn: #fbbf24;
-    --ps-warn-soft: #1c1203;
-    --ps-good: #34d399;
-    --ps-good-soft: #022c22;
-    --ps-bad: #f87171;
-    --ps-bad-soft: #1f0202;
-    --ps-star: #fbbf24;
+    --ps-bg: #1c1712;
+    --ps-surface: #2a231b;
+    --ps-surface-2: #1c1712;
+    --ps-text: #f3ece0;
+    --ps-text-muted: #cbb99e;
+    --ps-text-soft: #a3927a;
+    --ps-border: #3d3226;
+    --ps-border-strong: #554838;
+    --ps-acc: #e0b56d;
+    --ps-acc-hover: #eac887;
+    --ps-acc-soft: #3a2a12;
+    --ps-acc-fill: #cf9b4f;
+    --ps-warn: #e0a94e;
+    --ps-warn-soft: #2a1e08;
+    --ps-good: #8fb15a;
+    --ps-good-soft: #1e2810;
+    --ps-bad: #d98a6f;
+    --ps-bad-soft: #2a1409;
+    --ps-star: #e6b85a;
     --ps-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --ps-shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
     --ps-shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
   }
 }
 :root[data-theme="dark"] {
-  --ps-bg: #111827;
-  --ps-surface: #1f2937;
-  --ps-surface-2: #111827;
-  --ps-text: #f9fafb;
-  --ps-text-muted: #d1d5db;
-  --ps-text-soft: #9ca3af;
-  --ps-border: #374151;
-  --ps-border-strong: #4b5563;
-  --ps-acc: #818cf8;
-  --ps-acc-hover: #6366f1;
-  --ps-acc-soft: #1e1b4b;
-  --ps-warn: #fbbf24;
-  --ps-warn-soft: #1c1203;
-  --ps-good: #34d399;
-  --ps-good-soft: #022c22;
-  --ps-bad: #f87171;
-  --ps-bad-soft: #1f0202;
-  --ps-star: #fbbf24;
+  --ps-bg: #1c1712;
+  --ps-surface: #2a231b;
+  --ps-surface-2: #1c1712;
+  --ps-text: #f3ece0;
+  --ps-text-muted: #cbb99e;
+  --ps-text-soft: #a3927a;
+  --ps-border: #3d3226;
+  --ps-border-strong: #554838;
+  --ps-acc: #e0b56d;
+  --ps-acc-hover: #eac887;
+  --ps-acc-soft: #3a2a12;
+  --ps-acc-fill: #cf9b4f;
+  --ps-warn: #e0a94e;
+  --ps-warn-soft: #2a1e08;
+  --ps-good: #8fb15a;
+  --ps-good-soft: #1e2810;
+  --ps-bad: #d98a6f;
+  --ps-bad-soft: #2a1409;
+  --ps-star: #e6b85a;
   --ps-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --ps-shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
   --ps-shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
@@ -119,31 +130,58 @@
 /* Native <dialog>. Browser handles focus trap + Esc + backdrop click. We
    only ensure the visual matches the rest of the UI: pad, round, shadow,
    theme-aware bg. ::backdrop dims the page behind the modal. */
+/* Form dialog = a clipboard: a stained wooden board with a metal clip holding
+   a sheet of paper. Forms live on the paper (dark ink, light inputs). */
 .ps-dlg {
-  border: 1px solid var(--ps-border);
-  border-radius: var(--ps-radius-lg);
-  background: var(--ps-surface);
-  color: var(--ps-text);
+  border: 0;
+  border-radius: 12px;
+  background: #5a3d22;
+  color: #f3ece0;
   max-width: 28rem;
   width: calc(100vw - 2 * var(--ps-space-3));
-  padding: 0;
-  box-shadow: var(--ps-shadow-lg);
+  padding: 12px 12px 14px;
+  margin-top: 26px;
+  box-shadow: var(--ps-shadow-lg), inset 0 0 0 2px #3a2611;
+  overflow: visible;
 }
-.ps-dlg::backdrop { background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(2px); }
+.ps-dlg::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
 .ps-dlg__head {
   display: flex; justify-content: flex-end;
-  padding: var(--ps-space-2) var(--ps-space-3) 0;
+  padding: 2px 2px 6px;
   margin: 0;
+  position: relative;
+}
+.ps-dlg__head::before { /* metal clip body */
+  content: ""; position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+  width: 92px; height: 30px; border-radius: 6px 6px 4px 4px; z-index: 2;
+  background: linear-gradient(180deg,#e0e0e4,#a8a8ae 46%,#c6c6ca 54%,#84848c);
+  box-shadow: 0 4px 6px rgba(0,0,0,.4), inset 0 1px 0 #fff;
+}
+.ps-dlg__head::after { /* clip clamp */
+  content: ""; position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+  width: 42px; height: 10px; border-radius: 5px; z-index: 3;
+  background: linear-gradient(180deg,#6a6a70,#34343a);
 }
 .ps-dlg__close {
   appearance: none; background: transparent; border: 0; cursor: pointer;
-  width: 36px; height: 36px; border-radius: 50%;
-  font-size: 1.125rem; color: var(--ps-text-muted);
+  width: 34px; height: 34px; border-radius: 50%;
+  font-size: 1.125rem; color: #d8c8ac;
   -webkit-tap-highlight-color: transparent;
 }
-.ps-dlg__close:hover { background: var(--ps-surface-2); color: var(--ps-text); }
-.ps-dlg__body { padding: 0 var(--ps-space-5) var(--ps-space-5); }
-.ps-dlg__body h2 { margin: 0 0 var(--ps-space-2); }
+.ps-dlg__close:hover { background: rgba(255,255,255,.14); color: #fff; }
+.ps-dlg__body {
+  background: url("/img/paper.webp") center / 320px, #f4ede0;
+  color: #33291c;
+  border-radius: 3px;
+  padding: var(--ps-space-5);
+  box-shadow: 0 2px 8px rgba(0,0,0,.32);
+}
+.ps-dlg__body h2 { margin: 0 0 var(--ps-space-2); color: #241d15; }
+.ps-dlg__body p, .ps-dlg__body .ps-msg { color: #5a4e3c; }
+.ps-dlg__body label { color: #6a5e4a; }
+.ps-dlg__body input, .ps-dlg__body select, .ps-dlg__body textarea {
+  background: rgba(255,253,248,.85); color: #2c2620; border-color: #cbb99a;
+}
 /* Belt-and-suspenders: an authed user must NEVER see the login dialog,
    even if some code path forgot to programmatic-close it. */
 html[data-auth="user"] #login-dlg { display: none; }
@@ -157,10 +195,11 @@ html[data-auth="user"] #login-dlg { display: none; }
   z-index: 9000;
   max-width: 22rem;
   padding: var(--ps-space-4) var(--ps-space-5);
-  background: var(--ps-surface);
-  border: 1px solid var(--ps-border);
-  border-radius: var(--ps-radius-lg);
-  box-shadow: var(--ps-shadow-lg);
+  background: url("/img/paper.webp") center / 300px, #f4ede0;
+  color: #33291c;
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 10px 24px rgba(30,18,4,.4);
   display: flex;
   flex-direction: column;
   gap: var(--ps-space-2);
@@ -174,8 +213,8 @@ html[data-auth="user"] #login-dlg { display: none; }
   color: var(--ps-text-muted);
 }
 .ps-toast__close:hover { background: var(--ps-surface-2); color: var(--ps-text); }
-.ps-toast__title { display: block; margin: 0; padding-right: var(--ps-space-5); }
-.ps-toast__body { margin: 0; color: var(--ps-text-muted); font-size: 0.9375rem; line-height: 1.4; }
+.ps-toast__title { display: block; margin: 0; padding-right: var(--ps-space-5); color: #241d15; }
+.ps-toast__body { margin: 0; color: #5a4e3c; font-size: 0.9375rem; line-height: 1.4; }
 @media (max-width: 559.98px) {
   .ps-toast {
     top: auto;
@@ -622,50 +661,100 @@ flying-menu:not(:defined) { display: none; }
 @media (min-width: 720px) { .ps-form { gap: var(--ps-space-4); } }
 .ps-form textarea { min-height: 6rem; resize: vertical; font-family: inherit; }
 
-/* ---------- buttons ---------- */
+/* ---------- buttons ----------
+   PRIMARY (.ps-btn / form submit) = wooden SIGN: an SVG board with procedural
+   feTurbulence grain, irregular plank silhouette, knots, nails and a dark
+   outline (see --ps-sign). Rendered on ::before so no call site needs extra
+   markup; the label sits above via the stacking context. A subtle hand-made
+   tilt sells the "hecho a mano" read. Full "board on a post" = opt-in
+   .ps-btn--hero. SECONDARY (--ghost/--warn/--danger) reset to plain buttons. */
 .ps-btn,
 .ps-form button {
+  position: relative;
+  z-index: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--ps-space-2);
-  padding: var(--ps-space-3) var(--ps-space-5);
-  /* fixed dark-enough indigo so white text passes WCAG AA on both themes.
-     light-mode --ps-acc (#4f46e5) gives 5.4:1, but dark-mode (#818cf8) gives 2.98:1.
-     Lock the button bg to a single value that always passes. */
-  background: #4338ca;
-  color: #fff;
+  padding: 16px 30px;
   border: 0;
-  border-radius: var(--ps-radius-md);
+  background: transparent;
+  /* light "carved/painted" label — reads on the photoreal wood in both themes */
+  color: #f6e9d0;
   font: inherit;
-  font-weight: 600;
+  font-weight: 800;
   text-decoration: none;
+  text-shadow: 0 -1px 1px rgba(0,0,0,.55), 0 1px 1px rgba(0,0,0,.4);
   cursor: pointer;
-  min-height: 48px;
-  transition: background 120ms, transform 80ms;
+  min-height: 52px;
+  transform: rotate(-1.4deg);
+  filter: drop-shadow(0 6px 5px rgba(30,15,0,.35));
+  transition: transform 110ms ease, filter 160ms ease;
   -webkit-tap-highlight-color: transparent;
 }
+/* the wooden board — a WebGL-baked photoreal timber texture (procedural grain,
+   knots, nails, rough silhouette). Overhangs the text box so rough edges show. */
+.ps-btn::before,
+.ps-form button::before {
+  content: "";
+  position: absolute;
+  inset: -7px -13px;
+  z-index: -1;
+  background: url("/img/wood-sign.webp") center / 100% 100% no-repeat;
+}
+.ps-btn:hover,
+.ps-form button:hover { filter: drop-shadow(0 9px 7px rgba(30,15,0,.36)) brightness(1.05); animation: ps-sway 1s ease-in-out; }
 .ps-btn:active,
-.ps-form button:active { transform: scale(0.98); }
-/* Mobile: primary CTA fills width — easier thumb reach */
-.ps-form button[type="submit"] { width: 100%; }
+.ps-form button:active { transform: rotate(-1.4deg) translateY(3px) scale(0.99); filter: drop-shadow(0 3px 3px rgba(30,15,0,.34)); }
+.ps-btn:disabled { opacity: 0.55; cursor: not-allowed; filter: grayscale(.5) brightness(.9); }
+@keyframes ps-sway { 0% { transform: rotate(-1.4deg); } 30% { transform: rotate(-3deg); } 65% { transform: rotate(0deg); } 100% { transform: rotate(-1.4deg); } }
+@media (prefers-reduced-motion: reduce) { .ps-btn:hover, .ps-form button:hover { animation: none; } }
+
+/* Mobile: primary CTA fills width — easier thumb reach. Full-width boards
+   don't tilt (a rotated full-bleed bar overflows). */
+.ps-form button[type="submit"] { width: 100%; transform: none; }
+.ps-form button[type="submit"]:hover { transform: translateY(-1px); animation: none; }
+.ps-form button[type="submit"]:active { transform: translateY(3px); }
 @media (min-width: 560px) {
   .ps-form button[type="submit"] { width: auto; }
 }
-.ps-btn:hover,
-.ps-form button:hover { background: #3730a3; }
-.ps-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---- HERO sign: larger board for marquee actions. A matching photoreal
+   post/stake texture is pending (the old cartoon SVG post clashed with the
+   baked timber, so it's disabled until baked). ---- */
+.ps-btn--hero { padding: 22px 44px; font-size: 1.25rem; transform: rotate(-2deg); }
+.ps-btn--hero:hover { transform: rotate(-2deg); }
+
+/* ---- SECONDARY: strip the wood, back to plain classic buttons ---- */
+.ps-btn--ghost,
+.ps-btn--warn,
+.ps-btn--danger {
+  transform: none;
+  text-shadow: none;
+  border-radius: var(--ps-radius-md);
+  border: 1.5px solid transparent;
+  font-weight: 600;
+  filter: none;
+  min-height: 48px;
+  padding: var(--ps-space-3) var(--ps-space-5);
+}
+.ps-btn--ghost::before,
+.ps-btn--warn::before,
+.ps-btn--danger::before { content: none; }
+.ps-btn--ghost:hover, .ps-btn--warn:hover, .ps-btn--danger:hover { filter: none; transform: none; animation: none; }
+.ps-btn--ghost:active, .ps-btn--warn:active, .ps-btn--danger:active { transform: scale(0.98); }
 .ps-btn--ghost {
   background: transparent;
   color: var(--ps-acc);
-  border: 1.5px solid var(--ps-border-strong);
+  border-color: var(--ps-border-strong);
 }
 .ps-btn--ghost:hover { background: var(--ps-acc-soft); border-color: var(--ps-acc); }
-.ps-btn--warn { background: var(--ps-warn); }
+.ps-btn--warn { background: var(--ps-warn); color: #2c1c05; }
 .ps-btn--warn:hover { background: color-mix(in srgb, var(--ps-warn) 85%, black); }
-.ps-btn--danger { background: var(--ps-bad); }
+.ps-btn--danger { background: var(--ps-bad); color: #fff; }
 .ps-btn--danger:hover { background: color-mix(in srgb, var(--ps-bad) 80%, black); }
-.ps-btn--sm { padding: var(--ps-space-2) var(--ps-space-3); min-height: 44px; font-size: 0.875rem; }
+.ps-btn--sm { min-height: 44px; font-size: 0.875rem; }
+.ps-btn--ghost.ps-btn--sm, .ps-btn--warn.ps-btn--sm, .ps-btn--danger.ps-btn--sm { padding: var(--ps-space-2) var(--ps-space-3); }
 
 /* ------------------------------------------------------------------------
    Universal keyboard focus ring (WCAG 2.4.7).
@@ -804,7 +893,7 @@ html[lang="gn"] [lang="es"], html[lang="gn"] [lang="en"], html[lang="gn"] [lang=
 .ps-avatar__img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 /* Initials fallback — solid indigo circle + white bold letters. Keeps the
    detail page CLS-free even before the photo (or its 404) arrives. */
-.ps-avatar--initials { background: #4338ca; color: #fff; padding: 0; overflow: hidden; }
+.ps-avatar--initials { background: #e9dcc2; color: #5a3d1c; padding: 0; overflow: hidden; }
 .ps-avatar__initials { font: 700 1.5em/1 var(--ps-font-sans); letter-spacing: 0.02em; }
 
 /* Specialist list card with leading avatar */
@@ -819,7 +908,7 @@ html[lang="gn"] [lang="es"], html[lang="gn"] [lang="en"], html[lang="gn"] [lang=
   font-size: 1.5rem;
   overflow: hidden;
 }
-.ps-card__avatar.ps-avatar--initials { background: #4338ca; color: #fff; }
+.ps-card__avatar.ps-avatar--initials { background: #e9dcc2; color: #5a3d1c; }
 .ps-card__main { display: flex; flex-direction: column; gap: var(--ps-space-2); min-width: 0; }
 .ps-card__main h2 { margin: 0; font-size: 1rem; line-height: 1.3; }
 
@@ -964,11 +1053,18 @@ html[data-me-tab="stats"] #panel-stats,
 html:not([data-me-tab]) #panel-profile { content-visibility: visible; }
 
 /* ---------- cards ---------- */
+/* Listing grid = a corkboard ("doska objavleñij"): cork surface in a wooden
+   frame. The cards pinned to it are paper flyers (see .ps-card below). */
 .ps-cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--ps-space-3);
-  margin: var(--ps-space-3) 0;
+  gap: var(--ps-space-4);
+  margin: var(--ps-space-4) 0;
+  padding: var(--ps-space-5) var(--ps-space-4);
+  background: url("/img/cork.webp") center / 360px;
+  border: 13px solid #6b4a28;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px #4a3016, inset 0 0 44px rgba(55,32,8,.42), var(--ps-shadow-md);
 }
 /* Reserve a stable min-height on async-populated lists on the dashboard so
    they don't push the footer (entering the viewport from below) when content
@@ -991,34 +1087,80 @@ html:not([data-me-tab]) #panel-profile { content-visibility: visible; }
     margin: var(--ps-space-4) 0;
   }
 }
+/* Card = a paper flyer pinned to the corkboard. Paper is always light, so text
+   inside is forced to dark ink regardless of the app theme. A pushpin (::before)
+   and a small hand-pinned tilt sell the notice-board metaphor; on hover the note
+   straightens and lifts. */
 .ps-card {
+  position: relative;
   padding: var(--ps-space-4);
-  background: var(--ps-surface);
-  border: 1px solid var(--ps-border);
-  border-radius: var(--ps-radius-md);
+  background: url("/img/paper.webp") center / 300px, #f4ede0;
+  border: 0;
+  border-radius: 2px;
   display: flex;
   flex-direction: column;
   gap: var(--ps-space-2);
-  box-shadow: var(--ps-shadow-sm);
-  transition: transform 180ms, box-shadow 180ms, border-color 180ms;
+  box-shadow: 0 6px 14px rgba(30,18,4,.3);
+  transition: transform 160ms ease, box-shadow 160ms ease;
   text-decoration: none;
-  color: inherit;
+  color: #33291c;
   -webkit-tap-highlight-color: transparent;
 }
+.ps-card::before { /* pushpin */
+  content: "";
+  position: absolute;
+  top: -8px; left: 50%; margin-left: -11px;
+  width: 22px; height: 22px; border-radius: 50%; z-index: 2;
+  background: radial-gradient(circle at 38% 30%, #ff9a9a 0 3px, #e23b3b 32%, #a11f1f 74%, #6f1010 100%);
+  box-shadow: 0 4px 5px rgba(0,0,0,.4), inset 0 -2px 3px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.5);
+}
+.ps-cards > .ps-card:nth-child(3n+1) { transform: rotate(-0.7deg); }
+.ps-cards > .ps-card:nth-child(3n+2) { transform: rotate(0.6deg); }
+.ps-cards > .ps-card:nth-child(3n+3) { transform: rotate(-0.3deg); }
+.ps-cards > .ps-card:nth-child(2n)::before { background: radial-gradient(circle at 38% 30%, #9ac4ff 0 3px, #3b7de2 32%, #1f4fa1 74%, #10306f 100%); }
+.ps-cards > .ps-card:nth-child(3n)::before { background: radial-gradient(circle at 38% 30%, #a9e59a 0 3px, #46b23b 32%, #2a7a1f 74%, #145010 100%); }
 @media (min-width: 560px) {
   .ps-card { padding: var(--ps-space-5); gap: var(--ps-space-3); }
 }
 a.ps-card:active { transform: scale(0.99); }
 a.ps-card:hover,
 a.ps-card:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: var(--ps-shadow-md);
-  border-color: var(--ps-acc);
+  transform: rotate(0deg) translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 26px rgba(30,18,4,.36);
 }
-.ps-card h2 { margin: 0; font-size: 1.0625rem; letter-spacing: -0.01em; }
-.ps-card h3 { margin: 0; font-size: 1rem; letter-spacing: -0.005em; }
-.ps-card__sub { margin: 0; color: var(--ps-text-muted); font-size: 0.8125rem; }
-.ps-card__body { margin: 0; color: var(--ps-text); line-height: 1.55; }
+.ps-card h2 { margin: 0; font-size: 1.0625rem; letter-spacing: -0.01em; color: #241d15; }
+.ps-card h3 { margin: 0; font-size: 1rem; letter-spacing: -0.005em; color: #241d15; }
+.ps-card__sub { margin: 0; color: #7c6a52; font-size: 0.8125rem; }
+.ps-card__body { margin: 0; color: #3f3524; line-height: 1.55; }
+/* form controls inside a paper card stay light so they read on paper */
+.ps-card input, .ps-card select, .ps-card textarea {
+  background: rgba(255,253,248,.8); color: #2c2620; border-color: #cbb99a;
+}
+.ps-card label { color: #6a5e4a; }
+/* Tear-off fringe at the foot of a flyer (the classifieds "flecos"). Decorative
+   on list cards — the whole card links to the profile where the real WhatsApp
+   number lives with functional tear tabs. */
+.ps-tears {
+  grid-column: 1 / -1;
+  display: flex;
+  border-top: 2px dashed rgba(120,90,50,.5);
+  margin: var(--ps-space-3) calc(-1 * var(--ps-space-4)) calc(-1 * var(--ps-space-4));
+}
+@media (min-width: 560px) {
+  .ps-tears { margin: var(--ps-space-3) calc(-1 * var(--ps-space-5)) calc(-1 * var(--ps-space-5)); }
+}
+.ps-tear {
+  flex: 1;
+  padding: 8px 0 10px;
+  text-align: center;
+  color: #1f7a45;
+  font-size: 15px;
+  font-weight: 700;
+  border-left: 1px dashed rgba(120,90,50,.4);
+  transition: transform 120ms ease;
+}
+.ps-tear:first-child { border-left: 0; }
+a.ps-card:hover .ps-tear:nth-child(3) { transform: translateY(3px) rotate(-3deg); }
 .ps-card__cta { margin-top: auto; display: flex; gap: var(--ps-space-3); flex-wrap: wrap; align-items: center; }
 .ps-card__cta a { color: var(--ps-acc); font-weight: 600; text-decoration: none; }
 .ps-card__cta a:hover { text-decoration: underline; }
@@ -1037,15 +1179,15 @@ a.ps-card:focus-visible {
   gap: var(--ps-space-1);
   font-size: 0.75rem;
   padding: 2px 10px;
-  background: #e0e7ff; /* indigo-100 — solid, AAA on text below */
-  color: #312e81; /* indigo-900, ~10:1 on the chip bg */
-  border-radius: var(--ps-radius-pill);
+  /* strip of masking tape — sits on the paper flyers */
+  background: rgba(210,188,138,.94);
+  color: #56461f;
+  border-radius: 0;
   font-weight: 600;
+  transform: rotate(-1.5deg);
+  box-shadow: 0 1px 2px rgba(0,0,0,.16);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .ps-chip { background: #1e1b4b; color: #c7d2fe; }
-}
-:root[data-theme="dark"] .ps-chip { background: #1e1b4b; color: #c7d2fe; }
+.ps-chip:nth-of-type(2n) { transform: rotate(1.3deg); }
 .ps-badge {
   display: inline-flex;
   align-items: center;
@@ -1197,8 +1339,8 @@ html:not([data-me-tab]) #tab-profile,
   word-break: break-word;
 }
 .ps-bubble--mine {
-  background: var(--ps-acc);
-  color: #fff;
+  background: var(--ps-acc-fill);
+  color: #2c1c05;
   align-self: flex-end;
   border-bottom-right-radius: var(--ps-space-1);
 }
