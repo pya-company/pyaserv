@@ -1,98 +1,223 @@
 ---
 import Base from '~/layouts/Base.astro'
-import '~/styles/docs.css'
 import { OFICIOS, SERVICE_AREAS } from '~/data/service-areas.ts'
+import { OFICIO_CATEGORY, demoSpecialistsFor } from '~/data/demo-specialists.ts'
+import { CATEGORIES, initials, mediaUrl } from '~/lib/api.ts'
+import { tFor } from '~/lib/i18n.ts'
 
-export function getStaticPaths() {
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+// Unified shape rendered as a material card (mirrors specialists.astro).
+interface Card {
+  readonly id: string
+  readonly displayName: string
+  readonly headlineEs: string
+  readonly headlineEn: string
+  readonly barrio: string
+  readonly photo: string | null
+  readonly verified: boolean
+  readonly primaryCategory: string | null
+  readonly ratingAvg: number
+  readonly ratingCount: number
+}
+
+export async function getStaticPaths() {
+  // NOTE: Astro runs getStaticPaths in module scope, so everything it needs must live
+  // inside it — frontmatter consts below are only visible to the render pass.
+  const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.env.PUBLIC_API_URL) ||
+    'https://api.pyaserv.com'
+  // Fetch all real specialists ONCE at build time, then filter per page.
+  const fetchAllSpecialists = async (): Promise<ReadonlyArray<Card>> => {
+    try {
+      const r = await fetch(`${API}/v1/specialists`)
+      if (!r.ok) return []
+      const body = await r.json() as { data?: ReadonlyArray<Card> }
+      return body.data ?? []
+    } catch { return [] }
+  }
+  // Demo cards fill the SEO landings on the dev/preview stand; production (main) leaves it off.
+  const DEMO = import.meta.env.PUBLIC_DEMO === '1'
+  const real = await fetchAllSpecialists()
   const paths = []
   for (const o of OFICIOS) {
+    const cat = OFICIO_CATEGORY[o.slug] ?? null
     for (const a of SERVICE_AREAS) {
-      paths.push({ params: { oficio: o.slug, barrio: a.slug }, props: { oficio: o, area: a } })
+      // Strict category match so a real specialist only appears on its own oficio page
+      // (otherwise a null/mismatched category leaks onto every barrio landing).
+      const realMatches = real.filter((s) => s.barrio === a.name && !!cat && s.primaryCategory === cat)
+      const demo: ReadonlyArray<Card> = DEMO
+        ? demoSpecialistsFor(o.slug).map((d) => ({ ...d, barrio: a.name }))
+        : []
+      const specialists: ReadonlyArray<Card> = [...realMatches, ...demo]
+      paths.push({ params: { oficio: o.slug, barrio: a.slug }, props: { oficio: o, area: a, specialists } })
     }
   }
   return paths
 }
 
-const { oficio, area } = Astro.props
+const { oficio, area, specialists } = Astro.props
+
+const regionName = area.region === 'asuncion' ? 'Asunción' : 'Departamento Central'
 const title = `${oficio.name} en ${area.name} — PyaServ`
-const description = `Encontrá ${oficio.name.toLowerCase()} en ${area.name}, ${area.region === 'asuncion' ? 'Asunción' : 'Departamento Central'}. Contacto directo por WhatsApp, sin comisiones.`
+const description = `Encontrá ${oficio.name.toLowerCase()} en ${area.name}, ${regionName}. Contacto directo por WhatsApp, sin comisiones.`
+
+type Loc = 'es' | 'en' | 'de' | 'ru'
+const LOCS: ReadonlyArray<Loc> = ['es', 'en', 'de', 'ru']
+const countOne = (l: Loc): string => tFor(l, 'specialists.count.one')
+const countMany = (l: Loc): string => tFor(l, 'specialists.count.many')
+const cta = (l: Loc): string => tFor(l, 'specialists.card.cta')
+const verifiedLabel = (l: Loc): string => tFor(l, 'specialists.card.verified')
+
+const categoryEmoji = (value: string | null): string =>
+  CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
+const renderStars = (n: number): string =>
+  '★★★★★'.slice(0, Math.round(n)) + '☆☆☆☆☆'.slice(0, 5 - Math.round(n))
+const headlineFor = (s: Card, l: Loc): string => (l === 'en' ? s.headlineEn : s.headlineEs)
 ---
 <Base title={title} active="specialists" description={description}>
-  <div style="max-width:760px;margin:0 auto;padding:24px 16px;">
-    <nav style="font-size:13px;color:#6b7280;margin-bottom:16px;">
-      <a href="/servicios/" style="color:var(--ps-acc);">Servicios</a> · <a href={`/servicios/${oficio.slug}/`} style="color:var(--ps-acc);">{oficio.name}</a> · <span>{area.name}</span>
+  <section class="ps-section ps-barrio">
+    <nav class="ps-crumbs" aria-label="breadcrumb">
+      <a href={`${base}/servicios/`}>Servicios</a>
+      <span aria-hidden="true">·</span>
+      <a href={`${base}/servicios/${oficio.slug}/`}>{oficio.name}</a>
+      <span aria-hidden="true">·</span>
+      <span aria-current="page">{area.name}</span>
     </nav>
-    <h1 style="font-size:28px;margin:0 0 8px 0;">{oficio.name} en {area.name}</h1>
-    <p style="color:#6b7280;margin:0 0 24px 0;">
-      {description}
-    </p>
 
-    <div id="results" style="margin-bottom:32px;" aria-busy="true">
-      <p style="text-align:center;color:#6b7280;padding:24px;background:#f9fafb;border-radius:8px;">Cargando profesionales…</p>
+    <div class="ps-page-head">
+      <h1>{oficio.name} en {area.name}</h1>
+      <p>{description}</p>
     </div>
 
-    <section style="background:var(--ps-acc-soft);border-radius:12px;padding:20px;margin-top:32px;">
-      <h2 style="margin:0 0 8px 0;font-size:18px;">¿Sos {oficio.name.toLowerCase()} en {area.name}?</h2>
-      <p style="margin:0 0 12px 0;color:var(--ps-text);">Sumá tu perfil gratis a PyaServ y aparece en las búsquedas de clientes de tu barrio.</p>
-      <a href="/me/" style="background:var(--ps-acc);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Crear mi perfil →</a>
-    </section>
-
-    <section style="margin-top:32px;">
-      <h2 style="font-size:18px;margin:0 0 12px 0;">Preguntas frecuentes</h2>
-      <details style="background:#f9fafb;padding:14px;border-radius:8px;margin-bottom:8px;">
-        <summary style="font-weight:600;cursor:pointer;">¿Cuánto cobra un {oficio.name.toLowerCase()} en {area.name}?</summary>
-        <p style="margin:8px 0 0 0;color:#4b5563;">Los precios varían según el trabajo. Cada profesional publica su rango aproximado en su perfil. Antes de coordinar, pedile al profesional una cotización detallada.</p>
-      </details>
-      <details style="background:#f9fafb;padding:14px;border-radius:8px;margin-bottom:8px;">
-        <summary style="font-weight:600;cursor:pointer;">¿PyaServ cobra comisión?</summary>
-        <p style="margin:8px 0 0 0;color:#4b5563;">No. PyaServ es gratis para el cliente. El profesional puede tener un plan gratuito hasta cierta cantidad de contactos por mes; pasado ese límite paga una suscripción.</p>
-      </details>
-      <details style="background:#f9fafb;padding:14px;border-radius:8px;margin-bottom:8px;">
-        <summary style="font-weight:600;cursor:pointer;">¿Cómo verifico que un profesional es confiable?</summary>
-        <p style="margin:8px 0 0 0;color:#4b5563;">Mirá el perfil completo: insignia "WhatsApp verificado", reseñas de clientes anteriores (idealmente con foto), tiempo promedio de respuesta y portfolio de trabajos.</p>
-      </details>
-    </section>
-  </div>
-
-  <script define:vars={{ oficio: oficio.slug, barrio: area.slug }}>
-    const root = document.getElementById('results')
-    if (root) {
-      ;(async () => {
-        try {
-          const res = await fetch(`https://api.pyaserv.com/v1/specialists?barrio=${encodeURIComponent(barrio)}`)
-          if (!res.ok) throw new Error('HTTP ' + res.status)
-          const body = await res.json()
-          const all = body.data ?? []
-          // Filter by oficio if specialists have a primary_category
-          const filtered = all.filter((s) => !s.primaryCategory || s.primaryCategory === oficio || s.primaryCategory.includes(oficio))
-          root.removeAttribute('aria-busy')
-          if (filtered.length === 0) {
-            root.innerHTML = `
-              <div style="text-align:center;padding:32px 16px;background:#f9fafb;border-radius:8px;">
-                <p style="margin:0 0 8px 0;color:#1f2937;font-weight:600;">Todavía no hay profesionales de este oficio en esta zona.</p>
-                <p style="margin:0;color:#6b7280;font-size:14px;">Probá otros barrios o vení después — la red está creciendo.</p>
-              </div>`
-            return
-          }
-          root.innerHTML = filtered.map((s) => `
-            <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;">
-              <div style="width:48px;height:48px;border-radius:50%;background:#e5e7eb;background-size:cover;background-position:center;${s.photo ? `background-image:url(https://api.pyaserv.com/v1/media/${s.photo});` : ''}flex-shrink:0;"></div>
-              <div style="flex:1;min-width:0;">
-                <div style="font-weight:600;">${escapeHtml(s.displayName)}</div>
-                <div style="color:#6b7280;font-size:13px;">${escapeHtml(s.headline ?? '')}</div>
-                ${s.ratingCount > 0 ? `<div style="font-size:12px;color:#f59e0b;">★ ${s.ratingAvg.toFixed(1)} (${s.ratingCount})</div>` : ''}
+    {specialists.length > 0 ? (
+      <>
+        <p class="ps-msg" aria-live="polite">
+          {LOCS.map((l) => (
+            <span lang={l}>{specialists.length} {specialists.length === 1 ? countOne(l) : countMany(l)}</span>
+          ))}
+        </p>
+        <div class="ps-cards">
+          {specialists.map((s) => (
+            <a class="ps-card ps-card--with-avatar" href={`${base}/specialists/${s.id}/`}>
+              <div class={`ps-card__avatar ${s.photo ? 'ps-avatar--photo' : 'ps-avatar--initials'}`}>
+                {s.photo
+                  ? <img class="ps-avatar__img" width="56" height="56" loading="lazy" decoding="async" alt="" src={mediaUrl(s.photo)} />
+                  : <span class="ps-avatar__initials" aria-hidden="true">{initials(s.displayName)}</span>}
               </div>
-              <a href="/specialists/${s.id}/" style="background:var(--ps-acc);color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;flex-shrink:0;">Ver →</a>
-            </div>
-          `).join('')
-        } catch (e) {
-          root.removeAttribute('aria-busy')
-          root.innerHTML = `<p style="color:#991b1b;padding:16px;">Error al cargar profesionales.</p>`
-        }
-      })()
-    }
-    function escapeHtml(s) {
-      return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c])
-    }
-  </script>
+              <div class="ps-card__main">
+                <div class="ps-row">
+                  <h2>{s.displayName}</h2>
+                  {s.verified && (
+                    <span class="ps-badge">
+                      {LOCS.map((l) => <span lang={l}>{verifiedLabel(l)}</span>)}
+                    </span>
+                  )}
+                </div>
+                <p class="ps-card__sub">📍 {s.barrio}</p>
+                {s.primaryCategory && (
+                  <div class="ps-row">
+                    <span class="ps-chip">
+                      {categoryEmoji(s.primaryCategory)}
+                      {' '}
+                      {LOCS.map((l) => <span lang={l}>{tFor(l, `category.${s.primaryCategory}`)}</span>)}
+                    </span>
+                    {s.ratingCount > 0 && (
+                      <>
+                        <span class="ps-stars-inline" aria-label={`${s.ratingAvg} de 5`}>{renderStars(s.ratingAvg)}</span>
+                        <span class="ps-card__sub">{s.ratingAvg} ({s.ratingCount})</span>
+                      </>
+                    )}
+                  </div>
+                )}
+                <p class="ps-card__body">
+                  {LOCS.map((l) => <span lang={l}>{headlineFor(s, l)}</span>)}
+                </p>
+                <div class="ps-card__cta">
+                  {LOCS.map((l) => <span lang={l}>{cta(l)}</span>)}
+                </div>
+              </div>
+              <div class="ps-tears" aria-hidden="true">
+                {Array.from({ length: 7 }).map(() => <span class="ps-tear">✆</span>)}
+              </div>
+            </a>
+          ))}
+        </div>
+      </>
+    ) : (
+      <p class="ps-msg ps-barrio__empty">
+        Todavía no hay {oficio.name.toLowerCase()} cargados en {area.name}. Probá otros barrios — la red está creciendo.
+      </p>
+    )}
+
+    <section class="ps-signup">
+      <h2>¿Sos {oficio.name.toLowerCase()} en {area.name}?</h2>
+      <p>Sumá tu perfil gratis a PyaServ y aparecé en las búsquedas de clientes de tu barrio.</p>
+      <a class="ps-btn ps-btn--hero" href={`${base}/me/`}>Crear mi perfil →</a>
+    </section>
+
+    <section class="ps-faq">
+      <h2>Preguntas frecuentes</h2>
+      <details>
+        <summary>¿Cuánto cobra un {oficio.name.toLowerCase()} en {area.name}?</summary>
+        <p>Los precios varían según el trabajo. Cada profesional publica su rango aproximado en su perfil. Antes de coordinar, pedile al profesional una cotización detallada.</p>
+      </details>
+      <details>
+        <summary>¿PyaServ cobra comisión?</summary>
+        <p>No. PyaServ es gratis para el cliente. El profesional puede tener un plan gratuito hasta cierta cantidad de contactos por mes; pasado ese límite paga una suscripción.</p>
+      </details>
+      <details>
+        <summary>¿Cómo verifico que un profesional es confiable?</summary>
+        <p>Mirá el perfil completo: insignia "WhatsApp verificado", reseñas de clientes anteriores (idealmente con foto), tiempo promedio de respuesta y portfolio de trabajos.</p>
+      </details>
+    </section>
+  </section>
 </Base>
+
+<style>
+  .ps-barrio { max-width: 780px; }
+  .ps-crumbs {
+    font-size: 0.8125rem;
+    color: var(--ps-text-muted);
+    margin-bottom: var(--ps-space-4, 1rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    align-items: center;
+  }
+  .ps-crumbs a { color: var(--ps-acc); text-decoration: none; }
+  .ps-crumbs a:hover { text-decoration: underline; }
+  .ps-crumbs [aria-current] { color: var(--ps-text-muted); }
+
+  .ps-barrio__empty {
+    background: var(--ps-surface-2);
+    border: 1px solid var(--ps-border);
+    border-radius: 10px;
+    padding: var(--ps-space-5, 1.5rem);
+    color: var(--ps-text-muted);
+    text-align: center;
+  }
+
+  .ps-signup {
+    background: var(--ps-acc-soft);
+    border: 1px solid var(--ps-border);
+    border-radius: 14px;
+    padding: var(--ps-space-5, 1.5rem);
+    margin-top: var(--ps-space-6, 2rem);
+    text-align: center;
+  }
+  .ps-signup h2 { margin: 0 0 0.5rem; font-size: 1.15rem; color: var(--ps-text); }
+  .ps-signup p { margin: 0 0 1.25rem; color: var(--ps-text); }
+
+  .ps-faq { margin-top: var(--ps-space-6, 2rem); }
+  .ps-faq > h2 { font-size: 1.15rem; margin: 0 0 0.75rem; color: var(--ps-text); }
+  .ps-faq details {
+    background: var(--ps-surface);
+    border: 1px solid var(--ps-border);
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--ps-text);
+  }
+  .ps-faq summary { font-weight: 600; cursor: pointer; color: var(--ps-text); }
+  .ps-faq details p { margin: 0.5rem 0 0; color: var(--ps-text-muted); }
+</style>

@@ -26,7 +26,17 @@ const isDomainError = (e: unknown): e is DomainError =>
 const app = new Hono<AppEnv>()
   .use('*', (c, next) =>
     cors({
-      origin: c.env.SITE_ORIGIN,
+      // Echo the request origin when it is the configured site, the dev stand, or a
+      // Cloudflare Pages preview of either project — otherwise fall back to SITE_ORIGIN.
+      // credentials:true forbids "*", so we must return the specific matching origin.
+      origin: (origin) => {
+        if (!origin) return c.env.SITE_ORIGIN
+        const allowed =
+          origin === c.env.SITE_ORIGIN ||
+          origin === 'https://dev.pyaserv.com' ||
+          /^https:\/\/[a-z0-9-]+\.pyaserv-(site|dev)\.pages\.dev$/.test(origin)
+        return allowed ? origin : c.env.SITE_ORIGIN
+      },
       credentials: true,
       allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowHeaders: ['Content-Type', 'X-CSRF-Token', 'Authorization'],
