@@ -27,6 +27,9 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title} · PyaServ</title>
     <meta name="description" content={description ?? fallbackDesc} />
+    {import.meta.env.PUBLIC_DEMO === '1' && (
+      <meta name="robots" content="noindex,nofollow" />
+    )}
     <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#f4efe6" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1712" />
