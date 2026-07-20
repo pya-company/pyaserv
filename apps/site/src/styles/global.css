@@ -1140,44 +1140,31 @@ a.ps-card:focus-visible {
 /* Tear-off fringe at the foot of a flyer (the classifieds "flecos"). Decorative
    on list cards — the whole card links to the profile where the real WhatsApp
    number lives with functional tear tabs. */
-/* Tear-off phone tabs: the fringe of rip-away vertical strips at the foot of a
-   paper flyer (street-classifieds style). A dashed "tear here" line, then a row
-   of separate hanging strips cut apart by real gaps, each printed vertically. */
-.ps-tears {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 3px;
-  padding-top: 9px;
-  margin: var(--ps-space-3) calc(-1 * var(--ps-space-4)) calc(-1 * var(--ps-space-4) - 5px);
-  border-top: 2px dashed rgba(120,90,50,.55);
-}
-@media (min-width: 560px) {
-  .ps-tears { margin: var(--ps-space-3) calc(-1 * var(--ps-space-5)) calc(-1 * var(--ps-space-5) - 5px); }
-}
-.ps-tear {
-  flex: 1;
-  min-width: 0;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  text-align: center;
-  padding: 11px 0 13px;
-  color: #128c3e;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  white-space: nowrap;
-  background:
-    linear-gradient(180deg, rgba(120,90,50,.09), transparent 14px),
-    rgba(255,252,244,.62);
-  border-radius: 0 0 6px 6px;
-  box-shadow: 0 3px 5px rgba(30,18,4,.16);
-  transition: transform 130ms ease, box-shadow 130ms ease;
-}
-/* every other strip sits a hair lower — hand-cut, not machine-perfect */
-.ps-tear:nth-child(2n) { transform: translateY(2px); }
-a.ps-card:hover .ps-tear:nth-child(3n) { transform: translateY(6px) rotate(-2deg); box-shadow: 0 7px 10px rgba(30,18,4,.22); }
-.ps-tear:hover { transform: translateY(7px) rotate(1.5deg) !important; box-shadow: 0 8px 11px rgba(30,18,4,.24); }
 .ps-card__cta { margin-top: auto; display: flex; gap: var(--ps-space-3); flex-wrap: wrap; align-items: center; }
+
+/* Corkboard card CTA = a scrap of paper torn off along a perforation: a ragged
+   (scalloped) top edge via mask, paper texture, drop-shadow following the torn
+   silhouette, casually tilted. */
+.ps-card--with-avatar .ps-card__cta {
+  --tear: 5px;
+  align-self: flex-start;
+  margin-top: var(--ps-space-4);
+  padding: 15px 20px 10px;
+  background: url("/img/paper.webp") center / 200px, #fbf6ea;
+  color: #33291c;
+  font-weight: 700;
+  border-radius: 0 0 5px 5px;
+  transform: rotate(-1.3deg);
+  filter: drop-shadow(0 3px 4px rgba(30,18,4,.3));
+  -webkit-mask: radial-gradient(var(--tear) at 50% 0, #0000 98%, #000) repeat-x 0 0 / calc(2 * var(--tear)) 100%;
+  mask: radial-gradient(var(--tear) at 50% 0, #0000 98%, #000) repeat-x 0 0 / calc(2 * var(--tear)) 100%;
+  transition: transform 130ms ease, filter 130ms ease;
+}
+.ps-card--with-avatar .ps-card__cta span { color: #33291c; }
+a.ps-card--with-avatar:hover .ps-card__cta {
+  transform: rotate(-1.3deg) translateY(3px);
+  filter: drop-shadow(0 6px 7px rgba(30,18,4,.34));
+}
 .ps-card__cta a { color: var(--ps-acc); font-weight: 600; text-decoration: none; }
 .ps-card__cta a:hover { text-decoration: underline; }
 .ps-card--mini { padding: var(--ps-space-3) var(--ps-space-4); gap: var(--ps-space-2); }
