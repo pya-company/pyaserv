@@ -137,19 +137,9 @@ const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
           </div>
         )}
 
-        <div data-auth-user class="ps-contact-flyer">
-          <a id="phone-link" class="ps-contact-flyer__phone" href={`tel:${spec.phone.replace(/[^+0-9]/g, '')}`}>📞 <span>{spec.phone}</span></a>
-          <div class="ps-contact-tears" aria-label="WhatsApp">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <a
-                class="ps-contact-tear"
-                id={i === 0 ? 'whatsapp-link' : undefined}
-                href={`https://wa.me/${(spec.whatsapp ?? spec.phone).replace(/[^0-9]/g, '')}`}
-                target="_blank"
-                rel="noopener"
-              ><span>✆ {spec.whatsapp ?? spec.phone}</span></a>
-            ))}
-          </div>
+        <div data-auth-user class="ps-detail__contact ps-stack">
+          <a id="phone-link" class="ps-contact-line" href={`tel:${spec.phone.replace(/[^+0-9]/g, '')}`}>📞 <span>{spec.phone}</span></a>
+          <a id="whatsapp-link" class="ps-contact-line ps-contact-line--wa" href={`https://wa.me/${(spec.whatsapp ?? spec.phone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener">✆ <span>WhatsApp</span></a>
         </div>
         <p data-auth-guest class="ps-banner ps-banner--warn">
           <span lang="es">{tFor('es', 'specialist.detail.locked')} <a id="login-link-es">{tFor('es', 'specialist.detail.locked.cta')}</a>.</span>

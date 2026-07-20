@@ -1412,45 +1412,15 @@ html:not([data-me-tab]) #tab-profile,
 }
 .ps-detail__contact a:hover { border-color: var(--ps-acc); }
 
-/* Functional tear-off contact flyer on the specialist profile — each tab is a
-   real wa.me link showing the number. Paper flyer; tabs lift as if being torn. */
-.ps-contact-flyer {
-  background: url("/img/paper.webp") center / 300px, #f4ede0;
-  color: #33291c;
-  border-radius: 3px;
-  padding: var(--ps-space-2) var(--ps-space-3) 0;
-  box-shadow: 0 6px 14px rgba(30,18,4,.28);
-  overflow: hidden;
-}
-.ps-contact-flyer__phone {
-  display: flex; align-items: center; justify-content: center; gap: var(--ps-space-2);
-  padding: var(--ps-space-2) 0 var(--ps-space-3);
-  color: #33291c; font-weight: 700; text-decoration: none;
-}
-.ps-contact-tears {
+/* Specialist profile contact — plain tappable phone + WhatsApp rows. */
+.ps-contact-line {
   display: flex;
-  border-top: 2px dashed rgba(120,90,50,.55);
-  margin: 0 calc(-1 * var(--ps-space-3));
+  align-items: center;
+  gap: var(--ps-space-2);
+  font-weight: 700;
 }
-.ps-contact-tear {
-  flex: 1; min-width: 0;
-  padding: 12px 0 13px;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  text-align: center;
-  color: #128c3e; font-weight: 700; font-size: 11px;
-  text-decoration: none;
-  border-left: 1px dashed rgba(120,90,50,.45);
-  transition: transform 120ms ease, box-shadow 120ms ease;
-}
-.ps-contact-tear:first-child { border-left: 0; }
-.ps-contact-tear > span { display: inline-block; transform: rotate(180deg); white-space: nowrap; }
-.ps-contact-tear:hover, .ps-contact-tear:focus-visible {
-  transform: translateY(5px) rotate(1.5deg);
-  box-shadow: 0 6px 9px rgba(0,0,0,.22);
-  border-radius: 0 0 4px 4px;
-  outline: none;
-}
+.ps-contact-line--wa { color: #128c3e; }
+.ps-contact-line--wa:hover { border-color: #128c3e; }
 
 .ps-detail__body { display: flex; flex-direction: column; gap: var(--ps-space-5); }
 .ps-detail__bio {
