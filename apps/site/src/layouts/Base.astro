@@ -473,6 +473,25 @@ const canonical = `https://pyaserv.com${Astro.url.pathname}`
           e.stopImmediatePropagation()
           dlgMsg(t('common.sending'))
           dlgState.email = new FormData(f).get('email')
+          // DEV STAND: no email provider — sign in straight away via dev-bypass.
+          // PUBLIC_DEV_BYPASS is only baked into the dev.pyaserv.com build.
+          if (import.meta.env.PUBLIC_DEV_BYPASS) {
+            try {
+              const dr = await fetch(
+                `${import.meta.env.PUBLIC_API_URL}/api/dev/login?email=${encodeURIComponent(dlgState.email)}`,
+                { method: 'POST', headers: { 'X-Dev-Bypass-Key': import.meta.env.PUBLIC_DEV_BYPASS } },
+              )
+              if (!dr.ok) throw new Error('dev-login ' + dr.status)
+              const sid = (await dr.json())?.data?.sessionToken
+              if (!sid) throw new Error(t('error.network'))
+              void adoptSession(sid)
+              document.documentElement.dataset.auth = 'user'
+              closeDialog(dlgState.next || '/me/')
+            } catch (err) {
+              dlgMsg(`<span class="ps-error">${err.message || t('error.network')}</span>`)
+            }
+            return
+          }
           let data
           try {
             data = await apiFetch('/api/auth/start', {
