@@ -39,7 +39,7 @@ const app = new Hono<AppEnv>()
       },
       credentials: true,
       allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'X-CSRF-Token', 'Authorization'],
+      allowHeaders: ['Content-Type', 'X-CSRF-Token', 'Authorization', 'X-Dev-Bypass-Key'],
     })(c, next),
   )
   .onError((err, c) => {
