@@ -1,0 +1,9 @@
+title: Local-first / Offline (multi-sprint)
+tldr: 'Páginas se renderizan offline desde cache, mutations queued, sync en reconexión, conflict resolution. Reference: Todoist.'
+sections:
+  - heading: Vision
+    body: 'Cuando la red se cae, la app sigue funcionando: ver datos cacheados, crear/editar, queue local, sync automático al reconectar, conflict modal si hay edits paralelas.'
+  - heading: Sub-tickets (spec §19.2)
+    body: '10 sub-tickets: SW offline shell, IndexedDB layer, mutation queue, sync engine, conflict resolution, UI badges, background sync, optimistic UI, network detection, E2E suite (50+ scenarios).'
+  - heading: Estimación
+    body: 4-6 semanas. Top priority initiative.

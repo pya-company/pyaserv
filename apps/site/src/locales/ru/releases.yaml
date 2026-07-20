@@ -1,0 +1,10 @@
+releases:
+  page_title: Обновления
+  page_intro: Что нового в PyaServ. По одной записи на релиз.
+  rss_link: RSS-канал
+  back_to_index: ← Все обновления
+  section_new: Новое
+  section_improved: Улучшено
+  section_fixed: Исправлено
+  section_next: Скоро
+  read_more: Читать дальше →

@@ -7,7 +7,11 @@ import { devLoginRoutes } from './routes/dev-login.ts'
 import { inquiriesRoutes } from './routes/inquiries.ts'
 import { listingsRoutes } from './routes/listings.ts'
 import { mediaRoutes } from './routes/media.ts'
+import { gamificationRoutes } from './routes/gamification.ts'
 import { meRoutes } from './routes/me.ts'
+import { meExtendedRoutes } from './routes/me-extended.ts'
+import { publicProfileRoutes } from './routes/public-profile.ts'
+import { quotesClientsRoutes } from './routes/quotes-clients.ts'
 import { requestsRoutes } from './routes/requests.ts'
 import { reviewsRoutes } from './routes/reviews.ts'
 import { specialistsRoutes } from './routes/specialists.ts'
@@ -22,10 +26,20 @@ const isDomainError = (e: unknown): e is DomainError =>
 const app = new Hono<AppEnv>()
   .use('*', (c, next) =>
     cors({
-      origin: c.env.SITE_ORIGIN,
+      // Echo the request origin when it is the configured site, the dev stand, or a
+      // Cloudflare Pages preview of either project — otherwise fall back to SITE_ORIGIN.
+      // credentials:true forbids "*", so we must return the specific matching origin.
+      origin: (origin) => {
+        if (!origin) return c.env.SITE_ORIGIN
+        const allowed =
+          origin === c.env.SITE_ORIGIN ||
+          origin === 'https://dev.pyaserv.com' ||
+          /^https:\/\/[a-z0-9-]+\.pyaserv-(site|dev)\.pages\.dev$/.test(origin)
+        return allowed ? origin : c.env.SITE_ORIGIN
+      },
       credentials: true,
       allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'X-CSRF-Token', 'Authorization'],
+      allowHeaders: ['Content-Type', 'X-CSRF-Token', 'Authorization', 'X-Dev-Bypass-Key'],
     })(c, next),
   )
   .onError((err, c) => {
@@ -79,10 +93,14 @@ const app = new Hono<AppEnv>()
     return c.json({ data: { userId: session.userId, roles: session.roles } })
   })
   .route('/v1/specialists', specialistsRoutes)
+  .route('/v1', publicProfileRoutes)
   .route('/v1/listings', listingsRoutes)
   .route('/v1/requests', requestsRoutes)
   .route('/v1/inquiries', inquiriesRoutes)
   .route('/v1/me', meRoutes)
+  .route('/v1/me', meExtendedRoutes)
+  .route('/v1/me', gamificationRoutes)
+  .route('/v1/me', quotesClientsRoutes)
   .route('/v1', reviewsRoutes)
   .route('/v1/media', mediaRoutes)
   .route('/v1/analytics', analyticsRoutes)

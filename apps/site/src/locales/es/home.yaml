@@ -1,0 +1,23 @@
+home:
+  title: Servicios en Paraguay sin comisiones
+  description: PyaServ conecta profesionales con clientes en Paraguay. Sin comisiones por contacto, sin pagos en plataforma.
+  hero:
+    title: Servicios en Paraguay, sin intermediarios.
+    body: Si ofrecés un servicio o si buscás a alguien que resuelva algo concreto, PyaServ tiene un lado para vos. Nada de comisiones por presentar — el trato lo cierran ustedes.
+  specialists:
+    title: Necesito a un profesional
+    desc: Plomeros, electricistas, profes, peluqueras — buscá por barrio y categoría. Contactá directo cuando te decidas.
+    cta: Ver profesionales →
+  clients:
+    title: Ofrezco un servicio
+    desc: Mirá los pedidos abiertos en tu zona. Si encaja con lo tuyo, escribiles directo — sin filtros, sin pago para postularte.
+    cta: Ver pedidos →
+  banner:
+    html: >-
+      <strong>Estado:</strong> MVP en vivo. Crearás tu perfil de profesional o tu pedido en el panel <a data-banner-link>Mi panel</a>. Si todavía no tenés cuenta, te creamos una con tu email — sin
+      contraseñas.
+    status_label: 'Estado:'
+    body: MVP en vivo. Crearás tu perfil de profesional o tu pedido en el panel
+    cta: Mi panel
+    tail: Si todavía no tenés cuenta, te creamos una con tu email — sin contraseñas.
+  stats: <strong>{specs}</strong> profesionales activos · <strong>{reqs}</strong> pedidos abiertos

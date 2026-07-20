@@ -9,7 +9,7 @@ import { expect, test } from '@playwright/test'
 
 test.describe('desktop inline nav', () => {
   test('Specialists link routes after navigation chain', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/es/')
     // From home, click the topbar Specialists link.
     await page.locator('.ps-topbar__nav a').filter({ hasText: /Profesionales|Specialists/i }).click()
     await expect(page).toHaveURL(/\/specialists\/$/)
@@ -24,7 +24,7 @@ test.describe('desktop inline nav', () => {
     await page.addInitScript(() => {
       try { localStorage.removeItem('pyaserv.theme') } catch {}
     })
-    await page.goto('/')
+    await page.goto('/es/')
     await page.locator('.ps-topbar__nav a').filter({ hasText: /Specialists|Profesionales/i }).click()
     await expect(page).toHaveURL(/\/specialists\/$/)
 

@@ -1,0 +1,24 @@
+nav:
+  menu_open: Abrir menú
+  primary_aria: Principal
+  specialists: Profesionales
+  clients: Pedidos
+  docs: Docs
+  releases: Novedades
+  components: Componentes
+  me: Mi panel
+  login: Ingresar
+  logout: Cerrar sesión
+  skip: Saltar al contenido
+  lang_label: Idioma
+  theme_label: Cambiar tema (claro/oscuro/auto)
+  lang_es: ES
+  lang_en: EN
+  lang_de: DE
+  lang_ru: RU
+  lang_gn: GN
+  lang_es_aria: Cambiar a español
+  lang_en_aria: Cambiar a inglés
+  lang_de_aria: Auf Deutsch wechseln
+  lang_ru_aria: Переключить на русский
+  lang_gn_aria: Cambiar a guaraní

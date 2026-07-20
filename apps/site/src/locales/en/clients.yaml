@@ -1,0 +1,13 @@
+clients:
+  title: Requests
+  description: Client requests in Asunción. If you offer the service they need, message them directly.
+  heading: Open requests
+  intro: Clients looking for a specialist right now. To reply, sign in and start a conversation.
+  empty:
+    title: No requests right now
+    hint: Check back later or change the filters.
+  count:
+    one: open request
+    many: open requests
+  card:
+    cta: Apply →

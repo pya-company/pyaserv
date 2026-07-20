@@ -1,0 +1,27 @@
+inquiry:
+  detail:
+    title: Conversation
+    back: ← Conversations
+    heading: Conversation
+    view_subject: View post
+    placeholder: Write a message…
+    about_listing: About a service
+    about_request: About a request
+  back: ← Conversations
+  view_subject: View post
+  compose_placeholder: Write a message…
+  subject_listing: About a service
+  subject_request: About a request
+  status_negotiating: Negotiating
+  status_in_progress: In progress
+  status_done: Done
+  status_cancelled: Cancelled
+  btn_start: Start work
+  btn_done: Mark done
+  btn_cancel: Cancel
+  cancel_confirm: Cancel this work?
+  review_h: Rate the work
+  review_body_label: Comment (optional)
+  review_body_placeholder: Tell others how it went.
+  review_submit: Submit review
+  review_thanks: Thanks for your review!

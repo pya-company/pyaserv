@@ -1,0 +1,159 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/components-lib.css'
+import { STORIES } from '~/components-lib/stories.ts'
+
+export function getStaticPaths() {
+  return STORIES.map((s) => ({ params: { id: s.id }, props: { story: s } }))
+}
+
+const { story } = Astro.props
+const atoms = STORIES.filter((s) => s.level === 'atom')
+const molecules = STORIES.filter((s) => s.level === 'molecule')
+const organisms = STORIES.filter((s) => s.level === 'organism')
+const storyJson = JSON.stringify(story)
+---
+<Base title={`${story.name} · Components`} active="home" description={story.description}>
+  <div class="cl-sb-shell" data-story={story.id}>
+    <aside class="cl-sb-tree" aria-label="Componentes">
+      <h3>Atoms ({atoms.length})</h3>
+      {atoms.map((e) => <a href={`/components/${e.id}/`} aria-current={e.id === story.id ? 'page' : undefined}>{e.name}</a>)}
+      <h3>Molecules ({molecules.length})</h3>
+      {molecules.map((e) => <a href={`/components/${e.id}/`} aria-current={e.id === story.id ? 'page' : undefined}>{e.name}</a>)}
+      <h3>Organisms ({organisms.length})</h3>
+      {organisms.map((e) => <a href={`/components/${e.id}/`} aria-current={e.id === story.id ? 'page' : undefined}>{e.name}</a>)}
+    </aside>
+    <section class="cl-sb-canvas">
+      <h2 class="cl-sb-canvas__title">{story.name} <span style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-left:8px;">{story.level}</span></h2>
+      <p style="color:#6b7280;margin:0 0 16px 0;font-size:14px;">{story.description}</p>
+      <div class="cl-sb-canvas__viewport" id="story-viewport"></div>
+      <details style="margin-top:16px;">
+        <summary style="cursor:pointer;color:#6b7280;font-size:13px;">JSON props (raw)</summary>
+        <pre id="story-props-json" style="background:#0b1020;color:#e5e7eb;padding:12px;border-radius:8px;font-size:12px;overflow:auto;margin-top:8px;"></pre>
+      </details>
+    </section>
+    <aside class="cl-sb-panel">
+      <h3>Props</h3>
+      <form id="story-knobs"></form>
+      <h3 style="margin-top:20px;">Locale</h3>
+      <select id="story-locale" style="width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:12px;">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+        <option value="gn">Guaraní</option>
+      </select>
+      <p style="color:#9ca3af;font-size:11px;margin-top:8px;">Изменение locale меняет html.lang для CSS/data-locale тестов. Строки в этих компонентах = props, не t().</p>
+    </aside>
+  </div>
+
+  <script type="application/json" id="story-data" set:html={storyJson}></script>
+
+  <script>
+    // @ts-nocheck
+    // Bundled module — Astro produces a hashed _astro/*.js file allowed by CSP `script-src 'self'`.
+    // Story payload arrives via the JSON <script type="application/json" id="story-data"> element;
+    // no inline executable code, no `define:vars` (which forces inline emission).
+    import * as molecules from '~/components-lib/molecules.ts'
+    import { ProfileHeader, GameHUD, CompletenessBar, ProfilePublicView } from '~/components-lib/organisms.ts'
+
+    const ALL = { ...molecules, ProfileHeader, GameHUD, CompletenessBar, ProfilePublicView }
+
+    const readStoryData = () => {
+      const el = document.getElementById('story-data')
+      if (!el || !el.textContent) return null
+      try { return JSON.parse(el.textContent) } catch { return null }
+    }
+
+    const setByPath = (obj, path, value) => {
+      const parts = path.split('.')
+      let cur = obj
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (typeof cur[parts[i]] !== 'object' || cur[parts[i]] === null) cur[parts[i]] = {}
+        cur = cur[parts[i]]
+      }
+      cur[parts[parts.length - 1]] = value
+    }
+    const getByPath = (obj, path) => {
+      const parts = path.split('.')
+      let cur = obj
+      for (const k of parts) { if (cur == null) return undefined; cur = cur[k] }
+      return cur
+    }
+
+    let storyData = null
+    let renderFn = null
+    let props = {}
+
+    const render = () => {
+      const viewport = document.getElementById('story-viewport')
+      const propsJson = document.getElementById('story-props-json')
+      if (!viewport) return
+      try {
+        if (renderFn) viewport.innerHTML = renderFn(props)
+        if (propsJson) propsJson.textContent = JSON.stringify(props, null, 2)
+      } catch (e) {
+        viewport.innerHTML = `<p style="color:#dc2626;">Render error: ${e.message}</p>`
+      }
+    }
+
+    const buildKnobs = () => {
+      const form = document.getElementById('story-knobs')
+      if (!form || !storyData) return
+      form.innerHTML = storyData.knobs.map((k) => {
+        const v = getByPath(props, k.path)
+        const id = `knob-${k.path.replace(/\./g, '-')}`
+        if (k.type === 'select') {
+          return `<label><span>${k.label}</span><select data-knob-path="${k.path}" id="${id}">${
+            (k.options || []).map((o) => `<option value="${o}"${o === String(v) ? ' selected' : ''}>${o || '—'}</option>`).join('')
+          }</select></label>`
+        }
+        if (k.type === 'boolean') {
+          return `<label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" data-knob-path="${k.path}" id="${id}"${v ? ' checked' : ''} /> <span>${k.label}</span></label>`
+        }
+        if (k.type === 'textarea') {
+          return `<label><span>${k.label}</span><textarea data-knob-path="${k.path}" id="${id}" rows="3">${v ?? ''}</textarea></label>`
+        }
+        if (k.type === 'number') {
+          return `<label><span>${k.label}</span><input type="number" data-knob-path="${k.path}" id="${id}" value="${v ?? ''}" /></label>`
+        }
+        return `<label><span>${k.label}</span><input type="text" data-knob-path="${k.path}" id="${id}" value="${v ?? ''}" /></label>`
+      }).join('')
+
+      const handler = (e) => {
+        const el = e.target
+        const path = el.dataset.knobPath
+        if (!path) return
+        let value
+        if (el.type === 'checkbox') value = el.checked
+        else if (el.type === 'number') value = Number(el.value)
+        else value = el.value
+        setByPath(props, path, value)
+        render()
+      }
+      form.addEventListener('input', handler)
+      form.addEventListener('change', handler)
+    }
+
+    const init = () => {
+      storyData = readStoryData()
+      if (!storyData) return
+      renderFn = ALL[storyData.name]
+      props = JSON.parse(JSON.stringify(storyData.initialProps))
+      const viewport = document.getElementById('story-viewport')
+      if (!renderFn && viewport) {
+        viewport.innerHTML = `<p style="color:#dc2626;">No render function for ${storyData.name}</p>`
+      }
+      buildKnobs()
+      render()
+      const localeSel = document.getElementById('story-locale')
+      if (localeSel) {
+        localeSel.addEventListener('change', (e) => {
+          document.documentElement.lang = e.target.value
+          document.documentElement.dataset.loc = e.target.value
+        })
+      }
+    }
+
+    document.addEventListener('astro:page-load', init)
+    init()
+  </script>
+</Base>

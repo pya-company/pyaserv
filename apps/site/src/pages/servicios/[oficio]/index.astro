@@ -1,0 +1,39 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/docs.css'
+import { OFICIOS, SERVICE_AREAS } from '~/data/service-areas.ts'
+
+export function getStaticPaths() {
+  return OFICIOS.map((o) => ({ params: { oficio: o.slug }, props: { oficio: o } }))
+}
+
+const { oficio } = Astro.props
+const title = `${oficio.name} en Asunción y Central — PyaServ`
+const description = `Encontrá ${oficio.name.toLowerCase()} en Asunción y Departamento Central. Filtrá por barrio, contactá directo por WhatsApp, sin comisiones.`
+---
+<Base title={title} active="specialists" description={description}>
+  <section class="ps-docs-hero">
+    <h1>{oficio.name} en Asunción y Central</h1>
+    <p>Elegí tu barrio o distrito para ver los {oficio.name.toLowerCase()}s cerca tuyo.</p>
+  </section>
+  <div style="max-width:1100px;margin:0 auto;padding:0 16px 48px;">
+    <h2 style="margin:24px 0 12px 0;font-size:18px;color:#111827;">Asunción</h2>
+    <div class="ps-docs-grid">
+      {SERVICE_AREAS.filter((a) => a.region === 'asuncion').map((a) => (
+        <a href={`/servicios/${oficio.slug}/${a.slug}/`} class="ps-feature-card" style="text-decoration:none;color:inherit;">
+          <h3 class="ps-feature-card__title">{oficio.name} en {a.name}</h3>
+          <p class="ps-feature-card__desc">Ver profesionales →</p>
+        </a>
+      ))}
+    </div>
+    <h2 style="margin:32px 0 12px 0;font-size:18px;color:#111827;">Departamento Central</h2>
+    <div class="ps-docs-grid">
+      {SERVICE_AREAS.filter((a) => a.region === 'central').map((a) => (
+        <a href={`/servicios/${oficio.slug}/${a.slug}/`} class="ps-feature-card" style="text-decoration:none;color:inherit;">
+          <h3 class="ps-feature-card__title">{oficio.name} en {a.name}</h3>
+          <p class="ps-feature-card__desc">Ver profesionales →</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

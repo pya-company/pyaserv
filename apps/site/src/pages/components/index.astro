@@ -1,0 +1,74 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/components-lib.css'
+
+// Static catalog of components. Editing the registry adds a new entry to the tree.
+// Каждый компонент = чистая render-функция в components-lib/.
+interface Entry {
+  readonly id: string
+  readonly name: string
+  readonly level: 'atom' | 'molecule' | 'organism'
+  readonly description: string
+}
+const entries: ReadonlyArray<Entry> = [
+  { id: 'button',           name: 'Button',           level: 'atom',     description: 'Базовая кнопка / ссылка. Варианты, размеры, иконка.' },
+  { id: 'badge-pill',       name: 'BadgePill',        level: 'atom',     description: 'Pill-badge с rarity (common/rare/epic/legendary).' },
+  { id: 'avatar-circle',    name: 'AvatarCircle',     level: 'atom',     description: 'Круглый аватар с фото или инициалами.' },
+  { id: 'tier-label',       name: 'TierLabel',        level: 'atom',     description: 'Лейбл уровня (Aprendiz → Patrón).' },
+  { id: 'star-rating',      name: 'StarRating',       level: 'atom',     description: 'Звёздный рейтинг с количеством.' },
+  { id: 'progress-bar',     name: 'ProgressBar',      level: 'atom',     description: 'Polosa прогресса (0–100%).' },
+  { id: 'tag',              name: 'Tag',              level: 'atom',     description: 'Цветной chip (gray/indigo/amber/green/red).' },
+  { id: 'service-item',     name: 'ServiceItem',      level: 'molecule', description: 'Сервис в списке услуг профиля (название + диапазон цены).' },
+  { id: 'quest-row',        name: 'QuestRow',         level: 'molecule', description: 'Строка квеста с прогрессом и наградой XP.' },
+  { id: 'badge-tile',       name: 'BadgeTile',        level: 'molecule', description: 'Плитка badge в grid /me/?tab=game.' },
+  { id: 'metric-cell',      name: 'MetricCell',       level: 'molecule', description: 'Ячейка HUD (значение + лейбл).' },
+  { id: 'feature-card',     name: 'FeatureCard',      level: 'molecule', description: 'Карточка фичи в /docs/.' },
+  { id: 'review-card',      name: 'ReviewCard',       level: 'molecule', description: 'Отзыв клиента (автор / звёзды / дата / текст).' },
+  { id: 'area-chip',        name: 'AreaChip',         level: 'molecule', description: 'Чип района (Villa Morra, Lambaré...).' },
+  { id: 'whatsapp-cta',     name: 'WhatsAppCta',      level: 'molecule', description: 'Зелёная sticky-кнопка контакта через WhatsApp.' },
+  { id: 'profile-header',   name: 'ProfileHeader',    level: 'organism', description: 'Шапка публичного профиля: avatar + имя + tier + meta + stats.' },
+  { id: 'game-hud',         name: 'GameHUD',          level: 'organism', description: 'HUD сверху /me/: XP + Racha + Tier.' },
+  { id: 'completeness-bar', name: 'CompletenessBar',  level: 'organism', description: 'Расширенная completeness 0–100% + next hint.' },
+  { id: 'profile-public',   name: 'ProfilePublicView',level: 'organism', description: 'Целая страница публичного профиля собранная из atoms+molecules.' },
+]
+
+const atoms = entries.filter((e) => e.level === 'atom')
+const molecules = entries.filter((e) => e.level === 'molecule')
+const organisms = entries.filter((e) => e.level === 'organism')
+---
+<Base title="Componentes" active="home" description="Storybook lite — todos los componentes atómicos + composiciones.">
+  <div class="cl-sb-shell">
+    <aside class="cl-sb-tree" aria-label="Componentes">
+      <h3>Atoms ({atoms.length})</h3>
+      {atoms.map((e) => <a href={`/components/${e.id}/`}>{e.name}</a>)}
+      <h3>Molecules ({molecules.length})</h3>
+      {molecules.map((e) => <a href={`/components/${e.id}/`}>{e.name}</a>)}
+      <h3>Organisms ({organisms.length})</h3>
+      {organisms.map((e) => <a href={`/components/${e.id}/`}>{e.name}</a>)}
+    </aside>
+    <section class="cl-sb-canvas">
+      <h2 class="cl-sb-canvas__title">Storybook lite</h2>
+      <p style="color:#6b7280;margin:0 0 16px 0;">
+        Catálogo de componentes puros de PyaServ. Cada uno se renderiza por separado con
+        un panel de props para test rápido — incluido locale switcher para debug de localización.
+      </p>
+      <p style="color:#4b5563;font-size:14px;line-height:1.6;">
+        <strong>Niveles:</strong>
+        <br>· <em>Atoms</em>: piezas mínimas (Button, BadgePill...).
+        <br>· <em>Molecules</em>: composición de atoms (FeatureCard, QuestRow...).
+        <br>· <em>Organisms</em>: vistas grandes (ProfileHeader, GameHUD, ProfilePublicView).
+      </p>
+      <p style="color:#4b5563;font-size:14px;line-height:1.6;margin-top:16px;">
+        <strong>Reglas:</strong>
+        <br>· Todas las render-funciones son <code>pure (props) =&gt; string</code>.
+        <br>· Sin <code>fetch</code>, sin <code>localStorage</code>, sin <code>Date.now()</code>.
+        <br>· Strings ya traducidas se pasan como props (no hay <code>t()</code> dentro).
+        <br>· Demo Mode v2 reutiliza estos mismos componentes con datos canned.
+      </p>
+      <p style="color:#9ca3af;font-size:12px;margin-top:24px;">
+        Ver código fuente: <code>apps/site/src/components-lib/</code>
+      </p>
+    </section>
+    <aside class="cl-sb-panel"><h3>Props</h3><p style="color:#9ca3af;font-size:12px;">Elegí un componente del árbol →</p></aside>
+  </div>
+</Base>

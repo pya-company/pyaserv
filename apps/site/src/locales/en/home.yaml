@@ -1,0 +1,23 @@
+home:
+  title: Services in Paraguay without fees
+  description: PyaServ connects specialists with clients across Paraguay. No contact fees, no in-platform payments.
+  hero:
+    title: Services in Paraguay, no middlemen.
+    body: Whether you offer a service or you are looking for someone to get something done, PyaServ has a side for you. No fees for introducing — you close the deal directly.
+  specialists:
+    title: I need a specialist
+    desc: Plumbers, electricians, tutors, hairdressers — search by neighborhood and category. Reach out directly when you decide.
+    cta: Browse specialists →
+  clients:
+    title: I offer a service
+    desc: See open requests in your area. If it matches what you do, message them directly — no filters, no fee to apply.
+    cta: Browse requests →
+  banner:
+    html: >-
+      <strong>Status:</strong> MVP live. Create your specialist profile or your request from the <a data-banner-link>My dashboard</a> panel. If you do not have an account yet, we create one with your
+      email — no passwords.
+    status_label: 'Status:'
+    body: MVP live. Create your specialist profile or your request from the
+    cta: My dashboard
+    tail: If you do not have an account yet, we create one with your email — no passwords.
+  stats: <strong>{specs}</strong> active specialists · <strong>{reqs}</strong> open requests

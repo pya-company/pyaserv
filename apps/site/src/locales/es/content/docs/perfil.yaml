@@ -1,0 +1,30 @@
+title: Tu perfil público
+tldr: Página propia en pyaserv.com/p/<tu-slug> con foto, portada, bio, servicios con precio, galería de trabajos, reseñas, badges, horario y botón directo a WhatsApp.
+sections:
+  - heading: ¿Qué incluye?
+    body: |
+      · Foto de perfil + imagen de portada (16:9)
+      · Bio + servicios con rango de precio
+      · Hasta 8 zonas de trabajo
+      · Horario semanal
+      · Galería de trabajos (hasta 24 fotos)
+      · Reseñas de clientes con foto
+      · Badges + tier de gamification
+      · Botón sticky de WhatsApp
+      · QR para tarjeta de visita
+  - heading: URL
+    body: |
+      Cada profesional recibe un slug humano-friendly basado en su nombre: `pyaserv.com/p/juan-perez-019ec8`. Se genera al guardar el perfil; no se puede cambiar.
+  - heading: SEO
+    body: |
+      · Title y meta description dinámicos
+      · Schema.org `LocalBusiness` con aggregateRating
+      · Open Graph + Twitter Card
+      · Hreflang para versiones ES/EN/DE/RU
+      · LCP target < 2 s en 3 G + 4× CPU
+  - heading: Cómo editar
+    body: |
+      Ingresá a `/me/` → tab "Mi perfil" → ahí los campos básicos. Para portada / servicios / portfolio / horario / filtros / guaraní: abrir details "Perfil avanzado" debajo del form principal.
+  - heading: Cómo se calcula el "completeness"
+    body: |
+      10 pasos, cada uno 10 %, comenzando con 20 % de endowed-progress (Nunes 2006). Al 100 %: insignia "Perfil Maestro" + 7 días de Boost gratis.

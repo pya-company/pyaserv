@@ -1,0 +1,25 @@
+common:
+  loading: Loading…
+  sending: Sending…
+  saving: Saving…
+  publishing: Publishing…
+  verifying: Verifying…
+  save: Save
+  cancel: Cancel
+  send: Send
+  delete: Delete
+  edit: Edit
+  back: Back
+  next: Next
+  skip: Skip
+  finish: Done!
+  close: Close
+  missing_id: Missing id
+  price_tbd: To be agreed
+  budget_tbd: To be agreed
+  now: now
+  no_description: (no description)
+  brand_suffix: PyaServ
+  foot_brother: sibling of PyaEats
+  foot_built_on: built on pya-platform
+  error_network: Network error. Please try again.

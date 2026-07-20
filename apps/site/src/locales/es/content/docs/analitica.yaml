@@ -1,0 +1,17 @@
+title: Analítica del perfil
+tldr: Vistas del perfil, clicks a WhatsApp, conversión, tiempo de respuesta, comparación con el promedio del rubro en tu barrio.
+sections:
+  - heading: Métricas (últimos 30 días)
+    body: |-
+      · Profile views
+      · Phone clicks
+      · WhatsApp clicks
+      · Inquiries received
+      · Jobs completed
+      · Reviews acumuladas + rating promedio
+  - heading: Próximos sprints
+    body: |-
+      · Sparkline por día
+      · Source attribution (Google / WhatsApp share / direct / search en PyaServ)
+      · Heatmap hora-de-día
+      · Comparación vs avg del rubro en barrio

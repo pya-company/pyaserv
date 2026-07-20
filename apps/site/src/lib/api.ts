@@ -4,16 +4,73 @@ const API = (typeof import.meta.env.PUBLIC_API_URL === 'string' && import.meta.e
   'https://api.pyaserv.com'
 
 const TOKEN_KEY = 'pyaserv.token'
+const AUTHED_KEY = 'pyaserv.authed'
 
-export const getToken = (): string | null =>
-  typeof sessionStorage === 'undefined' ? null : sessionStorage.getItem(TOKEN_KEY)
+// Auth model: the real session is the backend's httpOnly `pya_sid` cookie
+// (Secure, SameSite=Lax, 30d — see @pya-company/auth). Because it is httpOnly
+// AND scoped to api.pyaserv.com, page JS on pyaserv.com can neither read it nor
+// forge it. We therefore keep a NON-sensitive boolean flag in localStorage just
+// for synchronous UI state (guest redirect / auth badge); it is not a credential.
+//
+// `getToken()` still returns a legacy/fallback Bearer id when present — used
+// only until adoptSession() confirms the cookie round-trips, then dropped so no
+// session id lives in JS at all. On envs where the cookie can't stick (e.g.
+// 3rd-party-cookie-blocked previews) the Bearer fallback keeps the user signed
+// in. One-time migration adopts any legacy sessionStorage token on first read.
+export const getToken = (): string | null => {
+  if (typeof localStorage === 'undefined') return null
+  const persisted = localStorage.getItem(TOKEN_KEY)
+  if (persisted) return persisted
+  const legacy = typeof sessionStorage === 'undefined' ? null : sessionStorage.getItem(TOKEN_KEY)
+  if (legacy) localStorage.setItem(TOKEN_KEY, legacy)
+  return legacy
+}
 
 export const setToken = (token: string): void => {
-  sessionStorage.setItem(TOKEN_KEY, token)
+  localStorage.setItem(TOKEN_KEY, token)
 }
 
 export const clearToken = (): void => {
-  sessionStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(TOKEN_KEY)
+  try { sessionStorage.removeItem(TOKEN_KEY) } catch {}
+}
+
+/** True when the client believes it has a live session — either the httpOnly
+ *  cookie (flagged) or a legacy fallback token. Cheap + synchronous for the
+ *  pre-paint guest redirect; a stale flag self-corrects on the next 401. */
+export const isAuthed = (): boolean => {
+  if (typeof localStorage === 'undefined') return false
+  return localStorage.getItem(AUTHED_KEY) === '1' || Boolean(getToken())
+}
+
+const setAuthed = (): void => { try { localStorage.setItem(AUTHED_KEY, '1') } catch {} }
+const clearAuthed = (): void => { try { localStorage.removeItem(AUTHED_KEY) } catch {} }
+
+/**
+ * Called right after a login endpoint returns its `sid`. The same response also
+ * Set-Cookie'd the httpOnly session, so we probe it: a cookie-only /v1/me (no
+ * Authorization header). If it succeeds the cookie works → we drop the JS token
+ * entirely and rely on the cookie. If it fails (cookie blocked) we keep the
+ * token as a Bearer fallback so the user is never locked out. Never throws.
+ */
+export const adoptSession = async (sid: string): Promise<void> => {
+  setToken(sid)   // guarantees the user is authed via Bearer no matter what
+  setAuthed()
+  try {
+    const probe = await fetch(`${API}/v1/me`, { credentials: 'include', headers: {} })
+    if (probe.ok) clearToken()   // cookie confirmed → no session id in JS
+  } catch { /* keep Bearer fallback */ }
+}
+
+/** Log out. Wipe local state FIRST (synchronous) so a caller that navigates
+ *  away immediately is still logged out even if the request is cut short; the
+ *  server revoke rides `keepalive` so the cookie is cleared regardless. */
+export const endSession = async (): Promise<void> => {
+  clearToken()
+  clearAuthed()
+  try {
+    await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include', keepalive: true })
+  } catch { /* local state already cleared; server session TTLs out */ }
 }
 
 export const apiFetch = async <T = unknown>(
@@ -27,10 +84,13 @@ export const apiFetch = async <T = unknown>(
 
   let res: Response
   try {
-    res = await fetch(`${API}${path}`, { ...init, headers })
+    // credentials:'include' sends + stores the httpOnly session cookie on every
+    // call (requireAuth prefers cookie over Bearer).
+    res = await fetch(`${API}${path}`, { ...init, headers, credentials: 'include' })
   } catch {
     throw new Error(t('error.network'))
   }
+  if (res.status === 401) clearAuthed()
   const ctype = res.headers.get('content-type') ?? ''
   const body = ctype.includes('json') ? await res.json() : await res.text()
   if (!res.ok) {
@@ -85,7 +145,7 @@ export const uploadImage = async (file: File): Promise<string> => {
   const headers = new Headers()
   headers.set('Content-Type', file.type)
   if (token) headers.set('Authorization', `Bearer ${token}`)
-  const res = await fetch(`${API}/v1/media`, { method: 'POST', headers, body: file })
+  const res = await fetch(`${API}/v1/media`, { method: 'POST', headers, body: file, credentials: 'include' })
   if (!res.ok) {
     const errBody = await res.json().catch(() => null) as { error?: { message?: string } } | null
     throw new Error(errBody?.error?.message ?? `HTTP ${res.status}`)

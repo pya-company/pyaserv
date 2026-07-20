@@ -1,0 +1,24 @@
+nav:
+  menu_open: Open menu
+  primary_aria: Main
+  specialists: Specialists
+  clients: Requests
+  docs: Docs
+  releases: Releases
+  components: Components
+  me: My dashboard
+  login: Sign in
+  logout: Sign out
+  skip: Skip to content
+  lang_label: Language
+  theme_label: Toggle theme (light/dark/auto)
+  lang_es: ES
+  lang_en: EN
+  lang_de: DE
+  lang_ru: RU
+  lang_gn: GN
+  lang_es_aria: Switch to Spanish
+  lang_en_aria: Switch to English
+  lang_de_aria: Switch to German
+  lang_ru_aria: Switch to Russian
+  lang_gn_aria: Switch to Guarani

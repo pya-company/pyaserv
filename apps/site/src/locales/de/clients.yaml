@@ -1,0 +1,13 @@
+clients:
+  title: Anfragen
+  description: Kundenanfragen in Asunción. Wenn Sie den gesuchten Service anbieten, schreiben Sie direkt.
+  heading: Offene Anfragen
+  intro: Kunden, die gerade einen Fachmann suchen. Melden Sie sich an, um zu antworten und ein Gespräch zu beginnen.
+  empty:
+    title: Derzeit keine Anfragen
+    hint: Schauen Sie später noch einmal vorbei oder ändern Sie die Filter.
+  count:
+    one: offene Anfrage
+    many: offene Anfragen
+  card:
+    cta: Bewerben →

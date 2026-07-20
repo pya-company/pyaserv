@@ -40,31 +40,46 @@ const items = await fetchRequests()
 const categoryEmoji = (value: string): string =>
   CATEGORIES.find((c) => c.value === value)?.emoji ?? '•'
 
-const countOneEs = tFor('es', 'clients.count.one')
-const countManyEs = tFor('es', 'clients.count.many')
-const countOneEn = tFor('en', 'clients.count.one')
-const countManyEn = tFor('en', 'clients.count.many')
-const ctaEs = tFor('es', 'clients.card.cta')
-const ctaEn = tFor('en', 'clients.card.cta')
+type Loc = 'es' | 'en' | 'de' | 'ru'
+const LOCS: ReadonlyArray<Loc> = ['es', 'en', 'de', 'ru']
+const countOne = (l: Loc): string => tFor(l, 'clients.count.one')
+const countMany = (l: Loc): string => tFor(l, 'clients.count.many')
+const cta = (l: Loc): string => tFor(l, 'clients.card.cta')
 
-// Relative time — render BOTH locales server-side. Reuses i18n locale-aware formatter.
-const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
+// Relative time — server-side per-locale formatter so SSR fills all 4 lang
+// spans (was es/en only, leaving DE/RU users with empty date chip).
+const relativeFor = (ts: number, loc: Loc): string => {
   const seconds = Math.floor(Date.now() / 1000) - ts
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
+  const months = Math.floor(days / 30)
   if (loc === 'es') {
     if (seconds < 60) return 'hace un momento'
     if (minutes < 60) return `hace ${minutes} min`
     if (hours < 24) return `hace ${hours} h`
     if (days < 30) return `hace ${days} d`
-    return `hace ${Math.floor(days / 30)} m`
+    return `hace ${months} m`
+  }
+  if (loc === 'de') {
+    if (seconds < 60) return 'gerade eben'
+    if (minutes < 60) return `vor ${minutes} Min`
+    if (hours < 24) return `vor ${hours} Std`
+    if (days < 30) return `vor ${days} T`
+    return `vor ${months} Mon`
+  }
+  if (loc === 'ru') {
+    if (seconds < 60) return 'только что'
+    if (minutes < 60) return `${minutes} мин назад`
+    if (hours < 24) return `${hours} ч назад`
+    if (days < 30) return `${days} д назад`
+    return `${months} мес назад`
   }
   if (seconds < 60) return 'just now'
   if (minutes < 60) return `${minutes} min ago`
   if (hours < 24) return `${hours} h ago`
   if (days < 30) return `${days} d ago`
-  return `${Math.floor(days / 30)} mo ago`
+  return `${months} mo ago`
 }
 
 const formatGs = (n: number): string => `Gs ${n.toLocaleString('es-PY')}`
@@ -85,51 +100,49 @@ const truncate = (s: string, n = 220): string => s.length > n ? `${s.slice(0, n)
 
     <form id="filters" class="ps-filters" autocomplete="off">
       <label>
-        <T k="specialists.filter.category" as="span" />
+        <T k="specialists.filter.category_label" as="span" />
         <select name="category" id="f-category" aria-label="Categoría">
           <option value="" data-i18n="specialists.filter.category.all">Todas</option>
         </select>
       </label>
       <label>
-        <T k="specialists.filter.barrio" as="span" />
+        <T k="specialists.filter.barrio_label" as="span" />
         <input type="text" name="barrio" id="f-barrio" list="ps-barrios" data-i18n-placeholder="specialists.filter.barrio.placeholder" placeholder="Villa Morra, Carmelitas…" />
       </label>
     </form>
 
     <p id="status" class="ps-msg" aria-live="polite">
-      <span lang="es">{items.length} {items.length === 1 ? countOneEs : countManyEs}</span>
-      <span lang="en">{items.length} {items.length === 1 ? countOneEn : countManyEn}</span>
+      {LOCS.map((l) => (
+        <span lang={l}>{items.length} {items.length === 1 ? countOne(l) : countMany(l)}</span>
+      ))}
     </p>
     <div id="results" class="ps-cards">
       {items.map((r) => {
-        const catLabelEs = tFor('es', `category.${r.category}`)
-        const catLabelEn = tFor('en', `category.${r.category}`)
+        // API returns titleEs/titleEn/descriptionEs/descriptionEn only.
+        // Fall back to ES/EN for DE/RU until the API ships per-locale fields.
+        const title = (l: Loc): string => l === 'en' ? r.titleEn : r.titleEs
+        const description = (l: Loc): string => l === 'en' ? r.descriptionEn : r.descriptionEs
         return (
           <a class="ps-card ps-card--request" href={`${base}/clients/${r.id}/`}>
             <div class="ps-row">
               <span class="ps-chip">
                 {categoryEmoji(r.category)}
                 {' '}
-                <span lang="es">{catLabelEs}</span>
-                <span lang="en">{catLabelEn}</span>
+                {LOCS.map((l) => <span lang={l}>{tFor(l, `category.${r.category}`)}</span>)}
               </span>
               <span class="ps-card__sub">
-                <span lang="es">{relativeFor(r.createdAt, 'es')}</span>
-                <span lang="en">{relativeFor(r.createdAt, 'en')}</span>
+                {LOCS.map((l) => <span lang={l}>{relativeFor(r.createdAt, l)}</span>)}
               </span>
             </div>
             <h2>
-              <span lang="es">{r.titleEs}</span>
-              <span lang="en">{r.titleEn}</span>
+              {LOCS.map((l) => <span lang={l}>{title(l)}</span>)}
             </h2>
             <p class="ps-card__sub">📍 {r.barrio} · 💰 {formatGs(r.budgetGs)}</p>
             <p class="ps-card__body">
-              <span lang="es">{truncate(r.descriptionEs)}</span>
-              <span lang="en">{truncate(r.descriptionEn)}</span>
+              {LOCS.map((l) => <span lang={l}>{truncate(description(l))}</span>)}
             </p>
             <div class="ps-card__cta">
-              <span lang="es">{ctaEs}</span>
-              <span lang="en">{ctaEn}</span>
+              {LOCS.map((l) => <span lang={l}>{cta(l)}</span>)}
             </div>
           </a>
         )

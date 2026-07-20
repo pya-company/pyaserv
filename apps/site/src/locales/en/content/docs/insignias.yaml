@@ -1,0 +1,15 @@
+title: Badges
+tldr: 18 badges in 4 categories that recognize specialist achievements. Public on the profile, optionally hideable.
+sections:
+  - heading: Categories
+    body: |-
+      · **Tier** (5): Apprentice → Patron of the Craft
+      · **Milestone** (5): first job, 10/50/100 jobs, first 5★
+      · **Superlative** (3): speedster of the month, neighborhood star, master of the neighborhood
+      · **Collection** (5): Master Profile, multilingual, builder, squad, fully verified
+  - heading: Rarity
+    body: common · rare · epic · legendary. Drives pill color and visual weight.
+  - heading: Auto-grant
+    body: Superlatives are evaluated monthly (cron next sprint). Milestones + collection awards fire on events (job completed, photo added, ruc set).
+  - heading: Visibility
+    body: Public on the profile by default. The user can hide individual badges from /me/?tab=game.

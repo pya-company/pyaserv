@@ -1,0 +1,15 @@
+login:
+  title: Sign in
+  description: Sign in to PyaServ with your email — no password. 6-digit code by email.
+  intro: No passwords — we email you a 6-digit code.
+  email_label: Email
+  email:
+    placeholder: yourname@email.com
+  send_code: Send code
+  code: Code (6 digits)
+  confirm: Confirm
+  change_email: Change email
+  sent_ok: Check your email — look for a 6-digit code.
+  success: ✓ Done, redirecting…
+
+  reason_dashboard: Sign in to access your dashboard.

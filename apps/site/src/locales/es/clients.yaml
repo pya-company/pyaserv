@@ -1,0 +1,13 @@
+clients:
+  title: Pedidos
+  description: Pedidos de clientes en Asunción. Si ofrecés el servicio que buscan, escribiles directo.
+  heading: Pedidos abiertos
+  intro: Clientes que están buscando un profesional ahora. Para responder, iniciá sesión y abrí una conversación.
+  empty:
+    title: Sin pedidos por ahora
+    hint: Volvé más tarde o cambiá los filtros.
+  count:
+    one: pedido abierto
+    many: pedidos abiertos
+  card:
+    cta: Postularme →

@@ -1,0 +1,30 @@
+{
+  // Isolated DEV backend for the dev.pyaserv.com stand. Runs the feature-branch
+  // API against its OWN D1 + KV so demo/test data never touches production.
+  // Deploy: bunx wrangler deploy --config apps/api/wrangler.dev.jsonc
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pyaserv-api-dev",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "migrations_dir": "migrations",
+  "vars": {
+    "ENVIRONMENT": "development",
+    "SITE_ORIGIN": "https://dev.pyaserv.com",
+    "ADMIN_ORIGIN": "https://dev.pyaserv.com",
+    "API_ORIGIN": "https://pyaserv-api-dev.igor-ganov.workers.dev",
+    "WEBAUTHN_RP_ID": "dev.pyaserv.com",
+    "WEBAUTHN_ORIGINS": "https://dev.pyaserv.com",
+    "EMAIL_DOMAIN": "pyaserv.com",
+    "EMAIL_BRAND": "PyaServ (dev)"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "pyaserv-dev", "database_id": "ee154550-f848-4772-8275-d845c94726b9" }
+  ],
+  "kv_namespaces": [
+    { "binding": "SESSIONS", "id": "729aeecbba934ea79885fdb068deee20" },
+    { "binding": "OAUTH_STATE", "id": "df3abfd84f4a4441bac645b0d7a0d16f" },
+    { "binding": "MEDIA_KV", "id": "bde1659591784836bcc25f61b6f4e46c" }
+  ],
+  "ai": { "binding": "AI" }
+}

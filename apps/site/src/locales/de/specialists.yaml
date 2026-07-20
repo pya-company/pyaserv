@@ -1,0 +1,24 @@
+specialists:
+  title: Fachleute
+  description: Klempner, Elektriker, Friseure, Nachhilfelehrer — finden Sie sie in Ihrem Stadtviertel in Asunción.
+  heading: Verfügbare Fachleute
+  intro: Filtern Sie nach Kategorie oder Stadtviertel. Der Kontakt läuft außerhalb der Plattform; PyaServ vermittelt nur.
+  filter:
+    category_label: Kategorie
+    barrio_label: Stadtviertel
+    category:
+      all: Alle
+    barrio:
+      placeholder: Villa Morra, Carmelitas…
+    near_me: 📍 In meiner Nähe
+    near_me_on: 📍 In meiner Nähe · aktiv
+    near_me_denied: Zugriff auf den Standort verweigert
+  empty:
+    title: Nichts gefunden
+    hint: Entfernen Sie Filter oder wechseln Sie das Stadtviertel.
+  count:
+    one: Fachperson
+    many: Fachleute
+  card:
+    verified: ✓ verifiziert
+    cta: Profil ansehen →

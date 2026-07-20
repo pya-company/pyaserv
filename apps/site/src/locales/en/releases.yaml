@@ -1,0 +1,10 @@
+releases:
+  page_title: Releases
+  page_intro: What is shipping on PyaServ. One entry per release.
+  rss_link: RSS feed
+  back_to_index: ← All releases
+  section_new: New
+  section_improved: Improved
+  section_fixed: Fixed
+  section_next: Coming soon
+  read_more: Read more →

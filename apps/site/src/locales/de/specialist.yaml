@@ -1,0 +1,45 @@
+specialist:
+  public:
+    loading: Wird geladen…
+    about: Über mich
+    services: Dienstleistungen
+    work_areas: Einsatzgebiete
+    jobs: Aufträge
+    badges: Auszeichnungen
+    contact_whatsapp: Über WhatsApp kontaktieren
+    wa_template: 'Hallo {name}, ich melde mich über PyaServ.'
+    not_found_title: Profil nicht gefunden
+    not_found_body: Diesen Fachmann gibt es nicht oder die Registrierung wurde nicht abgeschlossen.
+    see_all: Alle Fachleute ansehen →
+    no_slug_title: Fachkennung fehlt
+    no_slug_body: 'Diese URL erwartet ?slug=<kennung>.'
+    wa_verified: ✓ WhatsApp verifiziert
+    cedula_verified: ✓ Cédula verifiziert
+    price_from: 'Ab {amount}'
+    price_to_arrange: Nach Absprache
+    tier:
+      aprendiz: Lehrling
+      oficial: Geselle
+      maestro: Meister
+      maestro_mayor: Großmeister
+      patron: Patron
+  detail:
+    title: Profil
+    locked:
+      cta: anmelden
+    verified: ✓ Verifiziert
+    contact_btn: Nachricht senden
+    services_h: Angebotene Dienstleistungen
+    no_services:
+      title: Noch keine Dienstleistungen veröffentlicht
+    compose_h: Nachricht
+    compose:
+      label: Nachricht
+      placeholder: Hallo, ich habe Interesse…
+    no_listings_err: Dieser Fachmann hat noch keine Dienstleistungen veröffentlicht; das Gespräch kann nicht gestartet werden.
+    price_from: ab
+    per_hour: Stunde
+    per_job: Auftrag
+    price_tbd: Preis nach Absprache
+    ask_about: Zu dieser Dienstleistung anfragen
+    description: Fachprofil auf PyaServ. Nehmen Sie direkt Kontakt auf, ohne Provision.

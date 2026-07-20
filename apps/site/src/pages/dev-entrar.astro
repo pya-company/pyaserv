@@ -1,0 +1,59 @@
+---
+import Base from '~/layouts/Base.astro'
+// DEV-ONLY sign-in helper for the dev.pyaserv.com stand. The isolated dev API
+// has no email provider, so login uses the dev-bypass key (baked in ONLY for
+// the dev build via PUBLIC_DEV_BYPASS). Renders inert on any build without it.
+const bypass = import.meta.env.PUBLIC_DEV_BYPASS ?? ''
+const api = import.meta.env.PUBLIC_API_URL ?? ''
+---
+<Base title="Entrar (dev)" description="Ingreso rápido al stand de demo">
+  <section class="ps-section" style="max-width:520px;margin:0 auto;text-align:center;">
+    <h1>Stand de demo</h1>
+    <p style="color:var(--ps-text-muted);">Ingreso rápido sin email — sólo para el entorno de pruebas.</p>
+
+    {bypass ? (
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px;">
+        <button id="enter-yahoo" class="ps-btn ps-btn--hero" style="width:100%;transform:none;">
+          Entrar como igor_ganov@yahoo.com
+        </button>
+        <details style="margin-top:8px;text-align:left;color:var(--ps-text-muted);">
+          <summary style="cursor:pointer;">Entrar con otro email…</summary>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <input id="other-email" type="email" placeholder="alguien@ejemplo.com"
+              style="flex:1;min-width:0;padding:10px;border:1px solid var(--ps-border);border-radius:8px;" />
+            <button id="enter-other" class="ps-btn ps-btn--ghost">Entrar</button>
+          </div>
+        </details>
+        <p id="dev-msg" style="min-height:1.2em;color:var(--ps-text-muted);"></p>
+      </div>
+    ) : (
+      <p style="margin-top:24px;color:var(--ps-bad);">Este ingreso sólo está disponible en el stand de demo.</p>
+    )}
+  </section>
+
+  <script define:vars={{ bypass, api }}>
+    if (bypass) {
+      const msg = (t) => { const m = document.getElementById('dev-msg'); if (m) m.textContent = t }
+      const enter = async (email) => {
+        msg('Ingresando…')
+        try {
+          const r = await fetch(`${api}/api/dev/login?email=${encodeURIComponent(email)}`, {
+            method: 'POST', headers: { 'X-Dev-Bypass-Key': bypass },
+          })
+          if (!r.ok) throw new Error('HTTP ' + r.status)
+          const body = await r.json()
+          const sid = body?.data?.sessionToken
+          if (!sid) throw new Error('sin token')
+          localStorage.setItem('pyaserv.token', sid)
+          localStorage.setItem('pyaserv.authed', '1')
+          location.href = '/me/'
+        } catch (e) { msg('Error: ' + (e && e.message ? e.message : 'no se pudo entrar')) }
+      }
+      document.getElementById('enter-yahoo')?.addEventListener('click', () => enter('igor_ganov@yahoo.com'))
+      document.getElementById('enter-other')?.addEventListener('click', () => {
+        const v = (document.getElementById('other-email')?.value || '').trim()
+        if (v) enter(v)
+      })
+    }
+  </script>
+</Base>

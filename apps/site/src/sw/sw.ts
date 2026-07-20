@@ -33,10 +33,15 @@ const PRECACHE_URLS: ReadonlyArray<string> =
 const NEVER_CACHE = ['/api/', '/v1/']
 
 sw.addEventListener('install', (event) => {
+  // Non-atomic: a single 404 / flaky 3G fetch must not poison the whole
+  // install. Promise.allSettled keeps every successful add and ignores the rest.
+  // Every other page is lazy-cached on first navigation via fetch handler.
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll([...PRECACHE_URLS]))
+      .then(async (cache) => {
+        await Promise.allSettled(PRECACHE_URLS.map((u) => cache.add(u)))
+      })
       .then(() => sw.skipWaiting()),
   )
 })

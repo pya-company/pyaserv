@@ -1,0 +1,5 @@
+reviews:
+  h: Reviews
+  empty: No reviews yet.
+  avg_one: review
+  avg_many: reviews

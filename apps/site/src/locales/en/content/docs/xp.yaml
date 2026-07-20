@@ -1,0 +1,13 @@
+title: XP, streaks, quests
+tldr: 'Full gamification system: XP per action, 5 tiers, daily streak with freezes, daily and weekly quests with XP + boost rewards.'
+sections:
+  - heading: XP table (spec §4.4)
+    body: >-
+      · Reply < 1h: +5 · Reply < 24h: +2 · Job completed: +25 · Review: +30 · Review with photo: +50 · 5★ bonus: +20 · Portfolio photo: +5 · Share job: +15 · Daily quest: +10 ·
+      Weekly quest: +50 · Referral: +100
+  - heading: Tiers
+    body: Apprentice (0) → Journeyman (100) → Master (500) → Grand Master (2000) → Patron of the Craft (5000). Sticky — never go down.
+  - heading: Streak
+    body: Any "active" action on a given day (reply, photo, login with activity). Auto-freeze if no leads (max 3/month). Manual pause up to 14 days. Repair 1×/month for 100 XP.
+  - heading: Quests
+    body: 3 daily (10 XP each) + 1-2 weekly (50 XP). Auto-seeded when the user opens /me/?tab=game.

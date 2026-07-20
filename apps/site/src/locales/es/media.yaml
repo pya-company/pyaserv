@@ -1,0 +1,7 @@
+media:
+  upload: Subir foto
+  uploading: Subiendo…
+  replace: Cambiar foto
+  remove: Quitar
+  too_big: La imagen debe pesar menos de 5 MB.
+  bad_type: Solo JPG, PNG o WebP.

@@ -1,0 +1,24 @@
+nav:
+  menu_open: Menü öffnen
+  primary_aria: Hauptnavigation
+  specialists: Fachleute
+  clients: Anfragen
+  docs: Docs
+  releases: Neuigkeiten
+  components: Komponenten
+  me: Mein Konto
+  login: Anmelden
+  logout: Abmelden
+  skip: Zum Inhalt springen
+  lang_label: Sprache
+  theme_label: Thema wechseln (hell/dunkel/auto)
+  lang_es: ES
+  lang_en: EN
+  lang_de: DE
+  lang_ru: RU
+  lang_gn: GN
+  lang_es_aria: Auf Spanisch wechseln
+  lang_en_aria: Auf Englisch wechseln
+  lang_de_aria: Auf Deutsch wechseln
+  lang_ru_aria: Auf Russisch wechseln
+  lang_gn_aria: Auf Guarani wechseln

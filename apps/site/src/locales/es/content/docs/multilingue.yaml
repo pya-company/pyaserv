@@ -1,0 +1,9 @@
+title: Multilingüe per-perfil
+tldr: 'Versión en guaraní de tu bio/headline sin perder el SEO en español. Próximamente: DE, EN, RU como equal-class.'
+sections:
+  - heading: Hoy
+    body: Campos `bio_gn` y `headline_gn` en el "Perfil avanzado". Si están llenos, aparecen en `/p/<slug>?lang=gn` con hreflang correspondiente.
+  - heading: Estrategia 2026-06-25 (PIVOT)
+    body: >-
+      La estrategia comercial pivó a DE/EN/RU/ES como **idiomas equal** — apuntando a expat communities en Paraguay (alemana, inglesa, rusa) + local. Migration 0013 agregará
+      `bio_de`/`bio_ru`/`headline_de`/`headline_ru` columns en Sprint 2.

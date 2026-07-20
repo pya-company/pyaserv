@@ -30,7 +30,7 @@ test('<flying-menu> takes zero space before its module upgrades', async ({ page 
     return route.fulfill({ status: 200, contentType: 'text/javascript', body: '' })
   })
 
-  await page.goto('/')
+  await page.goto('/es/')
 
   const probe = await page.evaluate(() => {
     const fm = document.querySelector('flying-menu')

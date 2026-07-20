@@ -1,0 +1,382 @@
+/* ============================================================
+   /docs/ Hero + index — design-system-aligned
+   ============================================================ */
+
+.docs-hero {
+  max-width: 880px; margin: 0 auto;
+  padding: var(--ps-space-7) var(--ps-space-4) var(--ps-space-4);
+  text-align: center;
+}
+.docs-hero h1 {
+  font-size: clamp(28px, 5vw, 40px);
+  margin: 0 0 var(--ps-space-2) 0;
+  color: var(--ps-text); font-weight: 800; letter-spacing: -0.02em;
+}
+.docs-hero p {
+  color: var(--ps-text-muted); margin: 0;
+  font-size: 16px; line-height: 1.55;
+}
+.docs-toc {
+  margin-top: var(--ps-space-4);
+  display: flex; justify-content: center; gap: var(--ps-space-3); flex-wrap: wrap;
+}
+.docs-toc a {
+  color: var(--ps-acc); text-decoration: none; font-weight: 600;
+  padding: 6px 12px; border-radius: var(--ps-radius-sm);
+}
+.docs-toc a:hover { background: var(--ps-acc-soft); }
+
+.docs-section {
+  max-width: 1100px; margin: var(--ps-space-7) auto;
+  padding: 0 var(--ps-space-4);
+}
+.docs-section__head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--ps-space-4);
+  margin-bottom: var(--ps-space-4); flex-wrap: wrap;
+}
+.docs-section__head h2 {
+  font-size: 22px; margin: 0; color: var(--ps-text); font-weight: 700; letter-spacing: -0.01em;
+}
+.docs-section__head p { margin: 0; color: var(--ps-text-muted); font-size: 14px; }
+.docs-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--ps-space-4);
+}
+
+/* ============================================================
+   /docs/<slug>/ — per-feature page
+   ============================================================ */
+
+.docpage {
+  max-width: 780px;
+  margin: var(--ps-space-6) auto var(--ps-space-8);
+  padding: 0 var(--ps-space-4);
+  color: var(--ps-text);
+  /* Grid-child default `min-width: auto` would size to children's min-content
+     and overflow narrow viewports (was pushing /docs/<slug>/ to 420px on
+     375px mobile). Forcing min-width:0 lets the article shrink to its grid
+     track, then word-break inside <code> and long URLs handles the rest. */
+  min-width: 0;
+}
+.docpage code, .docpage pre {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.docpage pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.docpage a { overflow-wrap: anywhere; }
+.docpage__crumbs {
+  font-size: 13px; color: var(--ps-text-muted); margin-bottom: var(--ps-space-4);
+}
+.docpage__crumbs a { color: var(--ps-acc); text-decoration: none; }
+.docpage__crumbs a:hover { text-decoration: underline; }
+
+.docpage__meta {
+  display: flex; align-items: center; gap: var(--ps-space-2);
+  flex-wrap: wrap; margin-bottom: var(--ps-space-2);
+}
+.docpage__code {
+  background: var(--ps-acc-soft); color: var(--ps-acc);
+  padding: 2px 10px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; letter-spacing: .05em;
+}
+.docpage h1 {
+  font-size: clamp(28px, 5vw, 36px); margin: 0 0 var(--ps-space-2) 0;
+  color: var(--ps-text); font-weight: 800; letter-spacing: -0.02em;
+}
+.docpage__tldr {
+  color: var(--ps-text-muted); margin: 0;
+  font-size: 17px; line-height: 1.55;
+}
+.docpage__actions {
+  display: flex; gap: var(--ps-space-2); flex-wrap: wrap;
+  margin-top: var(--ps-space-4);
+}
+
+.docpage__screenshot {
+  margin: var(--ps-space-5) 0 0 0;
+  background: var(--ps-surface-2);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  overflow: hidden;
+  box-shadow: var(--ps-shadow-sm);
+}
+.docpage__screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Reserve vertical space approximately matching screenshot aspect so the
+   * paragraph below doesn't lurch when the lazy-loaded image lands. */
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.docpage section {
+  margin: var(--ps-space-6) 0;
+  padding-bottom: var(--ps-space-4);
+  border-bottom: 1px solid var(--ps-border);
+}
+.docpage section:last-of-type { border-bottom: 0; }
+.docpage h2 {
+  font-size: 20px; font-weight: 700; color: var(--ps-text);
+  margin: 0 0 var(--ps-space-3) 0; letter-spacing: -0.01em;
+}
+.docpage h3 {
+  font-size: 16px; font-weight: 700; color: var(--ps-text);
+  margin: var(--ps-space-4) 0 var(--ps-space-2) 0;
+}
+.docpage p {
+  margin: var(--ps-space-2) 0; line-height: 1.6; color: var(--ps-text);
+}
+.docpage ul {
+  padding-left: 20px; margin: var(--ps-space-2) 0; color: var(--ps-text);
+}
+.docpage li { margin-bottom: 4px; line-height: 1.55; }
+.docpage strong { color: var(--ps-text); font-weight: 700; }
+.docpage code {
+  background: var(--ps-surface-2);
+  color: var(--ps-text);
+  padding: 1px 6px; border-radius: 4px;
+  font-family: var(--ps-font-mono); font-size: 90%;
+}
+
+.docpage__status {
+  font-size: 10px; font-weight: 700; padding: 2px 10px;
+  border-radius: 4px; letter-spacing: .05em; text-transform: uppercase;
+}
+.docpage__status[data-status="live"] { background: var(--ps-good-soft); color: var(--ps-good); }
+.docpage__status[data-status="demo"] { background: var(--ps-warn-soft); color: var(--ps-warn); }
+.docpage__status[data-status="soon"] { background: var(--ps-surface-2); color: var(--ps-text-muted); }
+
+.docpage__back {
+  text-align: center; margin-top: var(--ps-space-7);
+  padding-top: var(--ps-space-5);
+  border-top: 1px solid var(--ps-border);
+  color: var(--ps-text-muted); font-size: 13px;
+}
+.docpage__back a { color: var(--ps-acc); text-decoration: none; }
+.docpage__back a:hover { text-decoration: underline; }
+
+/* ============================================================
+   /docs/ wiki layout — sidebar + content
+   ============================================================ */
+
+.docs-wiki {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--ps-space-5);
+  max-width: 1200px;
+  margin: var(--ps-space-5) auto;
+  padding: 0 var(--ps-space-4);
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .docs-wiki { grid-template-columns: 1fr; }
+}
+
+.docs-sidebar {
+  background: var(--ps-surface);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  padding: var(--ps-space-3) var(--ps-space-3) var(--ps-space-4);
+  position: sticky; top: var(--ps-space-3);
+  max-height: calc(100vh - var(--ps-space-5));
+  overflow: auto;
+}
+/* <summary> = mobile-only toggle. Desktop hides it and force-opens via JS. */
+.docs-sidebar__toggle {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ps-text);
+  padding: var(--ps-space-2) var(--ps-space-2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.docs-sidebar__toggle::-webkit-details-marker { display: none; }
+.docs-sidebar__toggle::after { content: '▾'; transition: transform 150ms; }
+.docs-sidebar[open] .docs-sidebar__toggle::after { transform: rotate(180deg); }
+@media (min-width: 821px) {
+  /* Desktop — sidebar is always open, hide the summary toggle. */
+  .docs-sidebar__toggle { display: none; }
+  .docs-sidebar { display: block; }
+}
+@media (max-width: 820px) {
+  .docs-sidebar { position: static; max-height: none; }
+}
+
+.docs-sidebar__group {
+  margin-bottom: var(--ps-space-3);
+}
+.docs-sidebar__group-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--ps-text-soft);
+  padding: var(--ps-space-2) var(--ps-space-2);
+  margin: 0;
+}
+.docs-sidebar__list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column;
+}
+.docs-sidebar__item a {
+  display: flex; align-items: center; gap: var(--ps-space-2);
+  padding: 6px var(--ps-space-2);
+  border-radius: var(--ps-radius-sm);
+  font-size: 14px; color: var(--ps-text);
+  text-decoration: none;
+  position: relative;
+}
+.docs-sidebar__item a:hover { background: var(--ps-surface-2); }
+.docs-sidebar__item a[aria-current="page"] {
+  background: var(--ps-acc-soft);
+  color: var(--ps-acc); font-weight: 600;
+}
+.docs-sidebar__code {
+  font-size: 10px; font-weight: 700;
+  background: var(--ps-surface-2); color: var(--ps-text-muted);
+  padding: 1px 6px; border-radius: 3px; flex-shrink: 0;
+}
+.docs-sidebar__item a[aria-current="page"] .docs-sidebar__code {
+  background: var(--ps-acc); color: white;
+}
+.docs-sidebar__status {
+  margin-left: auto;
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 3px; letter-spacing: .05em;
+}
+.docs-sidebar__status[data-status="live"] { background: var(--ps-good-soft); color: var(--ps-good); }
+.docs-sidebar__status[data-status="demo"] { background: var(--ps-warn-soft); color: var(--ps-warn); }
+.docs-sidebar__status[data-status="soon"] { background: var(--ps-surface-2); color: var(--ps-text-soft); }
+
+.docs-content {
+  min-width: 0;  /* allow shrinking inside grid */
+}
+
+/* ============================================================
+   /releases/ — full cards + per-release detail
+   ============================================================ */
+
+.release-list {
+  max-width: 880px; margin: var(--ps-space-5) auto var(--ps-space-7);
+  padding: 0 var(--ps-space-4);
+  display: flex; flex-direction: column; gap: var(--ps-space-5);
+}
+
+.release-card {
+  background: var(--ps-surface);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  padding: var(--ps-space-5);
+  box-shadow: var(--ps-shadow-sm);
+}
+
+.release-card__head { margin-bottom: var(--ps-space-4); }
+.release-card__meta {
+  display: flex; align-items: center; gap: var(--ps-space-2);
+  margin-bottom: var(--ps-space-2);
+}
+.release-card__version {
+  background: var(--ps-acc-soft); color: var(--ps-acc);
+  padding: 2px 10px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; letter-spacing: .05em;
+  font-family: var(--ps-font-mono);
+}
+.release-card__date { color: var(--ps-text-soft); font-size: 13px; }
+.release-card__title {
+  margin: 0 0 var(--ps-space-2) 0;
+  font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
+  color: var(--ps-text);
+}
+.release-card__title a { color: inherit; text-decoration: none; }
+.release-card__title a:hover { color: var(--ps-acc); }
+.release-card__tldr { margin: 0; color: var(--ps-text-muted); font-size: 15px; line-height: 1.5; }
+.release-card__tags {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-top: var(--ps-space-2);
+}
+
+.release-card__body {
+  display: flex; flex-direction: column; gap: var(--ps-space-4);
+  margin: var(--ps-space-4) 0 var(--ps-space-3);
+}
+
+.release-card__foot {
+  padding-top: var(--ps-space-3);
+  border-top: 1px solid var(--ps-border);
+}
+
+/* Sections (Nuevo / Mejorado / Arreglado / Próximamente) */
+.release-section {
+  padding: var(--ps-space-3) 0;
+  border-top: 1px dashed var(--ps-border);
+}
+.release-section:first-child { border-top: 0; padding-top: 0; }
+
+.release-section__heading {
+  display: flex; align-items: center; gap: var(--ps-space-2);
+  font-size: 16px; font-weight: 700; margin: 0 0 var(--ps-space-2) 0;
+  color: var(--ps-text);
+}
+.release-section__badge {
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 3px; letter-spacing: .05em; text-transform: uppercase;
+}
+.release-section__badge[data-kind="new"] { background: var(--ps-good-soft); color: var(--ps-good); }
+.release-section__badge[data-kind="improved"] { background: var(--ps-acc-soft); color: var(--ps-acc); }
+.release-section__badge[data-kind="fixed"] { background: var(--ps-warn-soft); color: var(--ps-warn); }
+.release-section__badge[data-kind="next"] { background: var(--ps-surface-2); color: var(--ps-text-muted); }
+.release-section__title { font-weight: 600; }
+
+.release-section__body {
+  color: var(--ps-text); font-size: 14px; line-height: 1.6;
+}
+.release-section__body p { margin: var(--ps-space-2) 0; }
+.release-section__body ul { padding-left: 20px; margin: var(--ps-space-2) 0; }
+.release-section__body li { margin-bottom: 4px; }
+.release-section__body strong { color: var(--ps-text); font-weight: 700; }
+.release-section__body code {
+  background: var(--ps-surface-2);
+  color: var(--ps-text);
+  padding: 1px 6px; border-radius: 4px;
+  font-family: var(--ps-font-mono); font-size: 90%;
+}
+.release-section__body a { color: var(--ps-acc); }
+
+.release-section__media {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--ps-space-3); margin-top: var(--ps-space-3);
+}
+.release-media {
+  margin: 0; background: var(--ps-surface-2);
+  border-radius: var(--ps-radius-sm); overflow: hidden;
+}
+.release-media img { width: 100%; height: auto; display: block; }
+.release-media figcaption {
+  padding: var(--ps-space-2) var(--ps-space-3);
+  font-size: 12px; color: var(--ps-text-muted);
+}
+
+/* Per-release detail page */
+.release-detail {
+  max-width: 820px; margin: var(--ps-space-5) auto var(--ps-space-7);
+  padding: 0 var(--ps-space-4);
+}
+.release-detail__head { margin-bottom: var(--ps-space-5); }
+.release-detail__head h1 {
+  font-size: clamp(28px, 5vw, 36px);
+  margin: var(--ps-space-2) 0;
+  font-weight: 800; letter-spacing: -0.02em;
+  color: var(--ps-text);
+}
+.release-detail__tldr {
+  color: var(--ps-text-muted); margin: 0;
+  font-size: 17px; line-height: 1.55;
+}
+.release-detail__body {
+  display: flex; flex-direction: column; gap: var(--ps-space-5);
+}
+.release-detail__body .release-section { padding: var(--ps-space-4) 0; }
+.release-detail__body .release-section__heading { font-size: 18px; }
+

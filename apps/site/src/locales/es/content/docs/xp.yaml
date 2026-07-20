@@ -1,0 +1,13 @@
+title: XP, rachas, misiones
+tldr: 'Sistema de gamification completo: XP por acción, 5 tiers, racha diaria con freezes, misiones diarias y semanales con recompensas XP + boost.'
+sections:
+  - heading: XP table (spec §4.4)
+    body: >-
+      · Respuesta < 1h: +5 · Respuesta < 24h: +2 · Trabajo completado: +25 · Reseña: +30 · Reseña con foto: +50 · 5★ bonus: +20 · Foto portfolio: +5 · Compartir trabajo: +15 · Quest diaria: +10 ·
+      Quest semanal: +50 · Referido: +100
+  - heading: Tiers
+    body: Aprendiz (0) → Oficial (100) → Maestro (500) → Maestro Mayor (2000) → Patrón del Oficio (5000). Sticky — no se baja.
+  - heading: Racha
+    body: Acción "activa" cualquier día (respuesta, foto, login con actividad). Auto-freeze si no hubo leads (max 3/mes). Manual pause hasta 14 días. Repair 1×/mes por 100 XP.
+  - heading: Quests
+    body: 3 diarias (10 XP cada una) + 1-2 semanales (50 XP). Auto-seed cuando el usuario abre /me/?tab=game.

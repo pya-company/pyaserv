@@ -1,0 +1,101 @@
+---
+import Base from '~/layouts/Base.astro'
+import '~/styles/components-lib.css'
+import '~/styles/docs.css'
+import { RELEASES } from '~/data/releases.ts'
+import { getReleaseContent } from '~/lib/content.ts'
+import { renderReleaseBody } from '~/lib/markdown-mini.ts'
+import { tFor, LOCALES, type Locale } from '~/lib/i18n.ts'
+import { getAllLocales } from '~/lib/l10n-emit.ts'
+
+// SSR default = ES. Client `applyContent()` re-renders on locale change.
+const loc: Locale = (Astro.currentLocale ?? 'es') as Locale
+const VISIBLE_LOCS = LOCALES.filter((l) => l !== 'gn')
+
+const title = tFor(loc, 'releases.page_title')
+const intro = tFor(loc, 'releases.page_intro')
+const rss = tFor(loc, 'releases.rss_link')
+const readMore = tFor(loc, 'releases.read_more')
+
+const enriched = RELEASES.map((r) => ({
+  schema: r,
+  content: getReleaseContent(loc, r.slug),
+})).filter((x) => x.content !== null) as Array<{
+  schema: typeof RELEASES[number]
+  content: NonNullable<ReturnType<typeof getReleaseContent>>
+}>
+
+const sectionLabelMap = (kind: string) => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, `releases.section_${kind}`)
+  return out
+}
+const readMoreMap = (): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) out[l] = tFor(l, 'releases.read_more')
+  return out
+}
+
+// Per-section rendered HTML across all locales for a given release slug + section index.
+const sectionBodyMap = (slug: string, idx: number): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const l of VISIBLE_LOCS) {
+    const c = getReleaseContent(l, slug)
+    const s = c?.sections?.[idx]
+    if (s) out[l] = renderReleaseBody(s.body)
+  }
+  return out
+}
+
+const escapeAttr = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const l10nText = (m: Record<string, string>): string => `data-l10n-text='${escapeAttr(JSON.stringify(m))}'`
+const l10nHtml = (m: Record<string, string>): string => `data-l10n-html='${escapeAttr(JSON.stringify(m))}'`
+---
+<Base title={title} active="home" description={intro}>
+  <section class="docs-hero">
+    <h1 data-i18n="releases.page_title">{title}</h1>
+    <p data-i18n="releases.page_intro">{intro}</p>
+    <p style="margin-top: var(--ps-space-2); font-size: 13px;">
+      <a href="/releases/rss.xml" style="color:var(--ps-acc);" data-i18n="releases.rss_link">{rss}</a>
+    </p>
+  </section>
+
+  <div class="release-list">
+    {enriched.map(({ schema, content }) => (
+      <article class="release-card" id={schema.slug}>
+        <header class="release-card__head">
+          <div class="release-card__meta">
+            <span class="release-card__version">{schema.version}</span>
+            <span class="release-card__date">{schema.date}</span>
+          </div>
+          <h2 class="release-card__title">
+            <a href={`/releases/${schema.slug}/`}><Fragment set:html={`<span ${l10nText(getAllLocales('releases', schema.slug, ['title']))}>${content.title}</span>`} /></a>
+          </h2>
+          <Fragment set:html={`<p class="release-card__tldr" ${l10nText(getAllLocales('releases', schema.slug, ['tldr']))}>${content.tldr}</p>`} />
+          {schema.tags.length > 0 && (
+            <div class="release-card__tags">
+              {schema.tags.map((tag) => <span class="cl-tag cl-tag--gray">{tag}</span>)}
+            </div>
+          )}
+        </header>
+
+        <div class="release-card__body">
+          {content.sections.map((sec, i) => (
+            <section class="release-section" data-kind={sec.kind}>
+              <h3 class="release-section__heading">
+                <Fragment set:html={`<span class="release-section__badge" data-kind="${sec.kind}" ${l10nText(sectionLabelMap(sec.kind))}>${tFor(loc, `releases.section_${sec.kind}`)}</span>`} />
+                <Fragment set:html={`<span class="release-section__title" ${l10nText(getAllLocales('releases', schema.slug, ['sections', i, 'heading']))}>${sec.heading}</span>`} />
+              </h3>
+              <Fragment set:html={`<div class="release-section__body" ${l10nHtml(sectionBodyMap(schema.slug, i))}>${renderReleaseBody(sec.body)}</div>`} />
+            </section>
+          ))}
+        </div>
+
+        <footer class="release-card__foot">
+          <Fragment set:html={`<a href="/releases/${schema.slug}/" class="cl-btn cl-btn--ghost cl-btn--sm" ${l10nText(readMoreMap())}>${readMore}</a>`} />
+        </footer>
+      </article>
+    ))}
+  </div>
+</Base>

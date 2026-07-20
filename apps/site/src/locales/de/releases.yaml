@@ -1,0 +1,10 @@
+releases:
+  page_title: Neuigkeiten
+  page_intro: Was bei PyaServ ausgeliefert wird. Ein Eintrag pro Release.
+  rss_link: RSS-Feed
+  back_to_index: ← Alle Releases
+  section_new: Neu
+  section_improved: Verbessert
+  section_fixed: Behoben
+  section_next: Demnächst
+  read_more: Weiterlesen →

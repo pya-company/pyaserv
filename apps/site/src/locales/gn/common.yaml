@@ -1,0 +1,4 @@
+common:
+  # Sparse Guaraní — only emotional CTAs / greetings. UI без эмоции fall back to EN.
+  save: Mbohasapyre
+  finish: I porã!

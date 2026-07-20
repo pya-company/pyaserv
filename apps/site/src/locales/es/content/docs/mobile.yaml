@@ -1,0 +1,7 @@
+title: Mobile (Tauri + WebView)
+tldr: iOS + Android app envolviendo el mismo código web vía Tauri 2.0 mobile. Single codebase. Sprint 7+.
+sections:
+  - heading: Decisión arquitectónica (spec §18)
+    body: NO React Native. NO Flutter. NO separate mobile app. Tauri WebView wrappea apps/site/dist directamente.
+  - heading: Plan
+    body: 'Sprint 7+: scaffold apps/mobile, iOS Xcode signing, Android Gradle, push notifications, share intent, biometric.'

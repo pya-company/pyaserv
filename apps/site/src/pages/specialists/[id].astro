@@ -138,10 +138,8 @@ const relativeFor = (ts: number, loc: 'es' | 'en'): string => {
         )}
 
         <div data-auth-user class="ps-detail__contact ps-stack">
-          <a id="phone-link" href={`tel:${spec.phone.replace(/[^+0-9]/g, '')}`}>📞 <span>{spec.phone}</span></a>
-          {spec.whatsapp && (
-            <a id="whatsapp-link" href={`https://wa.me/${spec.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener">💬 WhatsApp</a>
-          )}
+          <a id="phone-link" class="ps-contact-line" href={`tel:${spec.phone.replace(/[^+0-9]/g, '')}`}>📞 <span>{spec.phone}</span></a>
+          <a id="whatsapp-link" class="ps-contact-line ps-contact-line--wa" href={`https://wa.me/${(spec.whatsapp ?? spec.phone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener">✆ <span>WhatsApp</span></a>
         </div>
         <p data-auth-guest class="ps-banner ps-banner--warn">
           <span lang="es">{tFor('es', 'specialist.detail.locked')} <a id="login-link-es">{tFor('es', 'specialist.detail.locked.cta')}</a>.</span>
